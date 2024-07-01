@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.Swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
@@ -12,12 +12,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import frc.lib.math.OnboardModuleState;
-import frc.lib.util.CANCoderUtil;
-import frc.lib.util.CANSparkMaxUtil;
-import frc.lib.util.CANCoderUtil.CCUsage;
-import frc.lib.util.CANSparkMaxUtil.Usage;
-import frc.lib.util.SwerveModuleConstants;
+import frc.robot.Swerve.OnboardModuleState;
+import frc.robot.Swerve.CANCoderUtil;
+import frc.robot.Swerve.CANSparkMaxUtil;
+import frc.robot.Swerve.CANSparkMaxUtil.Usage;
+import frc.robot.Swerve.CANCoderUtil.CCUsage;
 import frc.robot.Constants;
 
 public class SwerveModule {
@@ -40,15 +39,15 @@ public class SwerveModule {
     private final SparkPIDController driveController;
     private final SparkPIDController angleController;
 
-    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.Swerve.driveKS,
-            Constants.Swerve.driveKV, Constants.Swerve.driveKA);
+    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.Swerve.kDriveS,
+            Constants.Swerve.kDriveV, Constants.Swerve.kDriveA);
 
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants) {
         this.moduleNumber = moduleNumber;
-        this.m_angleKP = Constants.Swerve.angleKP;
-        this.m_angleKI = Constants.Swerve.angleKI;
-        this.m_angleKD = Constants.Swerve.angleKD;
-        this.m_angleKFF = Constants.Swerve.angleKFF;
+        this.m_angleKP = Constants.Swerve.kAngleP;
+        this.m_angleKI = Constants.Swerve.kAngleI;
+        this.m_angleKD = Constants.Swerve.kAngleD;
+        this.m_angleKFF = Constants.Swerve.kAngleFF;
         angleOffset = moduleConstants.angleOffset;
 
         /* Angle Encoder Config */
@@ -144,7 +143,7 @@ public class SwerveModule {
         // limits can bus usage
         CANSparkMaxUtil.setCANSparkMaxBusUsage(angleMotor, Usage.kPositionOnly);
         // sets current limit
-        angleMotor.setSmartCurrentLimit(Constants.Swerve.angleContinuousCurrentLimit);
+        angleMotor.setSmartCurrentLimit(Constants.Swerve.kAngleContinuousCurrentLimit);
         // sets inversion
         angleMotor.setInverted(Constants.Swerve.angleInvert);
         // sets brake mode or not
@@ -157,7 +156,7 @@ public class SwerveModule {
         angleController.setI(m_angleKI);
         angleController.setD(m_angleKD);
         angleController.setFF(m_angleKFF);
-        angleMotor.enableVoltageCompensation(Constants.Swerve.voltageComp);
+        angleMotor.enableVoltageCompensation(Constants.Swerve.kVoltageComp);
         // burns spark max
         angleMotor.burnFlash();
 
@@ -172,7 +171,7 @@ public class SwerveModule {
         // full utilisation on the can loop hell yea
         CANSparkMaxUtil.setCANSparkMaxBusUsage(driveMotor, Usage.kAll);
         // sets current limit
-        driveMotor.setSmartCurrentLimit(Constants.Swerve.driveContinuousCurrentLimit);
+        driveMotor.setSmartCurrentLimit(Constants.Swerve.kDriveContinuousCurrentLimit);
         // sets inverted or not
         driveMotor.setInverted(Constants.Swerve.driveInvert);
         // sets brake mode or not
@@ -182,11 +181,11 @@ public class SwerveModule {
         // sets encoder to read positions as meters traveled
         driveEncoder.setPositionConversionFactor(Constants.Swerve.driveConversionPositionFactor);
         // pid setting fun
-        driveController.setP(Constants.Swerve.driveKP);
-        driveController.setI(Constants.Swerve.driveKI);
-        driveController.setD(Constants.Swerve.driveKD);
-        driveController.setFF(Constants.Swerve.driveKFF);
-        driveMotor.enableVoltageCompensation(Constants.Swerve.voltageComp);
+        driveController.setP(Constants.Swerve.kDriveP);
+        driveController.setI(Constants.Swerve.kDriveI);
+        driveController.setD(Constants.Swerve.kDriveD);
+        driveController.setFF(Constants.Swerve.kDriveFF);
+        driveMotor.enableVoltageCompensation(Constants.Swerve.kVoltageComp);
         // burns to spark max
         driveMotor.burnFlash();
         // resets encoder position to 0
