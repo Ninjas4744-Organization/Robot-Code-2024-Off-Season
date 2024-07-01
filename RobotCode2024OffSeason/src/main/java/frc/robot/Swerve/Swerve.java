@@ -30,13 +30,15 @@ public class Swerve extends SubsystemBase {
   private SwerveDriveOdometry _odometry;
   private Supplier<EstimationData> _visionEstimation;
   public SwerveDrivePoseEstimator _poseEstimator;
+  private PIDController _swerveAnglePID;
   private PIDController _driveAssistPID;
-  private boolean isDriveAssist;
+  private boolean isDriveAssist = false;
+  private boolean isAnglePID = false;
 
-  /*
+  /**
    * Creates a new Swerve.
    * @param visionEstimation - the supplier for the vision estimation
-  * */
+   */
   public Swerve(Supplier<EstimationData> visionEstimation) {
     _visionEstimation = visionEstimation;
 
@@ -51,6 +53,11 @@ public class Swerve extends SubsystemBase {
     resetOdometry(new Pose2d());
 
     _poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.kSwerveKinematics, RobotState.getGyroYaw(), getModulePositions(), new Pose2d());
+
+    _swerveAnglePID = new PIDController(Constants.Swerve.kSwerveAngleP, Constants.Swerve.kSwerveAngleI, Constants.Swerve.kSwerveAngleD);
+    _swerveAnglePID.enableContinuousInput(-1.5 * Math.PI, 0.5 * Math.PI);
+
+    _driveAssistPID = new PIDController(Constants.Swerve.kDriveAssistP, Constants.Swerve.kDriveAssistI, Constants.Swerve.kDriveAssistD);
 
     // AutoBuilder.configureHolonomic(
     //     this::getLastCalculatedPosition, // Robot pose supplier
@@ -86,9 +93,15 @@ public class Swerve extends SubsystemBase {
    * @param rotation - speed in m/s to rotate the robot, positive is counter clockwise
    * @param fieldRelative - whether or not the robot movement is relative to the field or the robot itself
    * @param isOpenLoop - whether or not to use velocity PID for the modules
-   * @return nothing
    */
   public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+    if(isAnglePID)
+      rotation = _swerveAnglePID.calculate(RobotState.getGyroYaw().getDegrees());
+
+    //TODO: add vision and stuff so                      |----------------closest tag or note pose-------------|
+    if(isDriveAssist)
+      translation.plus(calculateDriveAssist(translation, new Pose2d(0, 0, Rotation2d.fromDegrees(0)), rotation));
+
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
         fieldRelative
           ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, RobotState.getGyroYaw())
@@ -101,7 +114,6 @@ public class Swerve extends SubsystemBase {
   /**
    * Sets the modules to the given states
    * @param desiredStates - the wanted state for each module
-   * @return nothing
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
@@ -124,7 +136,6 @@ public class Swerve extends SubsystemBase {
   /**
    * Resets the swerve odometry to the given pose so it thinks the robot is at that pose
    * @param pose - the pose to reset the odometry to
-   * @return nothing
    */
   public void resetOdometry(Pose2d pose) {
     _odometry.resetPosition(RobotState.getGyroYaw(), getModulePositions(), pose);
@@ -139,7 +150,6 @@ public class Swerve extends SubsystemBase {
 
   /**
    * Sets the swerve modules rotation so it makes an X shape and makes the swerve immovable
-   * @return nothing
    */
   public void setWheelsToX() {
     setModuleStates(new SwerveModuleState[] {
@@ -206,10 +216,61 @@ public class Swerve extends SubsystemBase {
   }
 
   /**
+   * Makes the swerve use PID to look at the given angle
+   * @param angle - the angle to look at
+   * @param roundToAngle - the angle jumps to round to, for example 45 degrees will make it round the given angle to the nearest 0, 45, 90, 135...
+   * it rounds the angle only if the rounded angle is close enough to the given angle so for example if the given angle is 28 and the rounded angle is 45 it won't round.
+   * if you write 1 as the roundToAngle there will be no rounding, DON'T USE 0 (Division by zero error)
+   */
+  public void lookAt(double angle, double roundToAngle) {
+    double roundedAngle = Math.round(angle / roundToAngle) * roundToAngle;
+    angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundToAngle : angle;
+
+    _swerveAnglePID.setSetpoint(angle);
+    isAnglePID = true;
+  }
+
+  /**
+   * Makes the swerve use PID to look according to the given direction
+   * @param direction - the direction vector to look
+   * @param roundToAngle - the angle jumps to round to, for example 45 degrees will make it round the given angle (calculated from direction) to the nearest 0, 45, 90, 135...
+   * it rounds the angle only if the rounded angle is close enough to the given angle so for example if the given angle is 28 and the rounded angle is 45 it won't round.
+   * if you write 1 as the roundToAngle there will be no rounding, DON'T USE 0 (Division by zero error)
+   */
+  public void lookAt(Translation2d direction, double roundToAngle) {
+    double angle = 90 - Math.atan2(direction.getY(), direction.getX());
+    lookAt(angle, roundToAngle);
+  }
+
+  /**
+   * Turns off the angle PID so the swerve rotates according to given speed in drive function.
+   * running lookAt will turn on the angle PID again
+   */
+  public void turnOffAnglePID() {
+    isAnglePID = false;
+  }
+
+  private Translation2d calculateDriveAssist(Translation2d movingDirection, Pose2d targetPose, double driveAssistThreshold) {
+    //TODO: make this work
+    Translation2d result = new Translation2d(0, 0);
+
+    double size = Math.sqrt(result.getX() * result.getX() + result.getY() * result.getY());
+    return size > driveAssistThreshold ? new Translation2d(0, 0) : result;
+  }
+
+  /**
+   * Sets whether or not the drive assist is on
+   * @param isDriveAssist
+   */
+  public void setIsDriveAssist(boolean isDriveAssist) {
+    this.isDriveAssist = isDriveAssist;
+  }
+
+  /**
    * Logs info about the modules and swerve
    */
   public void log() {
-    
+    //TODO: make this work 
   }
 
   @Override

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.*;
-import frc.robot.FieldConstants;
+import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 
 import org.photonvision.EstimatedRobotPose;
@@ -13,31 +13,28 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public class PhotonCamera {
+public class VisionCamera {
     private final PhotonCamera _camera;
     private final PhotonPoseEstimator _estimator;
     private List<PhotonTrackedTarget> _targets;
-    private VisionIOOutput _output;
+    private VisionOutput _output;
 
     /**
-     * Implements PhotonVision camera
-     *
      * @param name Name of the camera.
      * @param cameraPose Location of the camera on the robot (from center, positive x forward, positive y left, and positive angle is counterclockwise).
      */
-    public PhotonCamera(String name, Transform3d cameraPose) {
+    public VisionCamera(String name, Transform3d cameraPose) {
         _camera = new PhotonCamera(name);
 
-        _estimator = new PhotonPoseEstimator(FieldConstants.getFieldLayout(), PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, _camera, cameraPose);
+        _estimator = new PhotonPoseEstimator(Constants.VisionConstants.getFieldLayout(), PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, _camera, cameraPose);
         _estimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
 
-        _output = new VisionIOOutput();
+        _output = new VisionOutput();
     }
 
-    @Override
-    public VisionIOOutput Update() {
+    public VisionOutput Update() {
         PhotonPipelineResult result = _camera.getLatestResult();
-        _estimator.setFieldTags(FieldConstants.getFieldLayout());
+        _estimator.setFieldTags(Constants.VisionConstants.getFieldLayout());
         Optional<EstimatedRobotPose> currentPose = _estimator.update(result);
         
         if(!currentPose.isPresent())
@@ -48,7 +45,7 @@ public class PhotonCamera {
         _targets = currentPose.get().targetsUsed;
         findMinMax(_output);
 
-        if (_output.maxAmbiguity < VisionConstants.maxAmbiguity) {
+        if (_output.maxAmbiguity < VisionConstants.kMaxAmbiguity) {
             _output.timestamp = currentPose.get().timestampSeconds;
             
             _output.robotPose = new Pose2d(
@@ -61,7 +58,7 @@ public class PhotonCamera {
         return _output;
     }
 
-    private void findMinMax(VisionIOOutput output) {
+    private void findMinMax(VisionOutput output) {
         output.closestTagDist = Double.MAX_VALUE;
         output.farthestTagDist = 0;
         output.maxAmbiguity = 0;

@@ -88,6 +88,11 @@ public final class Constants {
     public static final double kSwerveAngleI = 0;
     public static final double kSwerveAngleD = 2;
 
+    /* Swerve drive assist PID values */
+    public static final double kDriveAssistP = 0.2;
+    public static final double kDriveAssistI = 0;
+    public static final double kDriveAssistD = 2;
+
     /* Modules drive PID balues */
     public static final double kDriveP = 0.0;
     public static final double kDriveI = 0.0;
