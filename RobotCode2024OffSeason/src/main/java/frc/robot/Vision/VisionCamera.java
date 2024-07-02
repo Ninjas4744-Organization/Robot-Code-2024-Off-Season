@@ -69,18 +69,25 @@ public class VisionCamera {
 
             if (distance < output.closestTagDist){
                 output.closestTagDist = distance;
-                output.closestTagId = target.getFiducialId();
+                output.closestTag = Constants.VisionConstants.getFieldLayout().getTags().get(target.getFiducialId() - 1);
             }
 
             if (distance > output.farthestTagDist){
                 output.farthestTagDist = distance;
-                output.farthestTagId = target.getFiducialId();
+                output.farthestTag = Constants.VisionConstants.getFieldLayout().getTags().get(target.getFiducialId() - 1);
             }
 
             if (ambiguity > output.maxAmbiguity){
                 output.maxAmbiguity = ambiguity;
-                output.maxAmbiguityTagId = target.getFiducialId();
+                output.maxAmbiguityTag = Constants.VisionConstants.getFieldLayout().getTags().get(target.getFiducialId() - 1);
             }
         }
+    }
+
+    /**
+     * @return name of the camera
+     */
+    public String getName() {
+        return _camera.getName();
     }
 }

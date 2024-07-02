@@ -11,15 +11,12 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState;
-import frc.robot.Vision.EstimationData;
+import frc.robot.Vision.VisionEstimation;
 
 import java.util.List;
-import java.util.function.Supplier;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -28,20 +25,17 @@ public class Swerve extends SubsystemBase {
 
   private SwerveModule[] _modules;
   private SwerveDriveOdometry _odometry;
-  private Supplier<EstimationData> _visionEstimation;
   public SwerveDrivePoseEstimator _poseEstimator;
   private PIDController _swerveAnglePID;
   private PIDController _driveAssistPID;
   private boolean isDriveAssist = false;
   private boolean isAnglePID = false;
+  private boolean isBayblade = false;
 
   /**
    * Creates a new Swerve.
-   * @param visionEstimation - the supplier for the vision estimation
    */
-  public Swerve(Supplier<EstimationData> visionEstimation) {
-    _visionEstimation = visionEstimation;
-
+  public Swerve() {
     _modules = new SwerveModule[] {
       new SwerveModule(0, Constants.Swerve.Mod0.constants),
       new SwerveModule(1, Constants.Swerve.Mod1.constants),
@@ -95,12 +89,18 @@ public class Swerve extends SubsystemBase {
    * @param isOpenLoop - whether or not to use velocity PID for the modules
    */
   public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+    translation = translation.times(Constants.Swerve.kSpeedFactor);
+    rotation = rotation * Constants.Swerve.kRotationSpeedFactor;
+
     if(isAnglePID)
       rotation = _swerveAnglePID.calculate(RobotState.getGyroYaw().getDegrees());
 
+    if(isBayblade)
+      rotation = Constants.Swerve.maxAngularVelocity;
+
     //TODO: add vision and stuff so                      |----------------closest tag or note pose-------------|
     if(isDriveAssist)
-      translation.plus(calculateDriveAssist(translation, new Pose2d(0, 0, Rotation2d.fromDegrees(0)), rotation));
+      translation.plus(calculateDriveAssist(translation, new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
 
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
         fieldRelative
@@ -250,12 +250,25 @@ public class Swerve extends SubsystemBase {
     isAnglePID = false;
   }
 
-  private Translation2d calculateDriveAssist(Translation2d movingDirection, Pose2d targetPose, double driveAssistThreshold) {
-    //TODO: make this work
-    Translation2d result = new Translation2d(0, 0);
+  /**
+   * Calculates the drive assist
+   * @param movingDirection - the direction the robot is moving from the driver
+   * @param targetPose - the pose of the closest target(tags and notes)
+   * @return
+   */
+  private Translation2d calculateDriveAssist(Translation2d movingDirection, Pose2d targetPose) {
+    Translation2d perfectDirection = new Translation2d(targetPose.getX() - RobotState.getRobotPose().getX(), targetPose.getY() - RobotState.getRobotPose().getY());
+    Rotation2d perfectAngle = perfectDirection.getAngle();
+    Rotation2d movingAngle = movingDirection.getAngle();
 
-    double size = Math.sqrt(result.getX() * result.getX() + result.getY() * result.getY());
-    return size > driveAssistThreshold ? new Translation2d(0, 0) : result;
+    Rotation2d a = perfectAngle.minus(movingAngle);
+    double size = a.getSin() * perfectDirection.getNorm();
+    Translation2d result = new Translation2d(-a.getCos() * size, -a.getSin() * size);
+
+    if(size > Constants.Swerve.kDriveAssistThreshold)
+      return new Translation2d();
+
+    return new Translation2d(_driveAssistPID.calculate(0, result.getX()), _driveAssistPID.calculate(0, result.getY()));
   }
 
   /**
@@ -267,21 +280,33 @@ public class Swerve extends SubsystemBase {
   }
 
   /**
+   * Sets whether or not the bayblade mode is on, if it is on the swerve will rotate full speed non stop
+   * @param isBayblade - true if bayblade mode should be on
+   */
+  public void setBaybladeMode(boolean isBayblade) {
+    this.isBayblade = isBayblade;
+  }
+
+  /**
    * Logs info about the modules and swerve
    */
   public void log() {
     //TODO: make this work 
   }
 
+  /**
+   * Adds a vision estimation to the pose estimator so the robot can know where it is
+   * @param visionEstimation - the estimation
+   */
+  public void addVisionEstimation(VisionEstimation visionEstimation) {
+    if(visionEstimation.hasTargets)
+      _poseEstimator.addVisionMeasurement(visionEstimation.pose, visionEstimation.timestamp);
+  }
+
   @Override
   public void periodic() {
     _odometry.update(RobotState.getGyroYaw(), getModulePositions());
-
     _poseEstimator.update(RobotState.getGyroYaw(), getModulePositions());
-    
-    if(_visionEstimation.get().hasTargets)
-    _poseEstimator.addVisionMeasurement(_visionEstimation.get().pose, _visionEstimation.get().timestamp);
-    
     RobotState.setRobotPose(_poseEstimator.getEstimatedPosition());
   }
 }
