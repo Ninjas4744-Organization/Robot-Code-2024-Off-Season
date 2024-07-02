@@ -49,8 +49,8 @@ public final class Constants {
   }
 
   public static final class Swerve {
-    public static final double kSpeedFactor = 1;
-    public static final double kRotationSpeedFactor = 0.5;
+    public static final double kSpeedFactor = 0.5;
+    public static final double kRotationSpeedFactor = 0.25;
     public static final double kJoystickDeadband = 0.05;
 
     public static final boolean kInvertGyro = false; // Always ensure Gyro is CCW+ CW-
@@ -216,8 +216,8 @@ public final class Constants {
 
     public static HashMap<String, Transform3d> getCameraPoses() {
       HashMap<String, Transform3d> cameraPoses = new HashMap<String, Transform3d>();
-      cameraPoses.put("front", new Transform3d(0.5, 0, 0, new Rotation3d(0, 0, 0)));
-      cameraPoses.put("backleft", new Transform3d(-0.5, -0.5, 0, new Rotation3d(0, 0, -120)));
+      cameraPoses.put("Front", new Transform3d(0.5, 0, 0, new Rotation3d(0, 0, 0)));
+      cameraPoses.put("BackLeft", new Transform3d(-0.5, -0.5, 0, new Rotation3d(0, 0, 240)));
 
       return cameraPoses;
     }

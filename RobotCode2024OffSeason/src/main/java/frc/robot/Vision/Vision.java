@@ -31,10 +31,7 @@ public class Vision extends SubsystemBase {
         for (int i = 0; i < _cameras.length; i++) {
             VisionOutput output = _cameras[i].Update();
             _outputs.put(_cameras[i].getName(), output);
-
-            _estimationsData[i].pose = output.robotPose;
-            _estimationsData[i].timestamp = output.timestamp;
-            _estimationsData[i].hasTargets = output.hasTargets;
+            _estimationsData[i] = new VisionEstimation(output.robotPose, output.timestamp, output.hasTargets);
         }
     }
 

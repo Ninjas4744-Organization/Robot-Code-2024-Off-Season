@@ -20,7 +20,7 @@ public class RobotContainer {
     _operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
     _swerve = new Swerve();
-    _vision = new Vision(new String[]{"front", "backleft"});
+    _vision = new Vision(new String[]{"Front", "BackLeft"});
 
     AutoCommandBuilder.registerCommands();
 
@@ -34,7 +34,7 @@ public class RobotContainer {
 
   private void configureDriverBindings(){
     _swerve.setDefaultCommand(
-      TeleopCommandBuilder.swerveDrive(_swerve, _driverJoystick, true, _vision)
+      TeleopCommandBuilder.swerveDrive(_swerve, _driverJoystick, false, _vision)
     );
 
     _driverJoystick.R3().toggleOnTrue(Commands.startEnd(

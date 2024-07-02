@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -89,8 +90,8 @@ public class Swerve extends SubsystemBase {
    * @param isOpenLoop - whether or not to use velocity PID for the modules
    */
   public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-    translation = translation.times(Constants.Swerve.kSpeedFactor);
-    rotation = rotation * Constants.Swerve.kRotationSpeedFactor;
+    translation = translation.times(Constants.Swerve.kSpeedFactor).times(Constants.Swerve.maxSpeed);
+    rotation = rotation * Constants.Swerve.kRotationSpeedFactor * Constants.Swerve.maxAngularVelocity;
 
     if(isAnglePID)
       rotation = _swerveAnglePID.calculate(RobotState.getGyroYaw().getDegrees());
@@ -102,9 +103,17 @@ public class Swerve extends SubsystemBase {
     if(isDriveAssist)
       translation.plus(calculateDriveAssist(translation, new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
 
+    SmartDashboard.putNumber("Gyro", RobotState.getGyroYaw().getDegrees());
+    SmartDashboard.putBoolean("isAnglePID", isAnglePID);
+    SmartDashboard.putBoolean("isBayblade", isBayblade);
+    SmartDashboard.putBoolean("isDriveAssist", isDriveAssist);
+    SmartDashboard.putNumber("translationX", translation.getX());
+    SmartDashboard.putNumber("translationY", translation.getY());
+    SmartDashboard.putNumber("rotation", rotation);
+
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
         fieldRelative
-          ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, RobotState.getGyroYaw())
+          ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, RobotState.getGyroYaw().unaryMinus())
           : new ChassisSpeeds(translation.getX(), translation.getY(), rotation)
     );
   

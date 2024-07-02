@@ -22,10 +22,10 @@ public class TeleopCommandBuilder {
 
   public static Command swerveDrive(Swerve swerve, CommandPS5Controller joystick, boolean isLookAt, Vision vision) {
     return Commands.sequence(
-      Commands.run(() -> {
-        double lx = MathUtil.applyDeadband(joystick.getLeftX(), Constants.Swerve.kJoystickDeadband);
-        double ly = MathUtil.applyDeadband(joystick.getLeftY(), Constants.Swerve.kJoystickDeadband);
-        double rx = MathUtil.applyDeadband(joystick.getRightX(), Constants.Swerve.kJoystickDeadband);
+      Commands.runOnce(() -> {
+        double lx = -MathUtil.applyDeadband(joystick.getLeftX(), Constants.Swerve.kJoystickDeadband);
+        double ly = -MathUtil.applyDeadband(joystick.getLeftY(), Constants.Swerve.kJoystickDeadband);
+        double rx = -MathUtil.applyDeadband(joystick.getRightX(), Constants.Swerve.kJoystickDeadband);
 
         swerve.drive(
           new Translation2d(ly, lx), rx, true, false);
@@ -33,10 +33,10 @@ public class TeleopCommandBuilder {
 
       Commands.either(
         swerveLookAt(swerve, joystick), 
-        Commands.none(), 
+        Commands.none(),
         () -> isLookAt),
 
-      Commands.run(() -> {
+      Commands.runOnce(() -> {
         VisionEstimation[] data = vision.getEstimationsData();
         
         for(VisionEstimation estimation : data)
