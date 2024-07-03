@@ -23,10 +23,16 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 public class Swerve extends SubsystemBase {
+  private static Swerve _instance;
+
+  public static Swerve getInstance() {
+    if(_instance == null)
+      _instance = new Swerve();
+    return _instance;
+  }
 
   private SwerveModule[] _modules;
   private SwerveDriveOdometry _odometry;
-  public SwerveDrivePoseEstimator _poseEstimator;
   private PIDController _swerveAnglePID;
   private PIDController _driveAssistPID;
   private boolean isDriveAssist = false;
@@ -36,7 +42,7 @@ public class Swerve extends SubsystemBase {
   /**
    * Creates a new Swerve.
    */
-  public Swerve() {
+  private Swerve() {
     _modules = new SwerveModule[] {
       new SwerveModule(0, Constants.Swerve.Mod0.constants),
       new SwerveModule(1, Constants.Swerve.Mod1.constants),
@@ -47,39 +53,10 @@ public class Swerve extends SubsystemBase {
     _odometry = new SwerveDriveOdometry(Constants.Swerve.kSwerveKinematics, RobotState.getGyroYaw(), getModulePositions());
     resetOdometry(new Pose2d());
 
-    _poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.kSwerveKinematics, RobotState.getGyroYaw(), getModulePositions(), new Pose2d());
-
     _swerveAnglePID = new PIDController(Constants.Swerve.kSwerveAngleP, Constants.Swerve.kSwerveAngleI, Constants.Swerve.kSwerveAngleD);
     _swerveAnglePID.enableContinuousInput(-1.5 * Math.PI, 0.5 * Math.PI);
 
     _driveAssistPID = new PIDController(Constants.Swerve.kDriveAssistP, Constants.Swerve.kDriveAssistI, Constants.Swerve.kDriveAssistD);
-
-    // AutoBuilder.configureHolonomic(
-    //     this::getLastCalculatedPosition, // Robot pose supplier
-    //     this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-    //     this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-    //     this::drive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-    //     new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-    //         new PIDConstants(Constants.AutoConstants.kPXController, 0.0, 0.0), // Translation PID constants
-    //         new PIDConstants(Constants.AutoConstants.kPYController, 0.0, 0.0), // Rotation PID constants
-    //         Constants.AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
-    //         Constants.Swerve.trackWidth, // Drive base radius in meters. Distance from robot center to furthest module.
-    //         new ReplanningConfig() // Default path replanning config. See the API for the options here
-    //     ),
-    //     () -> {
-    //       // Boolean supplier that controls when the path will be mirrored for the red
-    //       // alliance
-    //       // This will flip the path being followed to the red side of the field.
-    //       // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-    //       Optional<Alliance> alliance = DriverStation.getAlliance();
-    //       if (alliance.isPresent()) {
-    //         return alliance.get() == DriverStation.Alliance.Red;
-    //       }
-    //       return false;
-    //     },
-    //     this // Reference to this subsystem to set requirements
-    // );
   }
 
   /**
@@ -103,20 +80,17 @@ public class Swerve extends SubsystemBase {
     if(isDriveAssist)
       translation.plus(calculateDriveAssist(translation, new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
 
-    SmartDashboard.putNumber("Gyro", RobotState.getGyroYaw().getDegrees());
-    SmartDashboard.putBoolean("isAnglePID", isAnglePID);
-    SmartDashboard.putBoolean("isBayblade", isBayblade);
-    SmartDashboard.putBoolean("isDriveAssist", isDriveAssist);
-    SmartDashboard.putNumber("translationX", translation.getX());
-    SmartDashboard.putNumber("translationY", translation.getY());
-    SmartDashboard.putNumber("rotation", rotation);
-
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
         fieldRelative
           ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, RobotState.getGyroYaw().unaryMinus())
           : new ChassisSpeeds(translation.getX(), translation.getY(), rotation)
     );
   
+    setModuleStates(swerveModuleStates);
+  }
+
+  public void drive(ChassisSpeeds chassisSpeeds) {
+    SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(chassisSpeeds, new Translation2d());
     setModuleStates(swerveModuleStates);
   }
 
@@ -140,6 +114,10 @@ public class Swerve extends SubsystemBase {
       states[mod.moduleNumber] = mod.getState();
     }
     return states;
+  }
+
+  public ChassisSpeeds getChassisSpeeds(){
+    return Constants.Swerve.kSwerveKinematics.toChassisSpeeds(getModuleStates());
   }
 
   /**
@@ -303,19 +281,9 @@ public class Swerve extends SubsystemBase {
     //TODO: make this work 
   }
 
-  /**
-   * Adds a vision estimation to the pose estimator so the robot can know where it is
-   * @param visionEstimation - the estimation
-   */
-  public void addVisionEstimation(VisionEstimation visionEstimation) {
-    if(visionEstimation.hasTargets)
-      _poseEstimator.addVisionMeasurement(visionEstimation.pose, visionEstimation.timestamp);
-  }
-
   @Override
   public void periodic() {
     _odometry.update(RobotState.getGyroYaw(), getModulePositions());
-    _poseEstimator.update(RobotState.getGyroYaw(), getModulePositions());
-    RobotState.setRobotPose(_poseEstimator.getEstimatedPosition());
+    RobotState.updateRobotPose(getModulePositions());
   }
 }

@@ -12,7 +12,7 @@ import frc.robot.Vision.Vision;
 import frc.robot.Vision.VisionEstimation;
 
 public class TeleopCommandBuilder {
-  // public static Command PLACEHOLDER() {
+  // public static Command EXAMPLE() {
   //   return Commands.either(
   //     System1.runCommand1(),
   //     System2.runCommand3(),
@@ -20,55 +20,54 @@ public class TeleopCommandBuilder {
   //   );
   // }
 
-  public static Command swerveDrive(Swerve swerve, CommandPS5Controller joystick, boolean isLookAt, Vision vision) {
+  public static Command swerveDrive(CommandPS5Controller joystick, boolean isLookAt) {
     return Commands.sequence(
       Commands.runOnce(() -> {
         double lx = -MathUtil.applyDeadband(joystick.getLeftX(), Constants.Swerve.kJoystickDeadband);
         double ly = -MathUtil.applyDeadband(joystick.getLeftY(), Constants.Swerve.kJoystickDeadband);
         double rx = -MathUtil.applyDeadband(joystick.getRightX(), Constants.Swerve.kJoystickDeadband);
 
-        swerve.drive(
+        Swerve.getInstance().drive(
           new Translation2d(ly, lx), rx, true, false);
-      }, swerve),
+      }, Swerve.getInstance()),
 
       Commands.either(
-        swerveLookAt(swerve, joystick), 
+        swerveLookAt(joystick), 
         Commands.none(),
-        () -> isLookAt),
-
-      Commands.runOnce(() -> {
-        VisionEstimation[] data = vision.getEstimationsData();
-        
-        for(VisionEstimation estimation : data)
-          swerve.addVisionEstimation(estimation);
-      }, swerve, vision)
+        () -> isLookAt)
     );
   }
 
-  public static Command swerveLookAt(Swerve swerve, CommandPS5Controller joystick) {
+  public static Command swerveLookAt(CommandPS5Controller joystick) {
     return Commands.run(() -> {
         double rx = MathUtil.applyDeadband(joystick.getRightX(), Constants.Swerve.kJoystickDeadband);
         double ry = MathUtil.applyDeadband(joystick.getRightY(), Constants.Swerve.kJoystickDeadband);
 
-        swerve.lookAt(new Translation2d(rx, ry), 45);
-      }, swerve);
+        Swerve.getInstance().lookAt(new Translation2d(rx, ry), 45);
+      }, Swerve.getInstance());
   }
 
-  public static Command resetSubsystems(Vision vision) {
+  public static Command resetSubsystems() {
     return Commands.parallel(
-      Commands.run(() -> {
-        if(vision.hasTargets())
-          RobotState.resetGyro(RobotState.getRobotPose().getRotation());
-        else
-          RobotState.resetGyro(Rotation2d.fromDegrees(0));
-      }),
-
-      Commands.none()
+      resetGyro()
     );
   }
 
-  public static Command goToTag(Swerve swerve, Vision vision){
-    Pose2d tagPose = vision.getClosestTag("front").pose.toPose2d();
-    return swerve.goTo(tagPose, 0.25);
+  public static Command resetGyro(){
+    return Commands.run(() -> {
+      if(Vision.getInstance().hasTargets())
+        RobotState.resetGyro(RobotState.getRobotPose().getRotation());
+      else
+        RobotState.resetGyro(Rotation2d.fromDegrees(0));
+    });
+  }
+
+  /**
+   * Makes the robot auto drive to the closest tag infront of it
+   * @return the command that will make it drive
+   */
+  public static Command goToTag(){
+    Pose2d tagPose = Vision.getInstance().getClosestTag("front").pose.toPose2d();
+    return Swerve.getInstance().goTo(tagPose, 0.25);
   }
 }

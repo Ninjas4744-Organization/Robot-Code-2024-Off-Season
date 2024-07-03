@@ -5,13 +5,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Vision.Vision;
+import frc.robot.Vision.VisionEstimation;
 
 public class RobotContainer {
-  // Subsystems
-  private Swerve _swerve;
-  private Vision _vision;
-
-  // Misc
   private CommandPS5Controller _driverJoystick;
   private CommandPS5Controller _operatorJoystick;
 
@@ -19,9 +15,7 @@ public class RobotContainer {
     _driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
     _operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
-    _swerve = new Swerve();
-    _vision = new Vision(new String[]{"Front", "BackLeft"});
-
+    AutoCommandBuilder.configureAutoBuilder();
     AutoCommandBuilder.registerCommands();
 
     configureBindings();
@@ -33,21 +27,23 @@ public class RobotContainer {
   }
 
   private void configureDriverBindings(){
-    _swerve.setDefaultCommand(
-      TeleopCommandBuilder.swerveDrive(_swerve, _driverJoystick, false, _vision)
+    Swerve.getInstance().setDefaultCommand(
+      TeleopCommandBuilder.swerveDrive(_driverJoystick, false)
     );
 
     _driverJoystick.R3().toggleOnTrue(Commands.startEnd(
-      () -> { _swerve.setBaybladeMode(true); },
-      () -> { _swerve.setBaybladeMode(false); }
+      () -> { Swerve.getInstance().setBaybladeMode(true); },
+      () -> { Swerve.getInstance().setBaybladeMode(false); }
     ));
 
     _driverJoystick.L1().onTrue(
       Commands.runOnce(() -> {
-        RobotState.resetGyro(Rotation2d.fromDegrees(0));
-        _swerve.resetModulesToAbsolute();
-      }, _swerve)
+        TeleopCommandBuilder.resetGyro();
+        Swerve.getInstance().resetModulesToAbsolute();
+      }, Swerve.getInstance())
     );
+
+    _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
   }
 
   private void configureOperatorBindings(){
@@ -55,10 +51,13 @@ public class RobotContainer {
   }
 
   public void periodic(){
+    VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
     
+    for(VisionEstimation estimation : estimations)
+      RobotState.updateRobotPose(estimation);
   }
 
   public void resetSubsystems(){
-    TeleopCommandBuilder.resetSubsystems(_vision).schedule();
+    TeleopCommandBuilder.resetSubsystems().schedule();
   }
 }

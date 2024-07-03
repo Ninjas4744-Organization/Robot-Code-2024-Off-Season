@@ -214,12 +214,12 @@ public final class Constants {
   public class VisionConstants {
     public static final double kMaxAmbiguity = 0.7;
 
-    public static HashMap<String, Transform3d> getCameraPoses() {
-      HashMap<String, Transform3d> cameraPoses = new HashMap<String, Transform3d>();
-      cameraPoses.put("Front", new Transform3d(0.5, 0, 0, new Rotation3d(0, 0, 0)));
-      cameraPoses.put("BackLeft", new Transform3d(-0.5, -0.5, 0, new Rotation3d(0, 0, 240)));
+    public static HashMap<String, Transform3d> getCamerasPoses() {
+      HashMap<String, Transform3d> cameras = new HashMap<String, Transform3d>();
+      cameras.put("Front", new Transform3d(0.5, 0, 0, new Rotation3d(0, 0, 0)));
+      cameras.put("BackLeft", new Transform3d(-0.5, -0.5, 0, new Rotation3d(0, 0, 240)));
 
-      return cameraPoses;
+      return cameras;
     }
     
     public static final double kFieldLength = Units.feetToMeters(54.0);

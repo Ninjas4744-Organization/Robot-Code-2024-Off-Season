@@ -8,19 +8,26 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Vision extends SubsystemBase {
+    private static Vision _instance;
+
+    public static Vision getInstance() {
+        if(_instance == null)
+            _instance = new Vision();
+        return _instance;
+    }
+
     private VisionCamera[] _cameras;
     private VisionEstimation[] _estimationsData;
     private HashMap<String, VisionOutput> _outputs;
 
-    /**
-     * @param cameras Array of the names of the cameras being used
-     */
-    public Vision(String[] cameras) {
-        _cameras = new VisionCamera[cameras.length];
+    private Vision(){
+        HashMap<String, Transform3d> camerasPoses = Constants.VisionConstants.getCamerasPoses();
+        String[] camerasNames = (String[])camerasPoses.keySet().toArray();
 
-        HashMap<String, Transform3d> cameraPoses = Constants.VisionConstants.getCameraPoses();
-        for (int i = 0; i < cameras.length; i++) {
-            _cameras[i] = new VisionCamera(cameras[i], cameraPoses.get(cameras[i]));
+        _cameras = new VisionCamera[camerasNames.length];
+
+        for (int i = 0; i < camerasPoses.size(); i++) {
+            _cameras[i] = new VisionCamera(camerasNames[i], camerasPoses.get(camerasNames[i]));
         }
 
         _estimationsData = new VisionEstimation[_cameras.length];
@@ -38,7 +45,7 @@ public class Vision extends SubsystemBase {
     /**
      * @return an array of each camera's robot pose, the time when this pose was detected and if it has targets
      */
-    public VisionEstimation[] getEstimationsData(){
+    public VisionEstimation[] getVisionEstimations(){
         return _estimationsData;
     }
 

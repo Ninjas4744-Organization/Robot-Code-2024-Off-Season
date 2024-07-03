@@ -2,10 +2,14 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import frc.robot.Swerve.Swerve;
+import frc.robot.Vision.VisionEstimation;
 
 public class RobotState {
     public enum State{
@@ -13,11 +17,9 @@ public class RobotState {
     }
 
     private static State state;
-
     private static Pose2d robotPose;
-
+    private static SwerveDrivePoseEstimator poseEstimator;
     private static AHRS navX = new AHRS();
-
     private static StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
 
     /**
@@ -51,6 +53,31 @@ public class RobotState {
     public static void setRobotPose(Pose2d pose) {
         robotPose = pose;
         publisher.set(pose);
+        poseEstimator.resetPosition(getGyroYaw(), Swerve.getInstance().getModulePositions(), pose);
+    }
+
+    /**
+     * Updates the robot pose according to odometry parameters
+     *
+     * @param modulePositions - The current position of the swerve modules.
+     */
+    public static void updateRobotPose(SwerveModulePosition[] modulePositions) {
+        poseEstimator.update(getGyroYaw(), modulePositions);
+        
+        robotPose = poseEstimator.getEstimatedPosition();
+        publisher.set(poseEstimator.getEstimatedPosition());
+    }
+
+    /**
+     * Updates the robot pose according to the given vision estimation
+     * @param visionEstimation - the estimation
+     */
+    public static void updateRobotPose(VisionEstimation visionEstimation) {
+        if(visionEstimation.hasTargets)
+            poseEstimator.addVisionMeasurement(visionEstimation.pose, visionEstimation.timestamp);
+
+        robotPose = poseEstimator.getEstimatedPosition();
+        publisher.set(poseEstimator.getEstimatedPosition());
     }
 
     /**
