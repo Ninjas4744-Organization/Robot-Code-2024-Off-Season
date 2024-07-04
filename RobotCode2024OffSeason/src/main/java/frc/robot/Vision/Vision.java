@@ -22,7 +22,7 @@ public class Vision extends SubsystemBase {
 
     private Vision(){
         HashMap<String, Transform3d> camerasPoses = Constants.VisionConstants.getCamerasPoses();
-        String[] camerasNames = (String[])camerasPoses.keySet().toArray();
+        String[] camerasNames = camerasPoses.keySet().toArray(new String[0]);
 
         _cameras = new VisionCamera[camerasNames.length];
 
@@ -32,6 +32,10 @@ public class Vision extends SubsystemBase {
 
         _estimationsData = new VisionEstimation[_cameras.length];
         _outputs = new HashMap<String, VisionOutput>();
+        for (int i = 0; i < _cameras.length; i++) {
+            VisionOutput output = new VisionOutput();
+            _outputs.put(_cameras[i].getName(), output);
+        }
     }
 
     public void periodic() {

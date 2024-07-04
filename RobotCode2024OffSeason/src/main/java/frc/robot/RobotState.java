@@ -18,8 +18,8 @@ public class RobotState {
 
     private static State state;
     private static Pose2d robotPose;
-    private static SwerveDrivePoseEstimator poseEstimator;
     private static AHRS navX = new AHRS();
+    private static SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.kSwerveKinematics, getGyroYaw(), Swerve.getInstance().getModulePositions(), getRobotPose());
     private static StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
 
     /**

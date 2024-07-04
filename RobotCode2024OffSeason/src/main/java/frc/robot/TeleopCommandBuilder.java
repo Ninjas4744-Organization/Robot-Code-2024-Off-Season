@@ -20,28 +20,28 @@ public class TeleopCommandBuilder {
   //   );
   // }
 
-  public static Command swerveDrive(CommandPS5Controller joystick, boolean isLookAt) {
+  public static Command swerveDrive(Translation2d translation, Translation2d rotation, boolean isLookAt) {
     return Commands.sequence(
       Commands.runOnce(() -> {
-        double lx = -MathUtil.applyDeadband(joystick.getLeftX(), Constants.Swerve.kJoystickDeadband);
-        double ly = -MathUtil.applyDeadband(joystick.getLeftY(), Constants.Swerve.kJoystickDeadband);
-        double rx = -MathUtil.applyDeadband(joystick.getRightX(), Constants.Swerve.kJoystickDeadband);
+        double lx = -MathUtil.applyDeadband(translation.getY(), Constants.Swerve.kJoystickDeadband);
+        double ly = -MathUtil.applyDeadband(translation.getX(), Constants.Swerve.kJoystickDeadband);
+        double rx = -MathUtil.applyDeadband(rotation.getX(), Constants.Swerve.kJoystickDeadband);
 
         Swerve.getInstance().drive(
           new Translation2d(ly, lx), rx, true, false);
       }, Swerve.getInstance()),
 
       Commands.either(
-        swerveLookAt(joystick), 
+        swerveLookAt(rotation), 
         Commands.none(),
         () -> isLookAt)
     );
   }
 
-  public static Command swerveLookAt(CommandPS5Controller joystick) {
+  public static Command swerveLookAt(Translation2d rotation) {
     return Commands.run(() -> {
-        double rx = MathUtil.applyDeadband(joystick.getRightX(), Constants.Swerve.kJoystickDeadband);
-        double ry = MathUtil.applyDeadband(joystick.getRightY(), Constants.Swerve.kJoystickDeadband);
+        double rx = MathUtil.applyDeadband(rotation.getX(), Constants.Swerve.kJoystickDeadband);
+        double ry = MathUtil.applyDeadband(rotation.getY(), Constants.Swerve.kJoystickDeadband);
 
         Swerve.getInstance().lookAt(new Translation2d(rx, ry), 45);
       }, Swerve.getInstance());
@@ -67,7 +67,13 @@ public class TeleopCommandBuilder {
    * @return the command that will make it drive
    */
   public static Command goToTag(){
-    Pose2d tagPose = Vision.getInstance().getClosestTag("front").pose.toPose2d();
-    return Swerve.getInstance().goTo(tagPose, 0.25);
+    return Commands.either(
+      Commands.runOnce(() -> {
+        Pose2d tagPose = Vision.getInstance().getClosestTag("Front").pose.toPose2d();
+        Swerve.getInstance().goTo(tagPose, 0.25).schedule();
+      }, Swerve.getInstance()),
+      Commands.none(),
+      () -> { return Vision.getInstance().hasTargets("Front"); }
+    );
   }
 }
