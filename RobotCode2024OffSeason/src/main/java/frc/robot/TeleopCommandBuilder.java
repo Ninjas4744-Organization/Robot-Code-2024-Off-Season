@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,19 +22,19 @@ public class TeleopCommandBuilder {
   //   );
   // }
 
-  public static Command swerveDrive(Translation2d translation, Translation2d rotation, boolean isLookAt) {
+  public static Command swerveDrive(Supplier<Translation2d> translation, Supplier<Translation2d> rotation, boolean isLookAt) {
     return Commands.sequence(
       Commands.runOnce(() -> {
-        double lx = -MathUtil.applyDeadband(translation.getY(), Constants.Swerve.kJoystickDeadband);
-        double ly = -MathUtil.applyDeadband(translation.getX(), Constants.Swerve.kJoystickDeadband);
-        double rx = -MathUtil.applyDeadband(rotation.getX(), Constants.Swerve.kJoystickDeadband);
-
+        double lx = -MathUtil.applyDeadband(translation.get().getY(), Constants.Swerve.kJoystickDeadband);
+        double ly = -MathUtil.applyDeadband(translation.get().getX(), Constants.Swerve.kJoystickDeadband);
+        double rx = -MathUtil.applyDeadband(rotation.get().getX(), Constants.Swerve.kJoystickDeadband);
+        System.out.println(lx + " " + ly + " " + rx);
         Swerve.getInstance().drive(
           new Translation2d(ly, lx), rx, true, false);
       }, Swerve.getInstance()),
 
       Commands.either(
-        swerveLookAt(rotation), 
+        swerveLookAt(rotation.get()), 
         Commands.none(),
         () -> isLookAt)
     );

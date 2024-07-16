@@ -1,7 +1,6 @@
 package frc.robot.Swerve;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -10,20 +9,17 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState;
-import frc.robot.Vision.VisionEstimation;
-
 import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 public class Swerve extends SubsystemBase {
-  private static Swerve _instance;
+  private static Swerve _instance = null;
 
   public static Swerve getInstance() {
     if(_instance == null)
@@ -34,7 +30,6 @@ public class Swerve extends SubsystemBase {
   private SwerveModule[] _modules;
   private SwerveDriveOdometry _odometry;
   private PIDController _swerveAnglePID;
-  private PIDController _driveAssistPID;
   private boolean isDriveAssist = false;
   private boolean isAnglePID = false;
   private boolean isBayblade = false;
@@ -55,8 +50,6 @@ public class Swerve extends SubsystemBase {
 
     _swerveAnglePID = new PIDController(Constants.Swerve.kSwerveAngleP, Constants.Swerve.kSwerveAngleI, Constants.Swerve.kSwerveAngleD);
     _swerveAnglePID.enableContinuousInput(-1.5 * Math.PI, 0.5 * Math.PI);
-
-    _driveAssistPID = new PIDController(Constants.Swerve.kDriveAssistP, Constants.Swerve.kDriveAssistI, Constants.Swerve.kDriveAssistD);
   }
 
   /**
@@ -76,9 +69,10 @@ public class Swerve extends SubsystemBase {
     if(isBayblade)
       rotation = Constants.Swerve.maxAngularVelocity;
 
-    //TODO: add vision and stuff so                      |----------------closest tag or note pose-------------|
+    //TODO: add vision and stuff so                   |----------------closest tag or note pose-------------|
     if(isDriveAssist)
-      translation.plus(calculateDriveAssist(translation, new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
+      translation = calculateDriveAssist(translation, new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+    // translation.plus(calculateDriveAssist(translation, new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
 
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
         fieldRelative
@@ -244,18 +238,29 @@ public class Swerve extends SubsystemBase {
    * @return
    */
   private Translation2d calculateDriveAssist(Translation2d movingDirection, Pose2d targetPose) {
-    Translation2d perfectDirection = new Translation2d(targetPose.getX() - RobotState.getRobotPose().getX(), targetPose.getY() - RobotState.getRobotPose().getY());
-    Rotation2d perfectAngle = perfectDirection.getAngle();
+    // Translation2d perfectDirection = new Translation2d(targetPose.getX() - RobotState.getRobotPose().getX(), targetPose.getY() - RobotState.getRobotPose().getY());
+    // Rotation2d perfectAngle = perfectDirection.getAngle();
+    // Rotation2d movingAngle = movingDirection.getAngle();
+
+    // Rotation2d a = perfectAngle.minus(movingAngle);
+    // double size = a.getSin() * perfectDirection.getNorm();
+    // Translation2d result = new Translation2d(-a.getCos() * size, -a.getSin() * size);
+
+    // if(size > Constants.Swerve.kDriveAssistThreshold)
+    //   return new Translation2d();
+
+    // return new Translation2d(_driveAssistPID.calculate(0, result.getX()), _driveAssistPID.calculate(0, result.getY()));
+  
+    Translation2d toTargetDirection = targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
+
     Rotation2d movingAngle = movingDirection.getAngle();
+    Rotation2d toTargetAngle = toTargetDirection.getAngle();
+    Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
 
-    Rotation2d a = perfectAngle.minus(movingAngle);
-    double size = a.getSin() * perfectDirection.getNorm();
-    Translation2d result = new Translation2d(-a.getCos() * size, -a.getSin() * size);
-
-    if(size > Constants.Swerve.kDriveAssistThreshold)
-      return new Translation2d();
-
-    return new Translation2d(_driveAssistPID.calculate(0, result.getX()), _driveAssistPID.calculate(0, result.getY()));
+    if(angleDiff.getDegrees() < Constants.Swerve.kDriveAssistThreshold)
+      return toTargetDirection;
+    
+    return movingDirection;
   }
 
   /**

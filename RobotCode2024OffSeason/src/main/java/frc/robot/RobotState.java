@@ -17,9 +17,9 @@ public class RobotState {
     }
 
     private static State state;
-    private static Pose2d robotPose;
+    private static Pose2d robotPose = new Pose2d();
     private static AHRS navX = new AHRS();
-    private static SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.kSwerveKinematics, getGyroYaw(), Swerve.getInstance().getModulePositions(), getRobotPose());
+    private static SwerveDrivePoseEstimator poseEstimator;
     private static StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
 
     /**
@@ -93,5 +93,9 @@ public class RobotState {
      */
     public static void resetGyro(Rotation2d angle) {
         navX.setAngleAdjustment(-navX.getAngle() + angle.getDegrees());
+    }
+
+    public static void initPoseEstimator() {
+        poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.kSwerveKinematics, getGyroYaw(), Swerve.getInstance().getModulePositions(), getRobotPose());
     }
 }
