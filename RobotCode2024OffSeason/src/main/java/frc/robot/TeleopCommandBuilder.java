@@ -25,10 +25,10 @@ public class TeleopCommandBuilder {
   public static Command swerveDrive(Supplier<Translation2d> translation, Supplier<Translation2d> rotation, boolean isLookAt) {
     return Commands.sequence(
       Commands.runOnce(() -> {
-        double lx = -MathUtil.applyDeadband(translation.get().getY(), Constants.Swerve.kJoystickDeadband);
-        double ly = -MathUtil.applyDeadband(translation.get().getX(), Constants.Swerve.kJoystickDeadband);
+        double lx = -MathUtil.applyDeadband(translation.get().getX(), Constants.Swerve.kJoystickDeadband);
+        double ly = -MathUtil.applyDeadband(translation.get().getY(), Constants.Swerve.kJoystickDeadband);
         double rx = -MathUtil.applyDeadband(rotation.get().getX(), Constants.Swerve.kJoystickDeadband);
-        System.out.println(lx + " " + ly + " " + rx);
+        System.out.println("lx: " + lx + "  ly: " + ly + "  rx: " + rx);
         Swerve.getInstance().drive(
           new Translation2d(ly, lx), rx, true, false);
       }, Swerve.getInstance()),
