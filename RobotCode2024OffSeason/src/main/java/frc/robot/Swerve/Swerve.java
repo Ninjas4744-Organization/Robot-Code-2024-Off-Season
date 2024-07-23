@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState;
+import frc.robot.Vision.Vision;
+
 import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -70,9 +72,8 @@ public class Swerve extends SubsystemBase {
       rotation = Constants.Swerve.maxAngularVelocity;
 
     //TODO: add vision and stuff so                   |----------------closest tag or note pose-------------|
-    if(isDriveAssist)
-      translation = calculateDriveAssist(translation, new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
-    // translation.plus(calculateDriveAssist(translation, new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
+    if(isDriveAssist && Vision.getInstance().hasTargets("Front"))
+      translation = calculateDriveAssist(translation, Vision.getInstance().getClosestTag("Front").pose.toPose2d());
 
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
         fieldRelative
@@ -283,7 +284,7 @@ public class Swerve extends SubsystemBase {
    * Logs info about the modules and swerve
    */
   public void log() {
-    //TODO: make this work 
+    //TODO: make this work
   }
 
   @Override

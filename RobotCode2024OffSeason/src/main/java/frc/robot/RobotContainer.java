@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -51,11 +52,19 @@ public class RobotContainer {
     //   () -> { Swerve.getInstance().setBaybladeMode(false); }
     // ));
 
+    _driverJoystick.R1().toggleOnTrue(Commands.startEnd(
+      () -> Swerve.getInstance().setIsDriveAssist(true), 
+      () -> Swerve.getInstance().setIsDriveAssist(false)
+    ));
+
     _driverJoystick.L1().onTrue(
-      Commands.runOnce(() -> {
-        TeleopCommandBuilder.resetGyro();
-        Swerve.getInstance().resetModulesToAbsolute();
-      }, Swerve.getInstance())
+      Commands.sequence(
+        TeleopCommandBuilder.resetGyro(),
+        
+        Commands.runOnce(() -> {
+          Swerve.getInstance().resetModulesToAbsolute();
+        }, Swerve.getInstance())
+      )
     );
 
     _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());

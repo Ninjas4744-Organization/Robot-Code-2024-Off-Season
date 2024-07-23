@@ -28,7 +28,7 @@ public class TeleopCommandBuilder {
         double lx = -MathUtil.applyDeadband(translation.get().getX(), Constants.Swerve.kJoystickDeadband);
         double ly = -MathUtil.applyDeadband(translation.get().getY(), Constants.Swerve.kJoystickDeadband);
         double rx = -MathUtil.applyDeadband(rotation.get().getX(), Constants.Swerve.kJoystickDeadband);
-        System.out.println("lx: " + lx + "  ly: " + ly + "  rx: " + rx);
+        // System.out.println("lx: " + lx + "  ly: " + ly + "  rx: " + rx);
         Swerve.getInstance().drive(
           new Translation2d(ly, lx), rx, true, false);
       }, Swerve.getInstance()),
@@ -56,11 +56,11 @@ public class TeleopCommandBuilder {
   }
 
   public static Command resetGyro(){
-    return Commands.run(() -> {
-      if(Vision.getInstance().hasTargets())
-        RobotState.resetGyro(RobotState.getRobotPose().getRotation());
-      else
-        RobotState.resetGyro(Rotation2d.fromDegrees(0));
+    return Commands.runOnce(() -> {
+      // if(Vision.getInstance().hasTargets())
+      //   RobotState.resetGyro(RobotState.getRobotPose().getRotation());
+      // else
+      RobotState.resetGyro(Rotation2d.fromDegrees(0));
     });
   }
 
