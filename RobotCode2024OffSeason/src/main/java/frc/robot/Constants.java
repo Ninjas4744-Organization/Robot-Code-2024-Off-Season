@@ -96,9 +96,9 @@ public final class Constants {
     public static final double kDriveAssistI = 0;
     public static final double kDriveAssistD = 2;
     /** Swerve drive assist threshold, if the drive assist angle difference from driver angle is bigger than this value, the drive assist will be ignored. degrees */
-    public static final double kDriveAssistThreshold = 30;
+    public static final double kDriveAssistThreshold = 360;
 
-    /** Modules drive PID balues */
+    /** Modules drive PID values */
     public static final double kDriveP = 0.0;
     public static final double kDriveI = 0.0;
     public static final double kDriveD = 0.0;
