@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -32,6 +33,7 @@ public class Swerve extends SubsystemBase {
   private SwerveModule[] _modules;
   private SwerveDriveOdometry _odometry;
   private PIDController _swerveAnglePID;
+  private PIDController _driveAssistPID;
   private boolean isDriveAssist = false;
   private boolean isAnglePID = false;
   private boolean isBayblade = false;
@@ -50,6 +52,7 @@ public class Swerve extends SubsystemBase {
     _odometry = new SwerveDriveOdometry(Constants.Swerve.kSwerveKinematics, RobotState.getGyroYaw(), getModulePositions());
     resetOdometry(new Pose2d());
 
+    _driveAssistPID = new PIDController(Constants.Swerve.kDriveAssistP, Constants.Swerve.kDriveAssistI, Constants.Swerve.kDriveAssistD);
     _swerveAnglePID = new PIDController(Constants.Swerve.kSwerveAngleP, Constants.Swerve.kSwerveAngleI, Constants.Swerve.kSwerveAngleD);
     _swerveAnglePID.enableContinuousInput(-1.5 * Math.PI, 0.5 * Math.PI);
   }
@@ -74,8 +77,7 @@ public class Swerve extends SubsystemBase {
     //TODO: add vision and stuff so                   |----------------closest tag or note pose-------------|
     if(isDriveAssist && Vision.getInstance().hasTargets("Front")){
       Pose2d targetPose = Vision.getInstance().getClosestTag("Front").pose.toPose2d();
-      Translation2d driveAssist = calculateDriveAssist(robotToFieldRelative(translation), targetPose);
-      translation = fieldToRobotRelative(driveAssist);
+      translation = calculateDriveAssist(translation, targetPose);
     }
 
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
@@ -246,62 +248,28 @@ public class Swerve extends SubsystemBase {
       return movingDirection;
 
     Translation2d toTargetDirection = targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
+    // toTargetDirection = new Translation2d(
+    //   toTargetDirection.getX() / toTargetDirection.getNorm() * Constants.Swerve.maxSpeed / 4,
+    //   toTargetDirection.getY() / toTargetDirection.getNorm() * Constants.Swerve.maxSpeed / 4
+    // );
 
     Rotation2d movingAngle = movingDirection.getAngle();
     Rotation2d toTargetAngle = toTargetDirection.getAngle();
     Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
 
-    System.out.println("---------------Drive Assist---------------");
-    System.out.println("movingDirection X: " + movingDirection.getX() + " Y: " + movingDirection.getY());
-    System.out.println("robotPose X: " + RobotState.getRobotPose().getX() + " Y: " + RobotState.getRobotPose().getY());
-    System.out.println("targetPose X: " + targetPose.getX() + " Y: " + targetPose.getY());
-    System.out.println("toTargetDirection X: " + toTargetDirection.getX() + " Y: " + toTargetDirection.getY());
-    System.out.println("movingAngle: " + movingAngle.getDegrees());
-    System.out.println("toTargetAngle: " + toTargetAngle.getDegrees());
-    System.out.println("angleDiff: " + angleDiff.getDegrees());
-    System.out.println("Threshold: " + Constants.Swerve.kDriveAssistThreshold);
-    System.out.println("---------------Drive Assist---------------");
+    if(Math.abs(angleDiff.getDegrees()) < Constants.Swerve.kDriveAssistThreshold){
+      Translation2d driveAssist = new Translation2d(
+        _driveAssistPID.calculate(RobotState.getRobotPose().getX(), targetPose.getX()),
+        _driveAssistPID.calculate(RobotState.getRobotPose().getY(), targetPose.getY())
+      );
 
-    if(Math.abs(angleDiff.getDegrees()) < Constants.Swerve.kDriveAssistThreshold)
-      return toTargetDirection;
+      SmartDashboard.putNumber("Drive Assist X", driveAssist.getX());
+      SmartDashboard.putNumber("Drive Assist Y", driveAssist.getY());
     
+      return driveAssist;
+    }
+
     return movingDirection;
-  }
-
-  private Translation2d robotToFieldRelative(Translation2d translation) {
-    Rotation2d beta = RobotState.getGyroYaw().unaryMinus();
-
-    Translation2d result = new Translation2d(
-      beta.getCos() * translation.getX() - beta.getSin() * translation.getY(),
-      beta.getSin() * translation.getX() + beta.getCos() * translation.getY()
-    );
-
-    System.out.println("---------------Robot To Field Relative---------------");
-    System.out.println("Translation X: " + translation.getX() + " Y: " + translation.getY());
-    System.out.println("Gyro Yaw: " + RobotState.getGyroYaw().getDegrees());
-    System.out.println("Beta: " + beta.getDegrees());
-    System.out.println("Result X: " + result.getX() + " Y: " + result.getY());
-    System.out.println("---------------Robot To Field Relative---------------");
-
-    return result;
-  }
-
-  private Translation2d fieldToRobotRelative(Translation2d translation) {
-    Rotation2d beta = RobotState.getGyroYaw().unaryMinus();
-
-    Translation2d result = new Translation2d(
-      beta.getCos() * translation.getX() - beta.getSin() * translation.getY(),
-      beta.getSin() * translation.getX() + beta.getCos() * translation.getY()
-    );
-
-    System.out.println("---------------Field To Robot Relative---------------");
-    System.out.println("Translation X: " + translation.getX() + " Y: " + translation.getY());
-    System.out.println("Gyro Yaw: " + RobotState.getGyroYaw().getDegrees());
-    System.out.println("Beta: " + beta.getDegrees());
-    System.out.println("Result X: " + result.getX() + " Y: " + result.getY());
-    System.out.println("---------------Field To Robot Relative---------------");
-
-    return result;
   }
 
   /**

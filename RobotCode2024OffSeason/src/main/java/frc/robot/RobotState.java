@@ -92,9 +92,10 @@ public class RobotState {
      * @param angle - the angle to set the gyro to
      */
     public static void resetGyro(Rotation2d angle) {
-        System.out.println("Gyro: " + navX.getAngle() + " -> " + angle.getDegrees());
+        System.out.print("Gyro: " + navX.getAngle() + " -> ");
         navX.reset();
         navX.setAngleAdjustment(angle.getDegrees());
+        System.out.println(navX.getAngle());
     }
 
     public static void initPoseEstimator() {

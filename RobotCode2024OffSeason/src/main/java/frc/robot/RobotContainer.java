@@ -42,7 +42,7 @@ public class RobotContainer {
       //  () -> new Translation2d(_driverJoystick2.getRawAxis(3), 0), false)
     );
       
-    _driverJoystick.R3().toggleOnTrue(Commands.startEnd(
+    _driverJoystick.circle().toggleOnTrue(Commands.startEnd(
       () -> { Swerve.getInstance().setBaybladeMode(true); },
       () -> { Swerve.getInstance().setBaybladeMode(false); }
     ));
@@ -67,7 +67,7 @@ public class RobotContainer {
       )
     );
 
-    _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
+    // _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
   }
 
   private void configureOperatorBindings(){

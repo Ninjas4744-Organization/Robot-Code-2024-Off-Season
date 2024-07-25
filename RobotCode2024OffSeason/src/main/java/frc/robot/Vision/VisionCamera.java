@@ -25,7 +25,7 @@ public class VisionCamera {
      */
     public VisionCamera(String name, Transform3d cameraPose) {
         _camera = new PhotonCamera(name);
-
+        
         _estimator = new PhotonPoseEstimator(Constants.VisionConstants.getFieldLayout(), PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, _camera, cameraPose);
         _estimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
 
