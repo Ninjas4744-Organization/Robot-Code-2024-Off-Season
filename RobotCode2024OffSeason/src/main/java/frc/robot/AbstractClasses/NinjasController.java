@@ -10,8 +10,8 @@ public abstract class NinjasController {
     public enum ControlState {
         PERCENT_OUTPUT,
         MOTION_MAGIC,
-        POSITION_PID,
-        VELOCITY_PID
+        POSITION_PIDF,
+        VELOCITY_PIDF
     }
 
     protected ControlState _controlState;
@@ -42,14 +42,14 @@ public abstract class NinjasController {
             
         _shuffleboardEnteries.put("setpoint", Shuffleboard.getTab(_constants.subsystemName)
             .add("Setpoint", 0)
-            .withWidget("Graph")
-            .withSize(_constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
+            .withWidget("Number Bar")
+            .withSize(_constants.shuffleboardEnteriesSize / 2, constants.shuffleboardEnteriesSize)
             .getEntry());
             
         _shuffleboardEnteries.put("controlState", Shuffleboard.getTab(_constants.subsystemName)
             .add("Control State", 0)
             .withWidget("Text View")
-            .withSize(_constants.shuffleboardEnteriesSize, 1)
+            .withSize(_constants.shuffleboardEnteriesSize, _constants.shuffleboardEnteriesSize / 2)
             .getEntry());        
     }
 
@@ -59,9 +59,17 @@ public abstract class NinjasController {
     public abstract double get();
 
     /**
-     * Sets the current value of the controller according to the control state, could be percent and could be position
+     * Sets the current value of the controller according to the control state, could be percent, could be position and more...
      */
     public abstract void set(double value);
+
+    /**
+     * Sets the current control state and sets the value of the controller according to the control state, could be percent, could be position and more...
+     */
+    public void set(ControlState state, double value){
+        setControlState(state);
+        set(value);
+    }
 
     /**
      * Stops the controller and all movement
