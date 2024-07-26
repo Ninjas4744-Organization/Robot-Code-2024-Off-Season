@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -32,8 +33,9 @@ public class Swerve extends SubsystemBase {
 
   private SwerveModule[] _modules;
   private SwerveDriveOdometry _odometry;
-  private PIDController _swerveAnglePID;
-  private PIDController _driveAssistPID;
+  private PIDController _anglePID;
+  private PIDController _driveAssistXPID;
+  private PIDController _driveAssistYPID;
   private boolean isDriveAssist = false;
   private boolean isAnglePID = false;
   private boolean isBayblade = false;
@@ -52,9 +54,10 @@ public class Swerve extends SubsystemBase {
     _odometry = new SwerveDriveOdometry(Constants.Swerve.kSwerveKinematics, RobotState.getGyroYaw(), getModulePositions());
     resetOdometry(new Pose2d());
 
-    _driveAssistPID = new PIDController(Constants.Swerve.kDriveAssistP, Constants.Swerve.kDriveAssistI, Constants.Swerve.kDriveAssistD);
-    _swerveAnglePID = new PIDController(Constants.Swerve.kSwerveAngleP, Constants.Swerve.kSwerveAngleI, Constants.Swerve.kSwerveAngleD);
-    _swerveAnglePID.enableContinuousInput(-1.5 * Math.PI, 0.5 * Math.PI);
+    _driveAssistXPID = new PIDController(Constants.Swerve.kDriveAssistP, Constants.Swerve.kDriveAssistI, Constants.Swerve.kDriveAssistD);
+    _driveAssistYPID = new PIDController(Constants.Swerve.kDriveAssistP, Constants.Swerve.kDriveAssistI, Constants.Swerve.kDriveAssistD);
+    _anglePID = new PIDController(Constants.Swerve.kSwerveAngleP, Constants.Swerve.kSwerveAngleI, Constants.Swerve.kSwerveAngleD);
+    _anglePID.enableContinuousInput(-1.5 * Math.PI, 0.5 * Math.PI);
   }
 
   /**
@@ -69,15 +72,17 @@ public class Swerve extends SubsystemBase {
     rotation = rotation * Constants.Swerve.kRotationSpeedFactor * Constants.Swerve.maxAngularVelocity;
 
     if(isAnglePID)
-      rotation = _swerveAnglePID.calculate(RobotState.getGyroYaw().getDegrees());
+      rotation = _anglePID.calculate(RobotState.getGyroYaw().getDegrees());
 
     if(isBayblade)
       rotation = Constants.Swerve.maxAngularVelocity;
 
-    //TODO: add vision and stuff so                   |----------------closest tag or note pose-------------|
+    //TODO: add note position as target
     if(isDriveAssist && Vision.getInstance().hasTargets("Front")){
       Pose2d targetPose = Vision.getInstance().getClosestTag("Front").pose.toPose2d();
-      translation = calculateDriveAssist(translation, targetPose);
+      Translation3d driveAssist = calculateDriveAssist(translation, targetPose);
+      translation = driveAssist.toTranslation2d();
+      rotation = driveAssist.getZ() == 0 ? rotation : driveAssist.getZ();
     }
 
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
@@ -182,16 +187,16 @@ public class Swerve extends SubsystemBase {
    * @return following path command
    */
   public Command goTo(Pose2d targetPose, double offset) {
-    Pose2d currentPos = RobotState.getRobotPose();
+    Pose2d currentPose = RobotState.getRobotPose();
 
     Translation2d offsetTranslation = new Translation2d(
-      offset * Math.cos(targetPose.getRotation().getRadians()),
-      offset * Math.sin(targetPose.getRotation().getRadians())
+      offset * targetPose.getRotation().getCos(),
+      offset * targetPose.getRotation().getSin()
     );
 
     targetPose = new Pose2d(targetPose.getX() + offsetTranslation.getX(), targetPose.getY() + offsetTranslation.getY(), targetPose.getRotation());
 
-    List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(currentPos, targetPose);
+    List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(currentPose, targetPose);
 
     PathPlannerPath path = new PathPlannerPath(
       bezierPoints,
@@ -213,7 +218,7 @@ public class Swerve extends SubsystemBase {
     double roundedAngle = Math.round(angle / roundToAngle) * roundToAngle;
     angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundToAngle : angle;
 
-    _swerveAnglePID.setSetpoint(angle);
+    _anglePID.setSetpoint(angle);
     isAnglePID = true;
   }
 
@@ -243,9 +248,9 @@ public class Swerve extends SubsystemBase {
    * @param targetPose - the pose of the closest target(tags and notes), field relative
    * @return Calculated drive assist moving direction, field relative
    */
-  private Translation2d calculateDriveAssist(Translation2d movingDirection, Pose2d targetPose) {
+  private Translation3d calculateDriveAssist(Translation2d movingDirection, Pose2d targetPose) {
     if(movingDirection.getX() == 0 && movingDirection.getY() == 0)
-      return movingDirection;
+      return new Translation3d(movingDirection.getX(), movingDirection.getY(), 0);
 
     Translation2d toTargetDirection = targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
     // toTargetDirection = new Translation2d(
@@ -258,18 +263,20 @@ public class Swerve extends SubsystemBase {
     Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
 
     if(Math.abs(angleDiff.getDegrees()) < Constants.Swerve.kDriveAssistThreshold){
-      Translation2d driveAssist = new Translation2d(
-        _driveAssistPID.calculate(RobotState.getRobotPose().getX(), targetPose.getX()),
-        _driveAssistPID.calculate(RobotState.getRobotPose().getY(), targetPose.getY())
+      Translation3d driveAssist = new Translation3d(
+        _driveAssistXPID.calculate(RobotState.getRobotPose().getX(), targetPose.getX()),
+        _driveAssistYPID.calculate(RobotState.getRobotPose().getY(), targetPose.getY()),
+        _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), toTargetAngle.getDegrees())
       );
 
       SmartDashboard.putNumber("Drive Assist X", driveAssist.getX());
       SmartDashboard.putNumber("Drive Assist Y", driveAssist.getY());
+      SmartDashboard.putNumber("Drive Assist 0", driveAssist.getZ());
     
       return driveAssist;
     }
 
-    return movingDirection;
+    return new Translation3d(movingDirection.getX(), movingDirection.getY(), 0);
   }
 
   /**
@@ -277,7 +284,7 @@ public class Swerve extends SubsystemBase {
    * @param isDriveAssist
    */
   public void setIsDriveAssist(boolean isDriveAssist) {
-    System.out.println("Drive Assist: " + this.isDriveAssist + " -> " + isDriveAssist);
+    System.out.println("Drive Assist Mode: " + this.isDriveAssist + " -> " + isDriveAssist);
     this.isDriveAssist = isDriveAssist;
   }
 
@@ -286,6 +293,7 @@ public class Swerve extends SubsystemBase {
    * @param isBayblade - true if bayblade mode should be on
    */
   public void setBaybladeMode(boolean isBayblade) {
+    System.out.println("Bayblade Mode: " + this.isBayblade + " -> " + isBayblade);
     this.isBayblade = isBayblade;
   }
 

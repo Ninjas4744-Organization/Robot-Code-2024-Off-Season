@@ -38,8 +38,6 @@ public class RobotContainer {
     Swerve.getInstance().setDefaultCommand(
       TeleopCommandBuilder.swerveDrive(() -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
       () -> new Translation2d(_driverJoystick.getRightX(), 0), false)
-      // TeleopCommandBuilder.swerveDrive(() -> new Translation2d(-_driverJoystick2.getRawAxis(1), _driverJoystick2.getRawAxis(2)),
-      //  () -> new Translation2d(_driverJoystick2.getRawAxis(3), 0), false)
     );
       
     _driverJoystick.circle().toggleOnTrue(Commands.startEnd(
@@ -47,19 +45,9 @@ public class RobotContainer {
       () -> { Swerve.getInstance().setBaybladeMode(false); }
     ));
 
-    // new Trigger(() -> _driverJoystick2.getRawButton(1)).toggleOnTrue(Commands.startEnd(
-    //   () -> { Swerve.getInstance().setBaybladeMode(true); },
-    //   () -> { Swerve.getInstance().setBaybladeMode(false); }
-    // ));
-
-    _driverJoystick.R1().toggleOnTrue(Commands.startEnd(
-      () -> Swerve.getInstance().setIsDriveAssist(true), 
-      () -> Swerve.getInstance().setIsDriveAssist(false)
-    ));
-
     _driverJoystick.L1().onTrue(
-      Commands.sequence(
-        TeleopCommandBuilder.resetGyro(),
+      Commands.parallel(
+        TeleopCommandBuilder.resetGyro(false),
         
         Commands.runOnce(() -> {
           Swerve.getInstance().resetModulesToAbsolute();
@@ -67,7 +55,22 @@ public class RobotContainer {
       )
     );
 
-    // _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
+    _driverJoystick.L2().onTrue(
+      Commands.parallel(
+        TeleopCommandBuilder.resetGyro(true),
+        
+        Commands.runOnce(() -> {
+          Swerve.getInstance().resetModulesToAbsolute();
+        }, Swerve.getInstance())
+      )
+    );
+
+    _driverJoystick.R1().toggleOnTrue(Commands.startEnd(
+      () -> Swerve.getInstance().setIsDriveAssist(true), 
+      () -> Swerve.getInstance().setIsDriveAssist(false)
+    ));
+
+    _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
   }
 
   private void configureOperatorBindings(){

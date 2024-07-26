@@ -94,9 +94,9 @@ public final class Constants {
     /** Swerve drive assist PID values */
     public static final double kDriveAssistP = 0.61;
     public static final double kDriveAssistI = 0;
-    public static final double kDriveAssistD = 0;
+    public static final double kDriveAssistD = 0.05;
     /** Swerve drive assist threshold, if the drive assist angle difference from driver angle is bigger than this value, the drive assist will be ignored. degrees */
-    public static final double kDriveAssistThreshold = 30;
+    public static final double kDriveAssistThreshold = 45;
     
     /** Modules drive PID values */
     public static final double kDriveP = 0.0;
@@ -216,8 +216,11 @@ public final class Constants {
 
     public static HashMap<String, Transform3d> getCamerasPoses() {
       HashMap<String, Transform3d> cameras = new HashMap<String, Transform3d>();
-      cameras.put("Front", new Transform3d(0.5, 0, 0, new Rotation3d(0, 0, 0)));
-      cameras.put("BackLeft", new Transform3d(-0.5, -0.5, 0, new Rotation3d(0, 0, 240)));
+
+      double deg2rad = 0.0174533;
+      cameras.put("Front", new Transform3d(0.385, 0, -0.260, new Rotation3d(0, 0, 0)));
+      cameras.put("BackLeft", new Transform3d(-0.325, 0.175, 0.1, new Rotation3d(0, 0, 120 * deg2rad)));
+      cameras.put("BackRight", new Transform3d(-0.325, -0.175, 0.08, new Rotation3d(0, 0, -120 * deg2rad)));
 
       return cameras;
     }
