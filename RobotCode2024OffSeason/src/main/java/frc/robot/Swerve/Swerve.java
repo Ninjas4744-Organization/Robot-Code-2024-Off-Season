@@ -57,20 +57,20 @@ public class Swerve extends SubsystemBase {
     _driveAssistXPID = new PIDController(Constants.Swerve.kDriveAssistP, Constants.Swerve.kDriveAssistI, Constants.Swerve.kDriveAssistD);
     _driveAssistYPID = new PIDController(Constants.Swerve.kDriveAssistP, Constants.Swerve.kDriveAssistI, Constants.Swerve.kDriveAssistD);
     _anglePID = new PIDController(Constants.Swerve.kSwerveAngleP, Constants.Swerve.kSwerveAngleI, Constants.Swerve.kSwerveAngleD);
-    _anglePID.enableContinuousInput(-1.5 * Math.PI, 0.5 * Math.PI);
+    _anglePID.enableContinuousInput(Rotation2d.fromDegrees(-270).getRadians(), Rotation2d.fromDegrees(90).getRadians());
   }
 
   /**
    * Drives the robot
-   * @param translation - speed in m/s to move in x and y
-   * @param rotation - speed in m/s to rotate the robot, positive is counter clockwise
+   * @param translation - speed percentage to move in x and y
+   * @param rotation - speed percentage to rotate the robot, positive is counter clockwise
    * @param fieldRelative - whether or not the robot movement is relative to the field or the robot itself
    * @param isOpenLoop - whether or not to use velocity PID for the modules
    */
   public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
     translation = translation.times(Constants.Swerve.kSpeedFactor).times(Constants.Swerve.maxSpeed);
     rotation = rotation * Constants.Swerve.kRotationSpeedFactor * Constants.Swerve.maxAngularVelocity;
-
+    
     if(isAnglePID)
       rotation = _anglePID.calculate(RobotState.getGyroYaw().getDegrees());
 
@@ -80,9 +80,10 @@ public class Swerve extends SubsystemBase {
     //TODO: add note position as target
     if(isDriveAssist && Vision.getInstance().hasTargets("Front")){
       Pose2d targetPose = Vision.getInstance().getClosestTag("Front").pose.toPose2d();
-      Translation3d driveAssist = calculateDriveAssist(translation, targetPose);
-      translation = driveAssist.toTranslation2d();
-      rotation = driveAssist.getZ() == 0 ? rotation : driveAssist.getZ();
+      ChassisSpeeds driveAssist = calculateDriveAssist(translation, rotation, targetPose);
+
+      translation = new Translation2d(driveAssist.vxMetersPerSecond, driveAssist.vyMetersPerSecond);
+      rotation = driveAssist.omegaRadiansPerSecond;
     }
 
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
@@ -196,11 +197,19 @@ public class Swerve extends SubsystemBase {
 
     targetPose = new Pose2d(targetPose.getX() + offsetTranslation.getX(), targetPose.getY() + offsetTranslation.getY(), targetPose.getRotation());
 
+    SmartDashboard.putNumber("Current X", currentPose.getX());
+    SmartDashboard.putNumber("Current Y", currentPose.getY());
+    SmartDashboard.putNumber("Current 0", currentPose.getRotation().getDegrees());
+    
+    SmartDashboard.putNumber("Auto Target X", targetPose.getX());
+    SmartDashboard.putNumber("Auto Target Y", targetPose.getY());
+    SmartDashboard.putNumber("Auto Target 0", targetPose.getRotation().getDegrees());
+
     List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(currentPose, targetPose);
 
     PathPlannerPath path = new PathPlannerPath(
       bezierPoints,
-      Constants.pathFollowingConstants.constraints,
+      Constants.AutoConstants.constraints,
       new GoalEndState(0, targetPose.getRotation())
     );
     
@@ -244,39 +253,36 @@ public class Swerve extends SubsystemBase {
 
   /**
    * Calculates the drive assist
-   * @param movingDirection - the direction the robot is moving from the driver, field relative
+   * @param movingDirection - the direction the robot is moving according to the driver input, field relative
+   * @param rotation - the rotation of the robot according to the driver input, field relative
    * @param targetPose - the pose of the closest target(tags and notes), field relative
-   * @return Calculated drive assist moving direction, field relative
+   * @return Calculated drive assist as chassis speeds(if the rotation is 0, use the rotation from the drive input), field relative
    */
-  private Translation3d calculateDriveAssist(Translation2d movingDirection, Pose2d targetPose) {
+  private ChassisSpeeds calculateDriveAssist(Translation2d movingDirection, double rotation, Pose2d targetPose) {
     if(movingDirection.getX() == 0 && movingDirection.getY() == 0)
-      return new Translation3d(movingDirection.getX(), movingDirection.getY(), 0);
+      return new ChassisSpeeds(0, 0, 0);
 
     Translation2d toTargetDirection = targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
-    // toTargetDirection = new Translation2d(
-    //   toTargetDirection.getX() / toTargetDirection.getNorm() * Constants.Swerve.maxSpeed / 4,
-    //   toTargetDirection.getY() / toTargetDirection.getNorm() * Constants.Swerve.maxSpeed / 4
-    // );
 
     Rotation2d movingAngle = movingDirection.getAngle();
     Rotation2d toTargetAngle = toTargetDirection.getAngle();
     Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
 
     if(Math.abs(angleDiff.getDegrees()) < Constants.Swerve.kDriveAssistThreshold){
-      Translation3d driveAssist = new Translation3d(
+      ChassisSpeeds driveAssist = new ChassisSpeeds(
         _driveAssistXPID.calculate(RobotState.getRobotPose().getX(), targetPose.getX()),
         _driveAssistYPID.calculate(RobotState.getRobotPose().getY(), targetPose.getY()),
         _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), toTargetAngle.getDegrees())
       );
 
-      SmartDashboard.putNumber("Drive Assist X", driveAssist.getX());
-      SmartDashboard.putNumber("Drive Assist Y", driveAssist.getY());
-      SmartDashboard.putNumber("Drive Assist 0", driveAssist.getZ());
+      SmartDashboard.putNumber("Drive Assist X", driveAssist.vxMetersPerSecond);
+      SmartDashboard.putNumber("Drive Assist Y", driveAssist.vyMetersPerSecond);
+      SmartDashboard.putNumber("Drive Assist 0", driveAssist.omegaRadiansPerSecond);
     
       return driveAssist;
     }
 
-    return new Translation3d(movingDirection.getX(), movingDirection.getY(), 0);
+    return new ChassisSpeeds(movingDirection.getX(), movingDirection.getY(), rotation);
   }
 
   /**

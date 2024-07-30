@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -87,9 +90,9 @@ public final class Constants {
     public static final double kAngleFF = 0.0;
 
     /** Swerve angle PID values */
-    public static final double kSwerveAngleP = 0.2;
+    public static final double kSwerveAngleP = 0.02;
     public static final double kSwerveAngleI = 0;
-    public static final double kSwerveAngleD = 2;
+    public static final double kSwerveAngleD = 0;
 
     /** Swerve drive assist PID values */
     public static final double kDriveAssistP = 0.61;
@@ -184,8 +187,8 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double maxVelocity = 3.0;
-    public static final double maxAcceleration = 3.0;
+    public static final double maxVelocity = 1;
+    public static final double maxAcceleration = 1;
 
     public static final double kPXController = 1;
     public static final double kPYController = 1;
@@ -199,16 +202,14 @@ public final class Constants {
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-  }
-
-  public static final class pathFollowingConstants {
-    public static final double maxVelocity = 1;
-    public static final double maxAcceleration = 1.25;
-
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI*2;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI*2;
-    public static final PathConstraints constraints = new PathConstraints(maxVelocity, maxAcceleration,
-        kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+  
+    public static final HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+      new PIDConstants(Constants.AutoConstants.kPXController, 0.0, 0.0), // Translation PID constants
+      new PIDConstants(Constants.AutoConstants.kPYController, 0.0, 0.0), // Rotation PID constants
+      Constants.AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
+      Constants.Swerve.kTrackWidth, // Drive base radius in meters. Distance from robot center to furthest module.
+      new ReplanningConfig() // Default path replanning config. See the API for the options here
+    );
   }
 
   public class VisionConstants {
