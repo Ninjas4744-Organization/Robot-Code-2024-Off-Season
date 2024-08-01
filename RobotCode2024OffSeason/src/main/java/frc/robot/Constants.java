@@ -56,7 +56,7 @@ public final class Constants {
     public static final double kRotationSpeedFactor = 0.25;
     public static final double kJoystickDeadband = 0.05;
 
-    public static final boolean kInvertGyro = false; // Always ensure Gyro is CCW+ CW-
+    public static final boolean kInvertGyro = true; // Always ensure Gyro is CCW+ CW-
 
     /** Drivetrain Constants */
     public static final double kTrackWidth = Units.inchesToMeters(30);
@@ -90,7 +90,7 @@ public final class Constants {
     public static final double kAngleFF = 0.0;
 
     /** Swerve angle PID values */
-    public static final double kSwerveAngleP = 0.02;
+    public static final double kSwerveAngleP = 0.16;
     public static final double kSwerveAngleI = 0;
     public static final double kSwerveAngleD = 0;
 

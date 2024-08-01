@@ -84,7 +84,7 @@ public class RobotState {
      * @return yaw angle of the robot according to gyro
      */
     public static Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(Constants.Swerve.kInvertGyro ? 360 - navX.getAngle() : navX.getAngle());
+        return Rotation2d.fromDegrees(Constants.Swerve.kInvertGyro ? -navX.getAngle() : navX.getAngle());
     }
 
     /**

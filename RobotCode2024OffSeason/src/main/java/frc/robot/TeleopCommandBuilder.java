@@ -85,15 +85,14 @@ public class TeleopCommandBuilder {
     // );
 
     return Commands.runOnce(() -> {
-      // if(Vision.getInstance().hasTargets("Front")){
-      //   Pose2d tagPose = Vision.getInstance().getClosestTag("Front").pose.toPose2d();
-      //   System.out.println("Going to tag: " + tagPose.getX() + ", " + tagPose.getY());
-      //   Swerve.getInstance().goTo(tagPose, 1.25).schedule();
-      // }
-      // else
-      //   Commands.print("Cannot auto go to tag because no tags were found infront of front camera").schedule();
-      Pose2d targetPose = new Pose2d(RobotState.getRobotPose().getX() + 2, RobotState.getRobotPose().getY(), RobotState.getGyroYaw().plus(Rotation2d.fromDegrees(90)));
-      Swerve.getInstance().goTo(targetPose, 0).schedule();
+      if(Vision.getInstance().hasTargets("Front")){
+        Pose2d tagPose = Vision.getInstance().getClosestTag("Front").pose.toPose2d();
+        tagPose = new Pose2d(tagPose.getX(), tagPose.getY(), tagPose.getRotation().unaryMinus());
+        System.out.println("Going to tag: " + tagPose.getX() + ", " + tagPose.getY() + ", " + tagPose.getRotation().getDegrees());
+        Swerve.getInstance().goTo(tagPose, 0).schedule();
+      }
+      else
+        Commands.print("Cannot auto go to tag because no tags were found infront of front camera").schedule();
     }, Swerve.getInstance());
 
     // return () -> {

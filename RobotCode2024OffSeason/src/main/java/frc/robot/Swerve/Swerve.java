@@ -17,6 +17,7 @@ import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.Vision.Vision;
 
+import java.util.Arrays;
 import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -88,7 +89,7 @@ public class Swerve extends SubsystemBase {
 
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
         fieldRelative
-          ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, RobotState.getGyroYaw().unaryMinus())
+          ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, RobotState.getGyroYaw())
           : new ChassisSpeeds(translation.getX(), translation.getY(), rotation)
     );
   
@@ -205,7 +206,8 @@ public class Swerve extends SubsystemBase {
     SmartDashboard.putNumber("Auto Target Y", targetPose.getY());
     SmartDashboard.putNumber("Auto Target 0", targetPose.getRotation().getDegrees());
 
-    List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(currentPose, targetPose);
+    // List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(currentPose, targetPose);
+    List<Translation2d> bezierPoints = Arrays.asList(currentPose.getTranslation(), currentPose.getTranslation(), targetPose.getTranslation(), targetPose.getTranslation());
 
     PathPlannerPath path = new PathPlannerPath(
       bezierPoints,
@@ -260,7 +262,7 @@ public class Swerve extends SubsystemBase {
    */
   private ChassisSpeeds calculateDriveAssist(Translation2d movingDirection, double rotation, Pose2d targetPose) {
     if(movingDirection.getX() == 0 && movingDirection.getY() == 0)
-      return new ChassisSpeeds(0, 0, 0);
+      return new ChassisSpeeds(0, 0, rotation);
 
     Translation2d toTargetDirection = targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
 
