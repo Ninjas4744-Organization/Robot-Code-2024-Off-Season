@@ -23,30 +23,26 @@ public class TeleopCommandBuilder {
   // }
 
   public static Command swerveDrive(Supplier<Translation2d> translation, Supplier<Translation2d> rotation, boolean isLookAt) {
-    return Commands.sequence(
-      Commands.runOnce(() -> {
+    return Commands.runOnce(() -> {
         double lx = -MathUtil.applyDeadband(translation.get().getX(), Constants.Swerve.kJoystickDeadband);
         double ly = -MathUtil.applyDeadband(translation.get().getY(), Constants.Swerve.kJoystickDeadband);
         double rx = -MathUtil.applyDeadband(rotation.get().getX(), Constants.Swerve.kJoystickDeadband);
+        double ry = -MathUtil.applyDeadband(rotation.get().getY(), Constants.Swerve.kJoystickDeadband);
         
-        Swerve.getInstance().drive(
-          new Translation2d(ly, lx), rx, true, false);
-      }, Swerve.getInstance()),
+        Swerve.getInstance().drive(new Translation2d(ly, lx), rx, true, false);
 
-      Commands.either(
-        swerveLookAt(rotation.get()), 
-        Commands.none(),
-        () -> isLookAt)
-    );
+        if(isLookAt){
+          rx = -rx;
+          ry = -ry;
+
+          Swerve.getInstance().lookAt(new Translation2d(rx, ry), 45);
+        }
+      }, Swerve.getInstance());
   }
 
   public static Command swerveLookAt(Translation2d rotation) {
     return Commands.run(() -> {
-        double rx = MathUtil.applyDeadband(rotation.getX(), Constants.Swerve.kJoystickDeadband);
-        double ry = MathUtil.applyDeadband(rotation.getY(), Constants.Swerve.kJoystickDeadband);
-
-        Swerve.getInstance().lookAt(new Translation2d(rx, ry), 45);
-      }, Swerve.getInstance());
+        }, Swerve.getInstance());
   }
 
   public static Command resetSubsystems() {

@@ -37,7 +37,7 @@ public class RobotContainer {
   private void configureDriverBindings(){
     Swerve.getInstance().setDefaultCommand(
       TeleopCommandBuilder.swerveDrive(() -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
-      () -> new Translation2d(_driverJoystick.getRightX(), 0), false)
+      () -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()), true)
     );
       
     _driverJoystick.circle().toggleOnTrue(Commands.startEnd(

@@ -74,23 +74,22 @@ public class Swerve extends SubsystemBase {
     
     if(isAnglePID)
       rotation = _anglePID.calculate(RobotState.getGyroYaw().getDegrees());
-
-    if(isBayblade)
-      rotation = Constants.Swerve.maxAngularVelocity;
-
-    //TODO: add note position as target
+      
     if(isDriveAssist && Vision.getInstance().hasTargets("Front")){
       Pose2d targetPose = Vision.getInstance().getClosestTag("Front").pose.toPose2d();
-      ChassisSpeeds driveAssist = calculateDriveAssist(translation, rotation, targetPose);
-
+      ChassisSpeeds driveAssist = calculateDriveAssist(translation, rotation, targetPose, true);
+      
       translation = new Translation2d(driveAssist.vxMetersPerSecond, driveAssist.vyMetersPerSecond);
       rotation = driveAssist.omegaRadiansPerSecond;
     }
 
+    if(isBayblade)
+      rotation = Constants.Swerve.maxAngularVelocity;
+      
     SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
-        fieldRelative
-          ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, RobotState.getGyroYaw())
-          : new ChassisSpeeds(translation.getX(), translation.getY(), rotation)
+      fieldRelative
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, RobotState.getGyroYaw())
+        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation)
     );
   
     setModuleStates(swerveModuleStates);
@@ -223,12 +222,13 @@ public class Swerve extends SubsystemBase {
    * @param angle - the angle to look at
    * @param roundToAngle - the angle jumps to round to, for example 45 degrees will make it round the given angle to the nearest 0, 45, 90, 135...
    * it rounds the angle only if the rounded angle is close enough to the given angle so for example if the given angle is 28 and the rounded angle is 45 it won't round.
-   * if you write 1 as the roundToAngle there will be no rounding, DON'T USE 0 (Division by zero error)
+   * if you write 1 as the roundToAngle there will be no rounding, DON'T USE 0 (division by zero error)
    */
   public void lookAt(double angle, double roundToAngle) {
     double roundedAngle = Math.round(angle / roundToAngle) * roundToAngle;
     angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundToAngle : angle;
-
+    
+    System.out.println(angle);
     _anglePID.setSetpoint(angle);
     isAnglePID = true;
   }
@@ -238,11 +238,10 @@ public class Swerve extends SubsystemBase {
    * @param direction - the direction vector to look
    * @param roundToAngle - the angle jumps to round to, for example 45 degrees will make it round the given angle (calculated from direction) to the nearest 0, 45, 90, 135...
    * it rounds the angle only if the rounded angle is close enough to the given angle so for example if the given angle is 28 and the rounded angle is 45 it won't round.
-   * if you write 1 as the roundToAngle there will be no rounding, DON'T USE 0 (Division by zero error)
+   * if you write 1 as the roundToAngle there will be no rounding, DON'T USE 0 (division by zero error)
    */
   public void lookAt(Translation2d direction, double roundToAngle) {
-    double angle = 90 - Math.atan2(direction.getY(), direction.getX());
-    lookAt(angle, roundToAngle);
+    lookAt(direction.getAngle().getDegrees(), roundToAngle);
   }
 
   /**
@@ -258,9 +257,10 @@ public class Swerve extends SubsystemBase {
    * @param movingDirection - the direction the robot is moving according to the driver input, field relative
    * @param rotation - the rotation of the robot according to the driver input, field relative
    * @param targetPose - the pose of the closest target(tags and notes), field relative
+   * @param isForTags - if the drive assist is for tags and not notes
    * @return Calculated drive assist as chassis speeds(if the rotation is 0, use the rotation from the drive input), field relative
    */
-  private ChassisSpeeds calculateDriveAssist(Translation2d movingDirection, double rotation, Pose2d targetPose) {
+  private ChassisSpeeds calculateDriveAssist(Translation2d movingDirection, double rotation, Pose2d targetPose, boolean isForTags) {
     if(movingDirection.getX() == 0 && movingDirection.getY() == 0)
       return new ChassisSpeeds(0, 0, rotation);
 
@@ -270,16 +270,24 @@ public class Swerve extends SubsystemBase {
     Rotation2d toTargetAngle = toTargetDirection.getAngle();
     Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
 
-    if(Math.abs(angleDiff.getDegrees()) < Constants.Swerve.kDriveAssistThreshold){
+    if (Math.abs(angleDiff.getDegrees()) < Constants.Swerve.kDriveAssistThreshold) {
+      double anglePIDMeasurement = RobotState.getRobotPose().getRotation().getDegrees();
+      double anglePIDSetpoint = isForTags
+      ? targetPose.getRotation().minus(Rotation2d.fromDegrees(180)).getDegrees()
+      : toTargetAngle.getDegrees();
+
       ChassisSpeeds driveAssist = new ChassisSpeeds(
-        _driveAssistXPID.calculate(RobotState.getRobotPose().getX(), targetPose.getX()),
-        _driveAssistYPID.calculate(RobotState.getRobotPose().getY(), targetPose.getY()),
-        _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), toTargetAngle.getDegrees())
+        _driveAssistXPID.calculate(RobotState.getRobotPose().getX(), targetPose.getX()) * Constants.Swerve.maxSpeed,
+        _driveAssistYPID.calculate(RobotState.getRobotPose().getY(), targetPose.getY()) * Constants.Swerve.maxSpeed,
+        _anglePID.calculate(anglePIDMeasurement, anglePIDSetpoint) * Constants.Swerve.maxAngularVelocity
       );
 
       SmartDashboard.putNumber("Drive Assist X", driveAssist.vxMetersPerSecond);
       SmartDashboard.putNumber("Drive Assist Y", driveAssist.vyMetersPerSecond);
       SmartDashboard.putNumber("Drive Assist 0", driveAssist.omegaRadiansPerSecond);
+      SmartDashboard.putNumber("Drive Assist 0 error", anglePIDSetpoint - anglePIDMeasurement);
+      SmartDashboard.putNumber("Drive Assist 0 measurement", anglePIDMeasurement);
+      SmartDashboard.putNumber("Drive Assist 0 setpoint", anglePIDSetpoint);
     
       return driveAssist;
     }
