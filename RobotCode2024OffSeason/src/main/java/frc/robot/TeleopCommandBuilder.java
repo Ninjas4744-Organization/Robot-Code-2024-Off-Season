@@ -29,20 +29,11 @@ public class TeleopCommandBuilder {
         double rx = -MathUtil.applyDeadband(rotation.get().getX(), Constants.Swerve.kJoystickDeadband);
         double ry = -MathUtil.applyDeadband(rotation.get().getY(), Constants.Swerve.kJoystickDeadband);
         
-        Swerve.getInstance().drive(new Translation2d(ly, lx), rx, true, false);
+        Swerve.getInstance().drive(new Translation2d(ly, lx), rx, true, true);
+        if(isLookAt)
+          Swerve.getInstance().lookAt(new Translation2d(ry, rx), 45);
 
-        if(isLookAt){
-          rx = -rx;
-          ry = -ry;
-
-          Swerve.getInstance().lookAt(new Translation2d(rx, ry), 45);
-        }
       }, Swerve.getInstance());
-  }
-
-  public static Command swerveLookAt(Translation2d rotation) {
-    return Commands.run(() -> {
-        }, Swerve.getInstance());
   }
 
   public static Command resetSubsystems() {

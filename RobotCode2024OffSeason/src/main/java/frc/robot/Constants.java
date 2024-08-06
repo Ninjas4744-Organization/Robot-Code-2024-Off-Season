@@ -54,7 +54,7 @@ public final class Constants {
   public static final class Swerve {
     public static final double kSpeedFactor = 0.5;
     public static final double kRotationSpeedFactor = 0.25;
-    public static final double kJoystickDeadband = 0.05;
+    public static final double kJoystickDeadband = 0.1;
 
     public static final boolean kInvertGyro = true; // Always ensure Gyro is CCW+ CW-
 
@@ -90,7 +90,7 @@ public final class Constants {
     public static final double kAngleFF = 0.0;
 
     /** Swerve angle PID values */
-    public static final double kSwerveAngleP = 0.02;
+    public static final double kSwerveAngleP = 0.0035;
     public static final double kSwerveAngleI = 0;
     public static final double kSwerveAngleD = 0;
 
@@ -99,7 +99,7 @@ public final class Constants {
     public static final double kDriveAssistI = 0;
     public static final double kDriveAssistD = 0;
     /** Swerve drive assist threshold, if the drive assist angle difference from driver angle is bigger than this value, the drive assist will be ignored. degrees */
-    public static final double kDriveAssistThreshold = 45;
+    public static final double kDriveAssistThreshold = 30;
     
     /** Modules drive PID values */
     public static final double kDriveP = 0.0;
@@ -219,9 +219,9 @@ public final class Constants {
       HashMap<String, Transform3d> cameras = new HashMap<String, Transform3d>();
 
       double deg2rad = 0.0174533;
-      cameras.put("Front", new Transform3d(0.385, 0, -0.260, new Rotation3d(0, 0, 0)));
-      cameras.put("BackLeft", new Transform3d(-0.325, 0.175, 0.1, new Rotation3d(0, 0, 120 * deg2rad)));
-      cameras.put("BackRight", new Transform3d(-0.325, -0.175, 0.08, new Rotation3d(0, 0, -120 * deg2rad)));
+      cameras.put("Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)));
+      cameras.put("BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, 120 * deg2rad)));
+      cameras.put("BackRight", new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, -120 * deg2rad)));
 
       return cameras;
     }

@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Swerve.CANSparkMaxUtil.Usage;
 import frc.robot.Swerve.CANCoderUtil.CCUsage;
 import frc.robot.Constants;
@@ -85,6 +86,7 @@ public class SwerveModule {
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
         if (isOpenLoop) {
             double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.maxSpeed;
+            SmartDashboard.putNumber("driveWheels", percentOutput);
             driveMotor.set(percentOutput);
         } else {
             driveController.setReference(
@@ -95,6 +97,7 @@ public class SwerveModule {
         }
     }
 
+    
     private void setAngle(SwerveModuleState desiredState) {
         // Prevent rotating module if speed is less then 1%. Prevents Jittering.
         Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.01))

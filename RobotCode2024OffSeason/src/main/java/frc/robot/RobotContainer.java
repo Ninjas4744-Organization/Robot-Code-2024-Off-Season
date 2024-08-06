@@ -1,12 +1,9 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Vision.Vision;
 import frc.robot.Vision.VisionEstimation;
@@ -70,7 +67,7 @@ public class RobotContainer {
       () -> Swerve.getInstance().setIsDriveAssist(false)
     ));
 
-    _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
+    // _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
   }
 
   private void configureOperatorBindings(){
@@ -86,6 +83,7 @@ public class RobotContainer {
   }
 
   public void resetSubsystems(){
+    TeleopCommandBuilder.resetGyro(false).schedule();
     TeleopCommandBuilder.resetSubsystems().schedule();
   }
 }
