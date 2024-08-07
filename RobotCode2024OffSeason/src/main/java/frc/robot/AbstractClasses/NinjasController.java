@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.DataClasses.ControllerConstants;
@@ -12,17 +13,24 @@ public abstract class NinjasController {
     public enum ControlState {
         PERCENT_OUTPUT,
         MOTION_MAGIC,
-        POSITION_PIDF,
-        VELOCITY_PIDF
+        PIDF_POSITION,
+        PIDF_VELOCITY
     }
 
     protected ControlState _controlState;
     protected HashMap<String, GenericEntry> _shuffleboardEnteries;
     protected ControllerConstants _constants;
+    protected ControllerConstants[] _followersConstants;
     protected ProfiledPIDController _pidfController;
 
-    public NinjasController(ControllerConstants constants) {
+    /**
+     * Creates a new Ninjas controller
+     * @param constants - the constants for the controller
+     * @param followersConstants - the constants for the controllers that follow the main controller, optional
+     */
+    public NinjasController(ControllerConstants constants, ControllerConstants... followersConstants) {
         _constants = constants;
+        _followersConstants = followersConstants;
         _controlState = ControlState.PERCENT_OUTPUT;
         _pidfController = new ProfiledPIDController(constants.pidConstants.kP, constants.pidConstants.kI, constants.pidConstants.kD, constants.constraints);
         
@@ -55,51 +63,71 @@ public abstract class NinjasController {
             .add("Control State", 0)
             .withWidget("Text View")
             .withSize(_constants.shuffleboardEnteriesSize, _constants.shuffleboardEnteriesSize / 2)
-            .getEntry());        
+            .getEntry());
     }
 
     /**
-     * @return The current value of the controller according to the control state, could be percent and could be position
+     * Sets percetage output to the controller
+     * 
+     * @param percent - how much to power the motor between -1 and 1
+     * @see #setPosition(double) 
+     * @see #setVelocity(double)
+     * @see #stop()
      */
-    public abstract double get();
-
-    /**
-     * Sets the current value of the controller according to the control state, could be percent, could be position and more...
-     */
-    public abstract void set(double value);
-
-    /**
-     * Sets the current control state and sets the value of the controller according to the control state, could be percent, could be position and more...
-     */
-    public void set(ControlState state, double value){
-        setControlState(state);
-        set(value);
+    public void setPercent(double percent){
+        _controlState = ControlState.PERCENT_OUTPUT;
     }
 
     /**
-     * Stops the controller and all movement
+     * Sets position setpoint to the controller
+     * 
+     * @param position - the wanted position of the controller according to the encoder
+     * @see #setPercent(double) 
+     * @see #setVelocity(double)
+     * @see #stop()
      */
-    public abstract void stop();
-
-    /**
-     * Sets the control state of the controller
-     */
-    public void setControlState(ControlState state) {
-        _controlState = state;
+    public void setPosition(double position){
+        _controlState = ControlState.PIDF_POSITION;
+        _pidfController.setGoal(new State(position, 0));
     }
 
     /**
-     * @return the position and velocity of the controller value no matter what the control state is
+     * Sets velocity setpoint output to the controller
+     * 
+     * @param velocity - the wanted velocity of the controller according to the encoder
+     * @see #setPercent(double) 
+     * @see #setPosition(double)
+     * @see #stop()
      */
-    public abstract TrapezoidProfile.State getEncoder();
+    public void setVelocity(double velocity){
+        _controlState = ControlState.PIDF_VELOCITY;
+        _pidfController.setGoal(new State(0, velocity));
+    }
 
     /**
-     * @return the percent output of the controller value no matter what the control state is
+     * Stops the controller of all movement
+     * @see #setPercent(double) 
+     * @see #setPosition(double)
+     * @see #setVelocity(double)
+     */
+    public void stop(){
+        setPercent(0);
+    }
+
+    /**
+     * @return the position and velocity of the controller
+     */
+    public abstract State getEncoder();
+
+    /**
+     * @return the percent output of the controller
      */
     public abstract double getOutput();
 
     /**
-     * Sets the position in the encoder
+     * Sets the position in the encoder so it thinks it is at that position
+     * 
+     * @param position - the position to set the encoder to
      */
     public abstract void setEncoder(double position);
 
@@ -107,28 +135,31 @@ public abstract class NinjasController {
      * Resets the encoder, sets it to the home position
      */
     public void resetEncoder() {
-        setEncoder(_constants.encoderHomePosition);
+        setEncoder(0);
     }
 
     /**
-     * @return the PIDF setpoint, only works if the control state has something to do with PIDF
+     * @return the setpoint/reference of the controller, the target of PIDF / PID / Motion Magic...
      */
-    public double getSetpoint(){
-        return _controlState == ControlState.POSITION_PIDF ? _pidfController.getGoal().position : _pidfController.getGoal().velocity;
-    }
-
-    /**
-     * @return the PIDF setpoint, only works if the control state has something to do with PIDF
-     */
-    public TrapezoidProfile.State getSetpointState(){
+    public TrapezoidProfile.State getSetpoint(){
         return _pidfController.getGoal();
     }
 
     /**
-     * @return wheter or not the controller is at the PIDF setpoint, only works if the control state has something to do with PIDF
+     * @return wheter or not the controller is at the setpoint, the target of PIDF / PID / Motion Magic...
      */
     public boolean atSetpoint(){
         return _pidfController.atGoal();
+    }
+
+    /**
+     * Sets the error which is considered atSetpoint(). if the PIDF error is smaller than this value it will be considered atSetpoint()
+     * @param positionTolerance - Position error which is considered atSetpoint().
+     * @param velocityTolerance - Velocity error which is considered atSetpoint().
+     * @see #atSetpoint()
+     */
+    public void setSetpointTolerance(double positionTolerance, double velocityTolerance){
+        _pidfController.setTolerance(positionTolerance, velocityTolerance);
     }
 
     /**
@@ -138,10 +169,18 @@ public abstract class NinjasController {
         _shuffleboardEnteries.get("position").setDouble(getEncoder().position);
         _shuffleboardEnteries.get("velocity").setDouble(getEncoder().velocity);
         _shuffleboardEnteries.get("output").setDouble(getOutput());
-        _shuffleboardEnteries.get("setpoint").setDouble(getSetpoint());
+
+        if(_controlState == ControlState.PIDF_POSITION)
+            _shuffleboardEnteries.get("setpoint").setDouble(getSetpoint().position);
+        else if(_controlState == ControlState.PIDF_VELOCITY)
+            _shuffleboardEnteries.get("setpoint").setDouble(getSetpoint().velocity);
+
         _shuffleboardEnteries.get("controlState").setString(_controlState.name());
     }
 
+    /**
+     * Runs controller periodic tasks, run it on the subsystem periodic
+     */
     public void periodic() {
         updateShuffleboard();
     }
