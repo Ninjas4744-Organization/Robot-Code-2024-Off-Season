@@ -7,7 +7,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import frc.robot.DataClasses.ControllerConstants;
+import frc.robot.DataClasses.MasterConstants;
 
 public abstract class NinjasController {
     public enum ControlState {
@@ -19,20 +19,17 @@ public abstract class NinjasController {
 
     protected ControlState _controlState;
     protected HashMap<String, GenericEntry> _shuffleboardEnteries;
-    protected ControllerConstants _constants;
-    protected ControllerConstants[] _followersConstants;
-    protected ProfiledPIDController _pidfController;
+    protected MasterConstants _constants;
+    protected double _demand;
 
     /**
      * Creates a new Ninjas controller
      * @param constants - the constants for the controller
      * @param followersConstants - the constants for the controllers that follow the main controller, optional
      */
-    public NinjasController(ControllerConstants constants, ControllerConstants... followersConstants) {
+    public NinjasController(MasterConstants constants ) {
         _constants = constants;
-        _followersConstants = followersConstants;
         _controlState = ControlState.PERCENT_OUTPUT;
-        _pidfController = new ProfiledPIDController(constants.pidConstants.kP, constants.pidConstants.kI, constants.pidConstants.kD, constants.constraints);
         
         _shuffleboardEnteries = new HashMap<>();
         _shuffleboardEnteries.put("position", Shuffleboard.getTab(_constants.subsystemName)
@@ -74,9 +71,7 @@ public abstract class NinjasController {
      * @see #setVelocity(double)
      * @see #stop()
      */
-    public void setPercent(double percent){
-        _controlState = ControlState.PERCENT_OUTPUT;
-    }
+    public abstract void setPercent(double percent);
 
     /**
      * Sets position setpoint to the controller
@@ -86,10 +81,7 @@ public abstract class NinjasController {
      * @see #setVelocity(double)
      * @see #stop()
      */
-    public void setPosition(double position){
-        _controlState = ControlState.PIDF_POSITION;
-        _pidfController.setGoal(new State(position, 0));
-    }
+    public abstract void setPosition(double position);
 
     /**
      * Sets velocity setpoint output to the controller
@@ -99,10 +91,7 @@ public abstract class NinjasController {
      * @see #setPosition(double)
      * @see #stop()
      */
-    public void setVelocity(double velocity){
-        _controlState = ControlState.PIDF_VELOCITY;
-        _pidfController.setGoal(new State(0, velocity));
-    }
+    public abstract void setVelocity(double velocity);
 
     /**
      * Stops the controller of all movement
@@ -141,16 +130,12 @@ public abstract class NinjasController {
     /**
      * @return the setpoint/reference of the controller, the target of PIDF / PID / Motion Magic...
      */
-    public TrapezoidProfile.State getSetpoint(){
-        return _pidfController.getGoal();
-    }
+    public abstract TrapezoidProfile.State getSetpoint();
 
     /**
      * @return wheter or not the controller is at the setpoint, the target of PIDF / PID / Motion Magic...
      */
-    public boolean atSetpoint(){
-        return _pidfController.atGoal();
-    }
+    public abstract boolean atSetpoint();
 
     /**
      * Sets the error which is considered atSetpoint(). if the PIDF error is smaller than this value it will be considered atSetpoint()
@@ -159,7 +144,7 @@ public abstract class NinjasController {
      * @see #atSetpoint()
      */
     public void setSetpointTolerance(double positionTolerance, double velocityTolerance){
-        _pidfController.setTolerance(positionTolerance, velocityTolerance);
+        // _pidfController.setTolerance(positionTolerance, velocityTolerance);
     }
 
     /**
