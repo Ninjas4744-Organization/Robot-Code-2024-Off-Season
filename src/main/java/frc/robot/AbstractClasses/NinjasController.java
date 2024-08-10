@@ -1,202 +1,188 @@
 package frc.robot.AbstractClasses;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import java.util.HashMap;
+
+import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import frc.robot.DataClasses.ControllerConstants;
-import java.util.HashMap;
+import frc.robot.DataClasses.MainControllerConstants;
 
 public abstract class NinjasController {
-  public enum ControlState {
-    PERCENT_OUTPUT,
-    MOTION_MAGIC,
-    PIDF_POSITION,
-    PIDF_VELOCITY
-  }
+    public enum ControlState {
+        PERCENT_OUTPUT,
+        MOTION_MAGIC_POSITION,
+        MOTION_MAGIC_VELOCITY,
+        PIDF_POSITION,
+        PIDF_VELOCITY
+    }
 
-  protected ControlState _controlState;
-  protected HashMap<String, GenericEntry> _shuffleboardEnteries;
-  protected ControllerConstants _constants;
-  protected ControllerConstants[] _followersConstants;
-  protected ProfiledPIDController _pidfController;
+    protected ControlState _controlState = ControlState.PERCENT_OUTPUT;
+    protected HashMap<String, GenericEntry> _shuffleboardEnteries = new HashMap<>();
+    protected State _goalTolerance;
+    protected RelativeEncoder _encoder;
 
-  /**
-   * Creates a new Ninjas controller
-   *
-   * @param constants - the constants for the controller
-   * @param followersConstants - the constants for the controllers that follow the main controller,
-   *     optional
-   */
-  public NinjasController(
-      ControllerConstants constants, ControllerConstants... followersConstants) {
-    _constants = constants;
-    _followersConstants = followersConstants;
-    _controlState = ControlState.PERCENT_OUTPUT;
-    _pidfController =
-        new ProfiledPIDController(
-            constants.pidConstants.kP,
-            constants.pidConstants.kI,
-            constants.pidConstants.kD,
-            constants.constraints);
+    protected TrapezoidProfile _profile;
+    protected State _profileGoal;
+    protected Timer _trapozoidTimer = new Timer();
 
-    _shuffleboardEnteries = new HashMap<>();
-    _shuffleboardEnteries.put(
-        "position",
-        Shuffleboard.getTab(_constants.subsystemName)
+    /**
+     * Creates a new Ninjas controller
+     * @param constants - the constants for the controller
+     */
+    public NinjasController(MainControllerConstants constants) {
+        _goalTolerance = new State(constants.positionGoalTolerance, constants.velocityGoalTolerance);
+
+        _profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
+
+        _shuffleboardEnteries.put("position", Shuffleboard.getTab(constants.subsystemName)
             .add("Position", 0)
             .withWidget("Graph")
-            .withSize(_constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
+            .withSize(constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
             .getEntry());
 
-    _shuffleboardEnteries.put(
-        "velocity",
-        Shuffleboard.getTab(_constants.subsystemName)
+        _shuffleboardEnteries.put("velocity", Shuffleboard.getTab(constants.subsystemName)
             .add("Velocity", 0)
             .withWidget("Graph")
-            .withSize(_constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
+            .withSize(constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
             .getEntry());
 
-    _shuffleboardEnteries.put(
-        "output",
-        Shuffleboard.getTab(_constants.subsystemName)
+        _shuffleboardEnteries.put("output", Shuffleboard.getTab(constants.subsystemName)
             .add("Output", 0)
             .withWidget("Graph")
-            .withSize(_constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
+            .withSize(constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
             .getEntry());
 
-    _shuffleboardEnteries.put(
-        "setpoint",
-        Shuffleboard.getTab(_constants.subsystemName)
-            .add("Setpoint", 0)
+        _shuffleboardEnteries.put("goalPos", Shuffleboard.getTab(constants.subsystemName)
+            .add("Goal Position", 0)
             .withWidget("Number Bar")
-            .withSize(_constants.shuffleboardEnteriesSize / 2, constants.shuffleboardEnteriesSize)
+            .withSize(constants.shuffleboardEnteriesSize / 2, constants.shuffleboardEnteriesSize)
             .getEntry());
 
-    _shuffleboardEnteries.put(
-        "controlState",
-        Shuffleboard.getTab(_constants.subsystemName)
+        _shuffleboardEnteries.put("goalVel", Shuffleboard.getTab(constants.subsystemName)
+            .add("Goal Velocity", 0)
+            .withWidget("Number Bar")
+            .withSize(constants.shuffleboardEnteriesSize / 2, constants.shuffleboardEnteriesSize)
+            .getEntry());
+
+        _shuffleboardEnteries.put("controlState", Shuffleboard.getTab(constants.subsystemName)
             .add("Control State", 0)
             .withWidget("Text View")
-            .withSize(_constants.shuffleboardEnteriesSize, _constants.shuffleboardEnteriesSize / 2)
+            .withSize(constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize / 2)
             .getEntry());
-  }
+    }
 
-  /**
-   * Sets percetage output to the controller
-   *
-   * @param percent - how much to power the motor between -1 and 1
-   * @see #setPosition(double)
-   * @see #setVelocity(double)
-   * @see #stop()
-   */
-  public void setPercent(double percent) {
-    _controlState = ControlState.PERCENT_OUTPUT;
-  }
+    /**
+     * Sets percetage output to the controller
+     *
+     * @param percent - how much to power the motor between -1 and 1
+     * @see #setPosition(double)
+     * @see #setVelocity(double)
+     * @see #stop()
+     */
+    public void setPercent(double percent){
+        _controlState = ControlState.PERCENT_OUTPUT;
+    }
 
-  /**
-   * Sets position setpoint to the controller
-   *
-   * @param position - the wanted position of the controller according to the encoder
-   * @see #setPercent(double)
-   * @see #setVelocity(double)
-   * @see #stop()
-   */
-  public void setPosition(double position) {
-    _controlState = ControlState.PIDF_POSITION;
-    _pidfController.setGoal(new State(position, 0));
-  }
+    /**
+     * Sets position setpoint to the controller
+     *
+     * @param position - the wanted position of the controller according to the encoder
+     * @see #setPercent(double)
+     * @see #setVelocity(double)
+     * @see #stop()
+     */
+    public void setPosition(double position){
+        _controlState = ControlState.PIDF_POSITION;
+        _profileGoal = new State(position, 0);
 
-  /**
-   * Sets velocity setpoint output to the controller
-   *
-   * @param velocity - the wanted velocity of the controller according to the encoder
-   * @see #setPercent(double)
-   * @see #setPosition(double)
-   * @see #stop()
-   */
-  public void setVelocity(double velocity) {
-    _controlState = ControlState.PIDF_VELOCITY;
-    _pidfController.setGoal(new State(0, velocity));
-  }
+        _trapozoidTimer.restart();
+    }
 
-  /**
-   * Stops the controller of all movement
-   *
-   * @see #setPercent(double)
-   * @see #setPosition(double)
-   * @see #setVelocity(double)
-   */
-  public void stop() {
-    setPercent(0);
-  }
+    /**
+     * Sets velocity setpoint output to the controller
+     *
+     * @param velocity - the wanted velocity of the controller according to the encoder
+     * @see #setPercent(double)
+     * @see #setPosition(double)
+     * @see #stop()
+     */
+    public void setVelocity(double velocity){
+        _controlState = ControlState.PIDF_VELOCITY;
+        _profileGoal = new State(0, velocity);
 
-  /**
-   * @return the position and velocity of the controller
-   */
-  public abstract State getEncoder();
+        _trapozoidTimer.restart();
+    }
 
-  /**
-   * @return the percent output of the controller
-   */
-  public abstract double getOutput();
+    /**
+     * Stops the controller of all movement
+     * @see #setPercent(double)
+     * @see #setPosition(double)
+     * @see #setVelocity(double)
+     */
+    public void stop(){
+        setPercent(0);
+    }
 
-  /**
-   * Sets the position in the encoder so it thinks it is at that position
-   *
-   * @param position - the position to set the encoder to
-   */
-  public abstract void setEncoder(double position);
+    /**
+     * @return the position and velocity of the controller
+     */
+    public State getEncoder(){
+        return new State(_encoder.getPosition(), _encoder.getVelocity());
+    }
 
-  /** Resets the encoder, sets it to the home position */
-  public void resetEncoder() {
-    setEncoder(0);
-  }
+    /**
+     * @return the percent output of the controller
+     */
+    public abstract double getOutput();
 
-  /**
-   * @return the setpoint/reference of the controller, the target of PIDF / PID / Motion Magic...
-   */
-  public TrapezoidProfile.State getSetpoint() {
-    return _pidfController.getGoal();
-  }
+    /**
+     * Sets the position in the encoder so it thinks it is at that position
+     *
+     * @param position - the position to set the encoder to
+     */
+    public void setEncoder(double position){
+        _encoder.setPosition(position);
+    }
 
-  /**
-   * @return wheter or not the controller is at the setpoint, the target of PIDF / PID / Motion
-   *     Magic...
-   */
-  public boolean atSetpoint() {
-    return _pidfController.atGoal();
-  }
+    /**
+     * Resets the encoder, sets it to the home position
+     */
+    public void resetEncoder() {
+        setEncoder(0);
+    }
 
-  /**
-   * Sets the error which is considered atSetpoint(). if the PIDF error is smaller than this value
-   * it will be considered atSetpoint()
-   *
-   * @param positionTolerance - Position error which is considered atSetpoint().
-   * @param velocityTolerance - Velocity error which is considered atSetpoint().
-   * @see #atSetpoint()
-   */
-  public void setSetpointTolerance(double positionTolerance, double velocityTolerance) {
-    _pidfController.setTolerance(positionTolerance, velocityTolerance);
-  }
+    /**
+     * @return the goal/setpoint/reference of the controller, the target of PIDF / PID / Motion Magic...
+     */
+    public State getGoal(){
+        return _profileGoal;
+    }
 
-  /** Updates the shuffleboard values */
-  protected void updateShuffleboard() {
-    _shuffleboardEnteries.get("position").setDouble(getEncoder().position);
-    _shuffleboardEnteries.get("velocity").setDouble(getEncoder().velocity);
-    _shuffleboardEnteries.get("output").setDouble(getOutput());
+    /**
+     * @return wheter or not the controller is at the goal, the target of PIDF / PID / Motion Magic... Will return false if not in position or velocity control
+     */
+    public abstract boolean atGoal();
 
-    if (_controlState == ControlState.PIDF_POSITION)
-      _shuffleboardEnteries.get("setpoint").setDouble(getSetpoint().position);
-    else if (_controlState == ControlState.PIDF_VELOCITY)
-      _shuffleboardEnteries.get("setpoint").setDouble(getSetpoint().velocity);
+    /**
+     * Updates the shuffleboard values
+     */
+    protected void updateShuffleboard(){
+        _shuffleboardEnteries.get("position").setDouble(getEncoder().position);
+        _shuffleboardEnteries.get("velocity").setDouble(getEncoder().velocity);
+        _shuffleboardEnteries.get("output").setDouble(getOutput());
+        _shuffleboardEnteries.get("goalPos").setDouble(getGoal().position);
+        _shuffleboardEnteries.get("goalVel").setDouble(getGoal().velocity);
+        _shuffleboardEnteries.get("controlState").setString(_controlState.name());
+    }
 
-    _shuffleboardEnteries.get("controlState").setString(_controlState.name());
-  }
-
-  /** Runs controller periodic tasks, run it on the subsystem periodic */
-  public void periodic() {
-    updateShuffleboard();
-  }
+    /**
+     * Runs controller periodic tasks, run it on the subsystem periodic
+     */
+    public void periodic() {
+        updateShuffleboard();
+    }
 }
