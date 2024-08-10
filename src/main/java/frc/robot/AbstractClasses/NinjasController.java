@@ -24,7 +24,7 @@ public abstract class NinjasController {
     protected HashMap<String, GenericEntry> _shuffleboardEnteries = new HashMap<>();
     protected State _goalTolerance;
     protected RelativeEncoder _encoder;
-    
+
     protected TrapezoidProfile _profile;
     protected State _profileGoal;
     protected Timer _trapozoidTimer = new Timer();
@@ -37,7 +37,7 @@ public abstract class NinjasController {
         _goalTolerance = new State(constants.positionGoalTolerance, constants.velocityGoalTolerance);
 
         _profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
-        
+
         _shuffleboardEnteries.put("position", Shuffleboard.getTab(constants.subsystemName)
             .add("Position", 0)
             .withWidget("Graph")
@@ -55,7 +55,7 @@ public abstract class NinjasController {
             .withWidget("Graph")
             .withSize(constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
             .getEntry());
-            
+
         _shuffleboardEnteries.put("goalPos", Shuffleboard.getTab(constants.subsystemName)
             .add("Goal Position", 0)
             .withWidget("Number Bar")
@@ -67,7 +67,7 @@ public abstract class NinjasController {
             .withWidget("Number Bar")
             .withSize(constants.shuffleboardEnteriesSize / 2, constants.shuffleboardEnteriesSize)
             .getEntry());
-            
+
         _shuffleboardEnteries.put("controlState", Shuffleboard.getTab(constants.subsystemName)
             .add("Control State", 0)
             .withWidget("Text View")
@@ -77,9 +77,9 @@ public abstract class NinjasController {
 
     /**
      * Sets percetage output to the controller
-     * 
+     *
      * @param percent - how much to power the motor between -1 and 1
-     * @see #setPosition(double) 
+     * @see #setPosition(double)
      * @see #setVelocity(double)
      * @see #stop()
      */
@@ -89,9 +89,9 @@ public abstract class NinjasController {
 
     /**
      * Sets position setpoint to the controller
-     * 
+     *
      * @param position - the wanted position of the controller according to the encoder
-     * @see #setPercent(double) 
+     * @see #setPercent(double)
      * @see #setVelocity(double)
      * @see #stop()
      */
@@ -104,9 +104,9 @@ public abstract class NinjasController {
 
     /**
      * Sets velocity setpoint output to the controller
-     * 
+     *
      * @param velocity - the wanted velocity of the controller according to the encoder
-     * @see #setPercent(double) 
+     * @see #setPercent(double)
      * @see #setPosition(double)
      * @see #stop()
      */
@@ -119,7 +119,7 @@ public abstract class NinjasController {
 
     /**
      * Stops the controller of all movement
-     * @see #setPercent(double) 
+     * @see #setPercent(double)
      * @see #setPosition(double)
      * @see #setVelocity(double)
      */
@@ -141,7 +141,7 @@ public abstract class NinjasController {
 
     /**
      * Sets the position in the encoder so it thinks it is at that position
-     * 
+     *
      * @param position - the position to set the encoder to
      */
     public void setEncoder(double position){

@@ -32,8 +32,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     _autoCommand = AutoCommandBuilder.autoCommand("");
 
-    if (_autoCommand != null)
-      _autoCommand.schedule();
+    if (_autoCommand != null) _autoCommand.schedule();
   }
 
   @Override
@@ -44,9 +43,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    if (_autoCommand != null)
-    _autoCommand.cancel();
-    
+    if (_autoCommand != null) _autoCommand.cancel();
+
     _robotContainer.resetSubsystems();
   }
 
