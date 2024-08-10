@@ -2,64 +2,76 @@ package frc.robot.AbstractClasses;
 
 import java.util.HashMap;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import frc.robot.DataClasses.MasterConstants;
+import frc.robot.DataClasses.MainControllerConstants;
 
 public abstract class NinjasController {
     public enum ControlState {
         PERCENT_OUTPUT,
-        MOTION_MAGIC,
+        MOTION_MAGIC_POSITION,
+        MOTION_MAGIC_VELOCITY,
         PIDF_POSITION,
         PIDF_VELOCITY
     }
 
-    protected ControlState _controlState;
-    protected HashMap<String, GenericEntry> _shuffleboardEnteries;
-    protected MasterConstants _constants;
-    protected double _demand;
+    protected ControlState _controlState = ControlState.PERCENT_OUTPUT;
+    protected HashMap<String, GenericEntry> _shuffleboardEnteries = new HashMap<>();
+    protected State _goalTolerance;
+    protected RelativeEncoder _encoder;
+    
+    protected TrapezoidProfile _profile;
+    protected State _profileGoal;
+    protected Timer _trapozoidTimer = new Timer();
 
     /**
      * Creates a new Ninjas controller
      * @param constants - the constants for the controller
-     * @param followersConstants - the constants for the controllers that follow the main controller, optional
      */
-    public NinjasController(MasterConstants constants ) {
-        _constants = constants;
-        _controlState = ControlState.PERCENT_OUTPUT;
+    public NinjasController(MainControllerConstants constants) {
+        _goalTolerance = new State(constants.positionGoalTolerance, constants.velocityGoalTolerance);
+
+        _profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
         
-        _shuffleboardEnteries = new HashMap<>();
-        _shuffleboardEnteries.put("position", Shuffleboard.getTab(_constants.subsystemName)
+        _shuffleboardEnteries.put("position", Shuffleboard.getTab(constants.subsystemName)
             .add("Position", 0)
             .withWidget("Graph")
-            .withSize(_constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
+            .withSize(constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
             .getEntry());
 
-        _shuffleboardEnteries.put("velocity", Shuffleboard.getTab(_constants.subsystemName)
+        _shuffleboardEnteries.put("velocity", Shuffleboard.getTab(constants.subsystemName)
             .add("Velocity", 0)
             .withWidget("Graph")
-            .withSize(_constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
+            .withSize(constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
             .getEntry());
 
-        _shuffleboardEnteries.put("output", Shuffleboard.getTab(_constants.subsystemName)
+        _shuffleboardEnteries.put("output", Shuffleboard.getTab(constants.subsystemName)
             .add("Output", 0)
             .withWidget("Graph")
-            .withSize(_constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
+            .withSize(constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize)
             .getEntry());
             
-        _shuffleboardEnteries.put("setpoint", Shuffleboard.getTab(_constants.subsystemName)
-            .add("Setpoint", 0)
+        _shuffleboardEnteries.put("goalPos", Shuffleboard.getTab(constants.subsystemName)
+            .add("Goal Position", 0)
             .withWidget("Number Bar")
-            .withSize(_constants.shuffleboardEnteriesSize / 2, constants.shuffleboardEnteriesSize)
+            .withSize(constants.shuffleboardEnteriesSize / 2, constants.shuffleboardEnteriesSize)
+            .getEntry());
+
+        _shuffleboardEnteries.put("goalVel", Shuffleboard.getTab(constants.subsystemName)
+            .add("Goal Velocity", 0)
+            .withWidget("Number Bar")
+            .withSize(constants.shuffleboardEnteriesSize / 2, constants.shuffleboardEnteriesSize)
             .getEntry());
             
-        _shuffleboardEnteries.put("controlState", Shuffleboard.getTab(_constants.subsystemName)
+        _shuffleboardEnteries.put("controlState", Shuffleboard.getTab(constants.subsystemName)
             .add("Control State", 0)
             .withWidget("Text View")
-            .withSize(_constants.shuffleboardEnteriesSize, _constants.shuffleboardEnteriesSize / 2)
+            .withSize(constants.shuffleboardEnteriesSize, constants.shuffleboardEnteriesSize / 2)
             .getEntry());
     }
 
@@ -71,7 +83,9 @@ public abstract class NinjasController {
      * @see #setVelocity(double)
      * @see #stop()
      */
-    public abstract void setPercent(double percent);
+    public void setPercent(double percent){
+        _controlState = ControlState.PERCENT_OUTPUT;
+    }
 
     /**
      * Sets position setpoint to the controller
@@ -81,7 +95,12 @@ public abstract class NinjasController {
      * @see #setVelocity(double)
      * @see #stop()
      */
-    public abstract void setPosition(double position);
+    public void setPosition(double position){
+        _controlState = ControlState.PIDF_POSITION;
+        _profileGoal = new State(position, 0);
+
+        _trapozoidTimer.restart();
+    }
 
     /**
      * Sets velocity setpoint output to the controller
@@ -91,7 +110,12 @@ public abstract class NinjasController {
      * @see #setPosition(double)
      * @see #stop()
      */
-    public abstract void setVelocity(double velocity);
+    public void setVelocity(double velocity){
+        _controlState = ControlState.PIDF_VELOCITY;
+        _profileGoal = new State(0, velocity);
+
+        _trapozoidTimer.restart();
+    }
 
     /**
      * Stops the controller of all movement
@@ -106,7 +130,9 @@ public abstract class NinjasController {
     /**
      * @return the position and velocity of the controller
      */
-    public abstract State getEncoder();
+    public State getEncoder(){
+        return new State(_encoder.getPosition(), _encoder.getVelocity());
+    }
 
     /**
      * @return the percent output of the controller
@@ -118,7 +144,9 @@ public abstract class NinjasController {
      * 
      * @param position - the position to set the encoder to
      */
-    public abstract void setEncoder(double position);
+    public void setEncoder(double position){
+        _encoder.setPosition(position);
+    }
 
     /**
      * Resets the encoder, sets it to the home position
@@ -128,24 +156,16 @@ public abstract class NinjasController {
     }
 
     /**
-     * @return the setpoint/reference of the controller, the target of PIDF / PID / Motion Magic...
+     * @return the goal/setpoint/reference of the controller, the target of PIDF / PID / Motion Magic...
      */
-    public abstract TrapezoidProfile.State getSetpoint();
-
-    /**
-     * @return wheter or not the controller is at the setpoint, the target of PIDF / PID / Motion Magic...
-     */
-    public abstract boolean atSetpoint();
-
-    /**
-     * Sets the error which is considered atSetpoint(). if the PIDF error is smaller than this value it will be considered atSetpoint()
-     * @param positionTolerance - Position error which is considered atSetpoint().
-     * @param velocityTolerance - Velocity error which is considered atSetpoint().
-     * @see #atSetpoint()
-     */
-    public void setSetpointTolerance(double positionTolerance, double velocityTolerance){
-        // _pidfController.setTolerance(positionTolerance, velocityTolerance);
+    public State getGoal(){
+        return _profileGoal;
     }
+
+    /**
+     * @return wheter or not the controller is at the goal, the target of PIDF / PID / Motion Magic... Will return false if not in position or velocity control
+     */
+    public abstract boolean atGoal();
 
     /**
      * Updates the shuffleboard values
@@ -154,12 +174,8 @@ public abstract class NinjasController {
         _shuffleboardEnteries.get("position").setDouble(getEncoder().position);
         _shuffleboardEnteries.get("velocity").setDouble(getEncoder().velocity);
         _shuffleboardEnteries.get("output").setDouble(getOutput());
-
-        if(_controlState == ControlState.PIDF_POSITION)
-            _shuffleboardEnteries.get("setpoint").setDouble(getSetpoint().position);
-        else if(_controlState == ControlState.PIDF_VELOCITY)
-            _shuffleboardEnteries.get("setpoint").setDouble(getSetpoint().velocity);
-
+        _shuffleboardEnteries.get("goalPos").setDouble(getGoal().position);
+        _shuffleboardEnteries.get("goalVel").setDouble(getGoal().velocity);
         _shuffleboardEnteries.get("controlState").setString(_controlState.name());
     }
 

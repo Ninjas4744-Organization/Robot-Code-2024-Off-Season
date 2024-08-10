@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Swerve.CANSparkMaxUtil.Usage;
 import frc.robot.Swerve.CANCoderUtil.CCUsage;
 import frc.robot.Constants;
+import frc.robot.DataClasses.SwerveModuleConstants;
 
 public class SwerveModule {
     public int moduleNumber;

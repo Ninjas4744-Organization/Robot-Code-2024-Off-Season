@@ -6,6 +6,7 @@ import java.util.Optional;
 import edu.wpi.first.math.geometry.*;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.DataClasses.VisionOutput;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;

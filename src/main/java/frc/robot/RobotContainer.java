@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Vision.Vision;
-import frc.robot.Vision.VisionEstimation;
+import frc.robot.DataClasses.VisionEstimation;
 
 public class RobotContainer {
   private CommandPS5Controller _driverJoystick;

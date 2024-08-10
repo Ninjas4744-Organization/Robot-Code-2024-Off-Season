@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.Swerve.Swerve;
-import frc.robot.Vision.VisionEstimation;
+import frc.robot.DataClasses.VisionEstimation;
 
 public class RobotState {
     public enum State{

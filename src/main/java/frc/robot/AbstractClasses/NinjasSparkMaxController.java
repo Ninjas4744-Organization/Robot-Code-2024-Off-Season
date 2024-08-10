@@ -2,81 +2,56 @@ package frc.robot.AbstractClasses;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.DataClasses.MasterConstants;
+import frc.robot.DataClasses.MainControllerConstants;
 
 public class NinjasSparkMaxController extends NinjasController
 {
-    protected final CANSparkMax _master;
-  protected final CANSparkMax[] _slaves;
+    private CANSparkMax _main;
+    private CANSparkMax[] _followers;
 
-  protected final RelativeEncoder _relEncoder;
-  // protected final AbsoluteEncoder _absEncoder;
-  protected final SparkPIDController _controller;
-
-  private final TrapezoidProfile _profile;
-  private final Timer trapozoidTimer = new Timer();
-
-    double demand;
-
-    public NinjasSparkMaxController(MasterConstants constants)
+    public NinjasSparkMaxController(MainControllerConstants constants)
     {
         super(constants);
         
-        _profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(constants.kCruiseVelocity,constants.kAcceleration));
-        _master = new CANSparkMax(constants.master.id, CANSparkMax.MotorType.kBrushless);
-        _master.restoreFactoryDefaults();
-        _master.setInverted(constants.master.inverted);
-        _master.setSmartCurrentLimit((int)constants.currentLimit);
-        _master.burnFlash();
+        _main = new CANSparkMax(constants.main.id, CANSparkMax.MotorType.kBrushless);
+        
+        _main.restoreFactoryDefaults();
+        
+        _main.setInverted(constants.main.inverted);
+        _main.setSmartCurrentLimit((int)constants.currentLimit);
+        
+        _main.getPIDController().setP(constants.PIDFConstants.kP);
+        _main.getPIDController().setI(constants.PIDFConstants.kI);
+        _main.getPIDController().setD(constants.PIDFConstants.kD);
+        _main.getPIDController().setIZone(constants.PIDFConstants.kIZone);
+        _main.getPIDController().setFF(constants.PIDFConstants.kF);
+        
+        _main.burnFlash();
 
-        _relEncoder = _master.getEncoder();
-        _controller = _master.getPIDController();
+        _encoder = _main.getEncoder();
+        _encoder.setPositionConversionFactor(constants.encoderConversionFactor);
+        _encoder.setVelocityConversionFactor(constants.encoderConversionFactor / 60);
 
-        _relEncoder.setPositionConversionFactor(constants.kGearRatio);
-        _relEncoder.setVelocityConversionFactor(constants.kGearRatio/60);
-
-        _controller.setP(constants.Kp);
-        _controller.setI(constants.Ki);
-        _controller.setD(constants.Kd);
-        _controller.setIZone(constants.KIzone);
-
-        _master.burnFlash();
-
-        _slaves = new CANSparkMax[constants.slaves.length];
-        for (int i = 0; i < _slaves.length; i++) {
-            _slaves[i] = new CANSparkMax(constants.slaves[i].id, CANSparkMax.MotorType.kBrushless);
-            _slaves[i].restoreFactoryDefaults();
-            _slaves[i].setInverted(constants.slaves[i].inverted);
-            _slaves[i].follow(_master);
-            _slaves[i].burnFlash();
+        _followers = new CANSparkMax[constants.followers.length];
+        for (int i = 0; i < _followers.length; i++) {
+            _followers[i] = new CANSparkMax(constants.followers[i].id, CANSparkMax.MotorType.kBrushless);
+            _followers[i].restoreFactoryDefaults();
+            _followers[i].follow(_main, constants.followers[i].inverted);
+            _followers[i].burnFlash();
         }
     }
 
     @Override
     public void setPercent(double percent) {
-        _master.set(percent);
-    }
+        super.setPercent(percent);
 
-    @Override
-    public State getEncoder() {
-        return new State(_relEncoder.getPosition(), _relEncoder.getVelocity());
+        _main.set(percent);
     }
 
     @Override
     public double getOutput(){
-        return 0;
-        // return _controller.get(); ???
-    }
-
-    @Override
-    public void setEncoder(double position) {
-        _relEncoder.setPosition(position);
+        return _main.get();
     }
     
     @Override
@@ -85,8 +60,11 @@ public class NinjasSparkMaxController extends NinjasController
         
         switch (_controlState) {
             case PIDF_POSITION:
-                
-                _controller.setReference(_profile.calculate(trapozoidTimer.get(), getEncoder(), new State(demand, 0)).position, ControlType.kPosition);
+                _main.getPIDController().setReference(_profile.calculate(_trapozoidTimer.get(), getEncoder(), getGoal()).position, ControlType.kPosition);
+                break;
+
+            case PIDF_VELOCITY:
+                _main.getPIDController().setReference(_profile.calculate(_trapozoidTimer.get(), getEncoder(), getGoal()).velocity, ControlType.kVelocity);
                 break;
 
             default:
@@ -95,24 +73,12 @@ public class NinjasSparkMaxController extends NinjasController
     }
 
     @Override
-    public State getSetpoint() {
-        return new State(demand,demand);
-    }
+    public boolean atGoal() {
+        if(_controlState == ControlState.PIDF_POSITION)
+            return Math.abs(getGoal().position - getEncoder().position) < _goalTolerance.position;
+        else if(_controlState == ControlState.PIDF_VELOCITY)
+            return Math.abs(getGoal().velocity - getEncoder().velocity) < _goalTolerance.velocity;
 
-    @Override
-    public boolean atSetpoint() {
         return false;
-    }
-
-    @Override
-    public void setPosition(double position) {
-        demand = position;
-        _controller.setReference(position, ControlType.kPosition);
-    }
-
-    @Override
-    public void setVelocity(double velocity) {
-        demand = velocity;
-        _controller.setReference(velocity, ControlType.kVelocity);
     }
 }

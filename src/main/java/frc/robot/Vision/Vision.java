@@ -6,6 +6,8 @@ import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.DataClasses.VisionEstimation;
+import frc.robot.DataClasses.VisionOutput;
 
 public class Vision extends SubsystemBase {
     private static Vision _instance;
