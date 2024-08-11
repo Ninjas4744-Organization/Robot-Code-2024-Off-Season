@@ -22,16 +22,7 @@ public abstract class NinjasSubsystem extends SubsystemBase {
               this);
     }
 
-    public enum RobotStates{
-        INTAKE,
-        POOPING,
-        SHOOTING,
-        CLIMBING,
-        IDLE,
-        STOP,
-        MANUAL,
-        RESET,
-      }
+    
 
     @Override
     public void periodic() {
@@ -59,4 +50,6 @@ public abstract class NinjasSubsystem extends SubsystemBase {
     public abstract void idle();
     public abstract void manual();
     public abstract void reset();
+    public abstract void POOPING();
+    public abstract void CLIMBING();
 }
