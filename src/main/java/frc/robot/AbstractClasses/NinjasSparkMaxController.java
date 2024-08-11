@@ -2,14 +2,23 @@ package frc.robot.AbstractClasses;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.DataClasses.MainControllerConstants;
 
 public class NinjasSparkMaxController extends NinjasController
 {
     private CANSparkMax _main;
     private CANSparkMax[] _followers;
-
+    protected State _goalTolerance;
+    
+    protected TrapezoidProfile _profile;
+    protected State _profileGoal;
+    protected Timer _trapozoidTimer = new Timer();
+    private RelativeEncoder _encoder;
     public NinjasSparkMaxController(MainControllerConstants constants)
     {
         super(constants);
@@ -44,8 +53,7 @@ public class NinjasSparkMaxController extends NinjasController
 
     @Override
     public void setPercent(double percent) {
-        super.setPercent(percent);
-
+        super._controlState = ControlState.PERCENT_OUTPUT;
         _main.set(percent);
     }
 
@@ -75,10 +83,34 @@ public class NinjasSparkMaxController extends NinjasController
     @Override
     public boolean atGoal() {
         if(_controlState == ControlState.PIDF_POSITION)
-            return Math.abs(getGoal().position - getEncoder().position) < _goalTolerance.position;
+            return Math.abs(_demand - getEncoder().position) < _goalTolerance.position;
         else if(_controlState == ControlState.PIDF_VELOCITY)
-            return Math.abs(getGoal().velocity - getEncoder().velocity) < _goalTolerance.velocity;
+            return Math.abs(_demand - getEncoder().velocity) < _goalTolerance.velocity;
 
         return false;
+    }
+
+    @Override
+    public void setPosition(double position) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
+    }
+
+    @Override
+    public void setVelocity(double velocity) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setVelocity'");
+    }
+
+    @Override
+    public State getEncoder() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getEncoder'");
+    }
+
+    @Override
+    public void setEncoder(double position) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setEncoder'");
     }
 }

@@ -1,6 +1,7 @@
 package frc.robot.AbstractClasses;
 
 import com.revrobotics.CANSparkBase.ControlType;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -46,7 +47,6 @@ public class NinjasTalonSRXController extends NinjasController
 
     @Override
     public void setPercent(double percent) {
-        super.setPercent(percent);
 
         _main.set(TalonSRXControlMode.PercentOutput, percent);
     }
@@ -75,12 +75,9 @@ public class NinjasTalonSRXController extends NinjasController
         
         switch (_controlState) {
             case PIDF_POSITION:
-                _main.set(TalonSRXControlMode.Position, _profile.calculate(_trapozoidTimer.get(), getEncoder(), getGoal()).position);
+                _main.set(ControlMode.Position, _demand);
                 break;
 
-            case PIDF_VELOCITY:
-                _main.set(TalonSRXControlMode.Velocity, _profile.calculate(_trapozoidTimer.get(), getEncoder(), getGoal()).velocity);
-                break;
 
             default:
                 break;
@@ -95,5 +92,15 @@ public class NinjasTalonSRXController extends NinjasController
             return Math.abs(getGoal().velocity - getEncoder().velocity) < _goalTolerance.velocity;
 
         return false;
+    }
+
+    @Override
+    public void setPosition(double position) {
+        _main.set(ControlMode.Position, position);
+    }
+
+    @Override
+    public void setVelocity(double velocity) {
+        
     }
 }

@@ -1,10 +1,12 @@
 package frc.robot.AbstractClasses;
 
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -17,18 +19,20 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import frc.robot.DataClasses.MainControllerConstants;
 
 public class NinjasTalonFXController extends NinjasController
-{
+{   
+    
     private TalonFX _main;
     private TalonFX[] _followers;
     private double _positionConversionFactor;
     private double _velocityConversionFactor;
-
+    private TalonFXConfigurator _mainConfigurator;
     public NinjasTalonFXController(MainControllerConstants constants)
     {
         super(constants);
         
         _main = new TalonFX(constants.main.id);
-        _main.getConfigurator().apply(
+        _mainConfigurator = _main.getConfigurator();
+        _mainConfigurator.apply(
             new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs().withInverted(constants.main.inverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive))
             .withMotionMagic(new MotionMagicConfigs().withMotionMagicAcceleration(constants.PIDFConstants.kAcceleration).withMotionMagicCruiseVelocity(constants.PIDFConstants.kCruiseVelocity))
@@ -49,8 +53,7 @@ public class NinjasTalonFXController extends NinjasController
 
     @Override
     public void setPercent(double percent) {
-        super.setPercent(percent);
-
+        super._controlState = ControlState.PERCENT_OUTPUT;
         _main.set(percent);
     }
 
@@ -106,5 +109,17 @@ public class NinjasTalonFXController extends NinjasController
             return Math.abs(getGoal().velocity - getEncoder().velocity) < _goalTolerance.velocity;
 
         return false;
+    }
+
+    @Override
+    public void setPosition(double position) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
+    }
+
+    @Override
+    public void setVelocity(double velocity) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setVelocity'");
     }
 }
