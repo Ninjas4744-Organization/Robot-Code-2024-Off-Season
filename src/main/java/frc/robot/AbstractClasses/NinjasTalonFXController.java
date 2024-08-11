@@ -14,7 +14,6 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import frc.robot.DataClasses.MainControllerConstants;
 
@@ -34,37 +33,47 @@ public class NinjasTalonFXController extends NinjasController
         _mainConfigurator = _main.getConfigurator();
         _mainConfigurator.apply(
             new TalonFXConfiguration()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(constants.main.inverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive))
-            .withMotionMagic(new MotionMagicConfigs().withMotionMagicAcceleration(constants.PIDFConstants.kAcceleration).withMotionMagicCruiseVelocity(constants.PIDFConstants.kCruiseVelocity))
-            .withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(constants.currentLimit).withStatorCurrentLimitEnable(true).withSupplyCurrentLimit(constants.currentLimit).withSupplyCurrentLimitEnable(true))
-            .withSlot0(new Slot0Configs().withKP(constants.PIDFConstants.kP).withKI(constants.PIDFConstants.kI).withKD(constants.PIDFConstants.kD))
-        );
+                .withMotorOutput(
+                    new MotorOutputConfigs()
+                        .withInverted(
+                            constants.main.inverted
+                                ? InvertedValue.CounterClockwise_Positive
+                                : InvertedValue.Clockwise_Positive))
+                .withMotionMagic(
+                    new MotionMagicConfigs()
+                        .withMotionMagicAcceleration(constants.PIDFConstants.kAcceleration)
+                        .withMotionMagicCruiseVelocity(constants.PIDFConstants.kCruiseVelocity))
+                .withCurrentLimits(
+                    new CurrentLimitsConfigs()
+                        .withStatorCurrentLimit(constants.currentLimit)
+                        .withStatorCurrentLimitEnable(true)
+                        .withSupplyCurrentLimit(constants.currentLimit)
+                        .withSupplyCurrentLimitEnable(true))
+                .withSlot0(
+                    new Slot0Configs()
+                        .withKP(constants.PIDFConstants.kP)
+                        .withKI(constants.PIDFConstants.kI)
+                        .withKD(constants.PIDFConstants.kD)));
 
-        _positionConversionFactor = constants.encoderConversionFactor;
-        _velocityConversionFactor = constants.encoderConversionFactor / 60;
+    _positionConversionFactor = constants.encoderConversionFactor;
+    _velocityConversionFactor = constants.encoderConversionFactor / 60;
 
-        _followers = new TalonFX[constants.followers.length];
-        for (int i = 0; i < _followers.length; i++) {
-            _followers[i] = new TalonFX(constants.followers[i].id);
-            _followers[i].getConfigurator().apply(new TalonFXConfiguration());
-            _followers[i].setControl(new Follower(constants.main.id, constants.followers[i].inverted));
-        }
+    _followers = new TalonFX[constants.followers.length];
+    for (int i = 0; i < _followers.length; i++) {
+      _followers[i] = new TalonFX(constants.followers[i].id);
+      _followers[i].getConfigurator().apply(new TalonFXConfiguration());
+      _followers[i].setControl(new Follower(constants.main.id, constants.followers[i].inverted));
     }
+  }
 
     @Override
     public void setPercent(double percent) {
         super._controlState = ControlState.PERCENT_OUTPUT;
         _main.set(percent);
     }
+  }
 
-    @Override
-    public State getEncoder(){
-        return new State(
-            _main.getPosition().getValue() * _positionConversionFactor,
-            _main.getVelocity().getValue() * _velocityConversionFactor
-        );
-    }
-
+  
     @Override
     public void setEncoder(double position){
         _main.setPosition(position / _positionConversionFactor);
@@ -99,7 +108,8 @@ public class NinjasTalonFXController extends NinjasController
             default:
                 break;
         }
-    }
+      }
+    
 
     @Override
     public boolean atGoal() {

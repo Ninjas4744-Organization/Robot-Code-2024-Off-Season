@@ -17,35 +17,43 @@ public class Leds extends SubsystemBase {
     _led.setData(_ledBuffer);
     _led.start();
 
-    for (int i = 0; i < _ledBuffer.getLength(); i++)
-      _ledBuffer.setRGB(i, 0, 255, 0);
+    for (int i = 0; i < _ledBuffer.getLength(); i++) _ledBuffer.setRGB(i, 0, 255, 0);
     _led.setData(_ledBuffer);
   }
 
-  public Command setColor(int r, int g, int b){
-    return Commands.run(() -> {
-      for (int i = 0; i < _ledBuffer.getLength(); i++)
-        _ledBuffer.setRGB(i, r, g, b);
-      _led.setData(_ledBuffer);
-      // Shuffleboard.getTab("Debug").add("Led Color", String.format("(%d, %d, %d) Solid", r, g, b));
-    }, this);
+  public Command setColor(int r, int g, int b) {
+    return Commands.run(
+        () -> {
+          for (int i = 0; i < _ledBuffer.getLength(); i++) _ledBuffer.setRGB(i, r, g, b);
+          _led.setData(_ledBuffer);
+          // Shuffleboard.getTab("Debug").add("Led Color", String.format("(%d, %d, %d) Solid", r, g,
+          // b));
+        },
+        this);
   }
 
-  public Command setColorBeep(int r, int g, int b, double t){
+  public Command setColorBeep(int r, int g, int b, double t) {
     return Commands.repeatingSequence(
-      Commands.run(() -> {
-        for (int i = 0; i < _ledBuffer.getLength(); i++)
-          _ledBuffer.setRGB(i, r, g, b);   
-        _led.setData(_ledBuffer);
-      // Shuffleboard.getTab("Debug").add("Led Color", String.format("(%d, %d, %d) Beep On", r, g, b));
-      }, this).withTimeout(t),
-
-      Commands.run(() -> {
-        for (int i = 0; i < _ledBuffer.getLength(); i++)
-          _ledBuffer.setRGB(i, 0, 0, 0);   
-        _led.setData(_ledBuffer);
-      // Shuffleboard.getTab("Debug").add("Led Color", String.format("(%d, %d, %d) Beep Off", 0, 0, 0));
-      }, this).withTimeout(t)
-    ).repeatedly();
+            Commands.run(
+                    () -> {
+                      for (int i = 0; i < _ledBuffer.getLength(); i++)
+                        _ledBuffer.setRGB(i, r, g, b);
+                      _led.setData(_ledBuffer);
+                      // Shuffleboard.getTab("Debug").add("Led Color", String.format("(%d, %d, %d)
+                      // Beep On", r, g, b));
+                    },
+                    this)
+                .withTimeout(t),
+            Commands.run(
+                    () -> {
+                      for (int i = 0; i < _ledBuffer.getLength(); i++)
+                        _ledBuffer.setRGB(i, 0, 0, 0);
+                      _led.setData(_ledBuffer);
+                      // Shuffleboard.getTab("Debug").add("Led Color", String.format("(%d, %d, %d)
+                      // Beep Off", 0, 0, 0));
+                    },
+                    this)
+                .withTimeout(t))
+        .repeatedly();
   }
 }

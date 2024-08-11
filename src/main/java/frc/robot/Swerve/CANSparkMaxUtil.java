@@ -1,8 +1,7 @@
 package frc.robot.Swerve;
 
-
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.revrobotics.CANSparkMax;
 
 /** Sets motor usage for a Spark Max motor controller */
 public class CANSparkMaxUtil {
@@ -35,22 +34,22 @@ public class CANSparkMaxUtil {
     }
 
     if (usage == Usage.kAll) {
-      //sets ussage to send all the frames of data yay
+      // sets ussage to send all the frames of data yay
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20);
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 20);
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
     } else if (usage == Usage.kPositionOnly) {
-      //only sends the position frames every 20 ms, saves on velocity and other status
+      // only sends the position frames every 20 ms, saves on velocity and other status
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 1000);
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 20);
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
     } else if (usage == Usage.kVelocityOnly) {
-      //only sends the velocity every 20 ms
+      // only sends the velocity every 20 ms
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20);
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 1000);
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
     } else if (usage == Usage.kMinimal) {
-      //sends as little data as possible to save canbus ussage
+      // sends as little data as possible to save canbus ussage
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
       motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
