@@ -7,6 +7,7 @@ public enum RobotStates{
         CLIMBING,
         IDLE,
         STOP,
+        TEST,
         MANUAL,
         RESET,
       }
