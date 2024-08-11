@@ -22,9 +22,11 @@ jobs:
       run: python update_ninjas_subsystem.py
 
     - name: Commit changes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add src/main/java/frc/robot/AbstractClasses/NinjasSubsystem.java
         git commit -m 'Automated update by GitHub Actions'
-        git push
+        git push https://${{ secrets.GH_PAT }}@github.com/Ninjas4744-Organization/Robot-Code-2024-Off-Season.git HEAD:main
