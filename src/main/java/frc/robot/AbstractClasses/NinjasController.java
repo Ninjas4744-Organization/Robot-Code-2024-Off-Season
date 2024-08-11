@@ -2,81 +2,67 @@ package frc.robot.AbstractClasses;
 
 import java.util.HashMap;
 
-
-import com.revrobotics.RelativeEncoder;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.DataClasses.MainControllerConstants;
-import java.util.HashMap;
 
 public abstract class NinjasController {
-    public enum ControlState {
-        PERCENT_OUTPUT,
-        MOTION_MAGIC_POSITION,
-        MOTION_MAGIC_VELOCITY,
-        PIDF_POSITION,
-        PIDF_VELOCITY
-    }
-    private final int shuffleboardEnteriesSize = 3;
-    protected ControlState _controlState = ControlState.PERCENT_OUTPUT;
-    protected HashMap<String, GenericEntry> _shuffleboardEnteries = new HashMap<>();
-    protected double _demand;
-    
+  public enum ControlState {
+    PERCENT_OUTPUT,
+    PIDF_POSITION,
+    PIDF_VELOCITY
+  }
 
-    /**
-     * Creates a new Ninjas controller
-     * @param constants - the constants for the controller
-     */
-    public NinjasController(MainControllerConstants constants) {
-        
-        
-        _shuffleboardEnteries.put("position", Shuffleboard.getTab(constants.subsystemName)
-            .add("Position", 0)
-            .withWidget("Graph")
-            .withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
-            .getEntry());
+  private final int shuffleboardEnteriesSize = 3;
+  protected ControlState _controlState = ControlState.PERCENT_OUTPUT;
+  protected HashMap<String, GenericEntry> _shuffleboardEnteries = new HashMap<>();
+  protected MainControllerConstants _constants;
+  protected double _goal = 0;
 
-    _shuffleboardEnteries.put(
-        "velocity",
-        Shuffleboard.getTab(constants.subsystemName)
-            .add("Velocity", 0)
-            .withWidget("Graph")
-            .withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
-            .getEntry());
+  /**
+   * Creates a new Ninjas controller
+   * @param constants - the constants for the controller
+   */
+  public NinjasController(MainControllerConstants constants) {
+    _constants = constants;
+      
+    _shuffleboardEnteries.put("position", Shuffleboard.getTab(constants.subsystemName)
+      .add("Position", 0)
+      .withWidget("Graph")
+      .withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
+      .getEntry());
 
     _shuffleboardEnteries.put(
-        "output",
-        Shuffleboard.getTab(constants.subsystemName)
-            .add("Output", 0)
-            .withWidget("Graph")
-            .withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
-            .getEntry());
+      "velocity",
+      Shuffleboard.getTab(constants.subsystemName)
+      .add("Velocity", 0)
+      .withWidget("Graph")
+      .withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
+      .getEntry());
 
     _shuffleboardEnteries.put(
-        "goalPos",
-        Shuffleboard.getTab(constants.subsystemName)
-            .add("Goal Position", 0)
-            .withWidget("Number Bar")
-            .withSize(shuffleboardEnteriesSize / 2, shuffleboardEnteriesSize)
-            .getEntry());
+      "output",
+      Shuffleboard.getTab(constants.subsystemName)
+      .add("Output", 0)
+      .withWidget("Graph")
+      .withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
+      .getEntry());
 
     _shuffleboardEnteries.put(
-        "goalVel",
-        Shuffleboard.getTab(constants.subsystemName)
-            .add("Goal Velocity", 0)
-            .withWidget("Number Bar")
-            .withSize(shuffleboardEnteriesSize / 2, shuffleboardEnteriesSize)
-            .getEntry());
+      "goal",
+      Shuffleboard.getTab(constants.subsystemName)
+      .add("Goal", 0)
+      .withWidget("Number Bar")
+      .withSize(shuffleboardEnteriesSize / 2, shuffleboardEnteriesSize)
+      .getEntry());
 
     _shuffleboardEnteries.put(
-        "controlState",
-        Shuffleboard.getTab(constants.subsystemName)
-            .add("Control State", 0)
-            .withWidget("Text View")
-            .withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize / 2)
-            .getEntry());
+      "controlState",
+      Shuffleboard.getTab(constants.subsystemName)
+      .add("Control State", 0)
+      .withWidget("Text View")
+      .withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize / 2)
+      .getEntry());
   }
 
   /**
@@ -101,9 +87,7 @@ public abstract class NinjasController {
    */
   public void setPosition(double position) {
     _controlState = ControlState.PIDF_POSITION;
-    _profileGoal = new State(position, 0);
-
-    _trapozoidTimer.restart();
+    _goal = position;
   }
 
   /**
@@ -116,9 +100,7 @@ public abstract class NinjasController {
    */
   public void setVelocity(double velocity) {
     _controlState = ControlState.PIDF_VELOCITY;
-    _profileGoal = new State(0, velocity);
-
-    _trapozoidTimer.restart();
+    _goal = velocity;
   }
 
   /**
@@ -133,60 +115,60 @@ public abstract class NinjasController {
   }
 
   /**
-   * @return the position and velocity of the controller
+   * @return the position of the controller
    */
-  public State getEncoder() {
-    return new State(_encoder.getPosition(), _encoder.getVelocity());
-  }
+  public abstract double getPosition();
+
+  /**
+   * @return the velocity of the controller
+   */
+  public abstract double getVelocity();
 
   /**
    * @return the percent output of the controller
    */
   public abstract double getOutput();
 
-    /**
-     * Sets the position in the encoder so it thinks it is at that position
-     * 
-     * @param position - the position to set the encoder to
-     */
-    public abstract void setEncoder(double position);
+  /**
+   * Sets the position in the encoder so it thinks it is at that position
+   * 
+   * @param position - the position to set the encoder to
+   */
+  public abstract void setEncoder(double position);
 
   /** Resets the encoder, sets it to the home position */
   public void resetEncoder() {
-    setEncoder(0);
+    setEncoder(_constants.encoderHomePosition);
   }
 
-    /**
-     * @return the goal/setpoint/reference of the controller, the target of PIDF / PID / Motion Magic...
-     */
-    public double getGoal(){
-        return _demand;
-    }
+  /**
+   * @return the goal/setpoint/reference of the controller, the target of PIDF / PID / Motion Magic...
+   */
+  public double getGoal(){
+    return _goal;
+  }
 
   /**
    * @return wheter or not the controller is at the goal, the target of PIDF / PID / Motion Magic...
-   *     Will return false if not in position or velocity control
+   * Will return false if not in position or velocity control
    */
   public abstract boolean atGoal();
 
-    /**
-     * Updates the shuffleboard values
-     */
-    protected void updateShuffleboard(){
-        _shuffleboardEnteries.get("position").setDouble(getPosition());
-        _shuffleboardEnteries.get("velocity").setDouble(getVelocity());
-        _shuffleboardEnteries.get("output").setDouble(getOutput());
-        _shuffleboardEnteries.get("goalPos").setDouble(_demand);
-        _shuffleboardEnteries.get("goalVel").setDouble(_demand);
-        _shuffleboardEnteries.get("controlState").setString(_controlState.name());
-    }
-    protected void writeControlInputs(ControlState _newState){
+  /**
+   * Updates the shuffleboard values
+   */
+  protected void updateShuffleboard(){
+    _shuffleboardEnteries.get("position").setDouble(getPosition());
+    _shuffleboardEnteries.get("velocity").setDouble(getVelocity());
+    _shuffleboardEnteries.get("output").setDouble(getOutput());
+    _shuffleboardEnteries.get("goal").setDouble(getGoal());
+    _shuffleboardEnteries.get("controlState").setString(_controlState.name());
+  }
 
-    }
-    /**
-     * Runs controller periodic tasks, run it on the subsystem periodic
-     */
-    public void periodic() {
-        updateShuffleboard();
-    }
+  /**
+   * Runs controller periodic tasks, run it on the subsystem periodic
+   */
+  public void periodic() {
+    updateShuffleboard();
+  }
 }

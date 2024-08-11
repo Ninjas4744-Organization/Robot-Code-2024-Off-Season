@@ -2,7 +2,6 @@ package frc.robot.AbstractClasses;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
@@ -11,32 +10,29 @@ import frc.robot.DataClasses.MainControllerConstants;
 
 public class NinjasSparkMaxController extends NinjasController
 {
-    private CANSparkMax _main;
-    private CANSparkMax[] _followers;
-    protected State _goalTolerance;
+  private CANSparkMax _main;
+  private CANSparkMax[] _followers;
+  
+  protected TrapezoidProfile _profile;
+  protected Timer _trapozoidTimer = new Timer();
+
+  public NinjasSparkMaxController(MainControllerConstants constants){
+    super(constants);
     
-    protected TrapezoidProfile _profile;
-    protected State _profileGoal;
-    protected Timer _trapozoidTimer = new Timer();
-    private RelativeEncoder _encoder;
-    public NinjasSparkMaxController(MainControllerConstants constants)
-    {
-        super(constants);
-        
-        _main = new CANSparkMax(constants.main.id, CANSparkMax.MotorType.kBrushless);
-        
-        _main.restoreFactoryDefaults();
-        
-        _main.setInverted(constants.main.inverted);
-        _main.setSmartCurrentLimit((int)constants.currentLimit);
-        
-        _main.getPIDController().setP(constants.PIDFConstants.kP);
-        _main.getPIDController().setI(constants.PIDFConstants.kI);
-        _main.getPIDController().setD(constants.PIDFConstants.kD);
-        _main.getPIDController().setIZone(constants.PIDFConstants.kIZone);
-        _main.getPIDController().setFF(constants.PIDFConstants.kF);
-        
-        _main.burnFlash();
+    _main = new CANSparkMax(constants.main.id, CANSparkMax.MotorType.kBrushless);
+    
+    _main.restoreFactoryDefaults();
+    
+    _main.setInverted(constants.main.inverted);
+    _main.setSmartCurrentLimit((int)constants.currentLimit);
+    
+    _main.getPIDController().setP(constants.PIDFConstants.kP);
+    _main.getPIDController().setI(constants.PIDFConstants.kI);
+    _main.getPIDController().setD(constants.PIDFConstants.kD);
+    _main.getPIDController().setIZone(constants.PIDFConstants.kIZone);
+    _main.getPIDController().setFF(constants.PIDFConstants.kF);
+    
+    _main.burnFlash();
 
     _main = new CANSparkMax(constants.main.id, CANSparkMax.MotorType.kBrushless);
 
@@ -51,11 +47,10 @@ public class NinjasSparkMaxController extends NinjasController
     _main.getPIDController().setIZone(constants.PIDFConstants.kIZone);
     _main.getPIDController().setFF(constants.PIDFConstants.kF);
 
+    _main.getEncoder().setPositionConversionFactor(constants.encoderConversionFactor);
+    _main.getEncoder().setVelocityConversionFactor(constants.encoderConversionFactor / 60);
+    
     _main.burnFlash();
-
-    _encoder = _main.getEncoder();
-    _encoder.setPositionConversionFactor(constants.encoderConversionFactor);
-    _encoder.setVelocityConversionFactor(constants.encoderConversionFactor / 60);
 
     _followers = new CANSparkMax[constants.followers.length];
     for (int i = 0; i < _followers.length; i++) {
@@ -66,46 +61,73 @@ public class NinjasSparkMaxController extends NinjasController
     }
   }
 
-    @Override
-    public void setPercent(double percent) {
-        super._controlState = ControlState.PERCENT_OUTPUT;
-        _main.set(percent);
+  @Override
+  public void setPercent(double percent) {
+    super.setPercent(percent);
+    _main.set(percent);
+  }
+
+  @Override
+  public void setPosition(double position) {
+    super.setPosition(position);
+
+    _trapozoidTimer.restart();
+  }
+
+  @Override
+  public void setVelocity(double velocity) {
+    super.setVelocity(velocity);
+
+    _trapozoidTimer.restart();
+  }
+
+  @Override
+  public double getPosition() {
+    return _main.getEncoder().getPosition();
+  }
+
+  @Override
+  public double getVelocity() {
+    return _main.getEncoder().getVelocity();
+  }
+
+  @Override
+  public double getOutput() {
+    return _main.get();
+  }
+
+  @Override
+  public void setEncoder(double position) {
+    _main.getEncoder().setPosition(position);
+  }
+
+  @Override
+  public boolean atGoal() {
+    if(_controlState == ControlState.PIDF_POSITION)
+      return Math.abs(_goal - getPosition()) < _constants.positionGoalTolerance;
+    else if(_controlState == ControlState.PIDF_VELOCITY)
+      return Math.abs(_goal - getVelocity()) < _constants.velocityGoalTolerance;
+
+    return false;
+  }
+
+  @Override
+  public void periodic() {
+    super.periodic();
+
+    switch (_controlState) {
+      case PIDF_POSITION:
+        if(!atGoal())
+          _main.getPIDController().setReference(_profile.calculate(_trapozoidTimer.get(), new State(getPosition(), 0), new State(getGoal(), 0)).position, ControlType.kPosition);
+        break;
+
+      case PIDF_VELOCITY:
+        if(!atGoal())
+          _main.getPIDController().setReference(_profile.calculate(_trapozoidTimer.get(), new State(0, getVelocity()), new State(0, getGoal())).velocity, ControlType.kVelocity);
+        break;
+    
+      default:
+        break;
     }
-  
-
-  
-
-    @Override
-    public boolean atGoal() {
-        if(_controlState == ControlState.PIDF_POSITION)
-            return Math.abs(_demand - getEncoder().position) < _goalTolerance.position;
-        else if(_controlState == ControlState.PIDF_VELOCITY)
-            return Math.abs(_demand - getEncoder().velocity) < _goalTolerance.velocity;
-
-        return false;
-    }
-
-    @Override
-    public void setPosition(double position) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
-    }
-
-    @Override
-    public void setVelocity(double velocity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setVelocity'");
-    }
-
-    @Override
-    public State getEncoder() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEncoder'");
-    }
-
-    @Override
-    public void setEncoder(double position) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setEncoder'");
-    }
+  }
 }
