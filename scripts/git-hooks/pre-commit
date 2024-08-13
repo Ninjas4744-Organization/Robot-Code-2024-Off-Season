@@ -13,23 +13,6 @@ fi
 
 echo ""
 
-# Download missing files that are needed in order for wpilib to perform unit tests
-if [[ "$OSTYPE" == "msys" ]]; then
-  if [ ! -f C:\Users\Public\wpilib\2024\maven\org\junit\jupiter\junit-jupiter\5.10.1\junit-jupiter-5.10.1.module ]; then
-    pwsh -c "Invoke-WebRequest -Uri https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.10.1/junit-jupiter-5.10.1.module -OutFile C:\Users\Public\wpilib\2024\maven\org\junit\jupiter\junit-jupiter\5.10.1\junit-jupiter-5.10.1.module"
-  fi
-  if [ ! -f C:\Users\Public\wpilib\2024\maven\org\junit\junit-bom\5.10.1\junit-bom-5.10.1.module ]; then
-    pwsh -c "Invoke-WebRequest -Uri https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.1/junit-bom-5.10.1.module -OutFile C:\Users\Public\wpilib\2024\maven\org\junit\junit-bom\5.10.1\junit-bom-5.10.1.module"
-  fi
-else
-  if [ ! -f ~/wpilib/2024/maven/org/junit/jupiter/junit-jupiter/5.10.1/junit-jupiter-5.10.1.module ]; then
-    curl https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.10.1/junit-jupiter-5.10.1.module -o ~/wpilib/2024/maven/org/junit/jupiter/junit-jupiter/5.10.1/junit-jupiter-5.10.1.module
-  fi
-  if [ ! -f ~/wpilib/2024/maven/org/junit/junit-bom/5.10.1/junit-bom-5.10.1.module ]; then
-    curl https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.1/junit-bom-5.10.1.module -o ~/wpilib/2024/maven/org/junit/junit-bom/5.10.1/junit-bom-5.10.1.module
-  fi
-fi
-
 echo "Performing tests..."
 ./gradlew -q test; gradlew_return_code=$?
 

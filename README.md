@@ -4,9 +4,9 @@ Welcome to the official repository for the 2024 offseason robot code for Team Ni
 
 ## 📚 About Us
 
-**Team Name:** Ninjas  
-**Team Number:** 4744  
-**Season:** 2024 Offseason  
+**Team Name:** Ninjas
+**Team Number:** 4744
+**Season:** 2024 Offseason
 **Location:** Hadera/Israel
 
 Team Ninjas #4744 is a dedicated and enthusiastic group of high school students committed to the exploration and development of robotics and engineering. Each year, we participate in the FIRST Robotics Competition (FRC), where we design, build, and program a robot to compete in a game challenge announced at the beginning of the season. During the offseason, we work on refining our skills, experimenting with new ideas, and improving our robot's capabilities.
