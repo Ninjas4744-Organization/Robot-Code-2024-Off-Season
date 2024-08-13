@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Vision.Vision;
 import java.util.function.Supplier;
@@ -24,13 +25,13 @@ public class TeleopCommandBuilder {
     return Commands.runOnce(
         () -> {
           double lx =
-              -MathUtil.applyDeadband(translation.get().getX(), Constants.Swerve.kJoystickDeadband);
+              -MathUtil.applyDeadband(translation.get().getX(), SwerveConstants.kJoystickDeadband);
           double ly =
-              -MathUtil.applyDeadband(translation.get().getY(), Constants.Swerve.kJoystickDeadband);
+              -MathUtil.applyDeadband(translation.get().getY(), SwerveConstants.kJoystickDeadband);
           double rx =
-              -MathUtil.applyDeadband(rotation.get().getX(), Constants.Swerve.kJoystickDeadband);
+              -MathUtil.applyDeadband(rotation.get().getX(), SwerveConstants.kJoystickDeadband);
           double ry =
-              -MathUtil.applyDeadband(rotation.get().getY(), Constants.Swerve.kJoystickDeadband);
+              -MathUtil.applyDeadband(rotation.get().getY(), SwerveConstants.kJoystickDeadband);
 
           Swerve.getInstance().drive(new Translation2d(ly, lx), rx, true, true);
           if (isLookAt) Swerve.getInstance().lookAt(new Translation2d(ry, rx), 45);

@@ -1,57 +1,37 @@
 package frc.robot.AbstractClasses;
 
+import java.util.function.BooleanSupplier;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 
 public abstract class NinjasSubsystem extends SubsystemBase {
-  protected NinjasController _group;
-  RobotStates _currentState;
-
-  public NinjasSubsystem(NinjasController groupOfMotors) {
-    _group = groupOfMotors;
-  }
-
-  public Command runMotor(double percetage) {
-    return Commands.startEnd(
-        () -> {
-          _group.setPercent(percetage);
-        },
-        _group::stop,
-        this);
-  }
+  protected NinjasController _controller;
 
   @Override
   public void periodic() {
-    switch (_currentState) {
-      case INTAKE:
-        intake();
-        break;
-      case STOP:
-        _group.stop();
-        break;
-      case MANUAL:
-        manual();
-        break;
-      case RESET:
-        reset();
-        break;
-      default:
-        idle();
-        break;
-    }
-    _group.periodic();
+    // switch(RobotState.getRobotState()) {
+    //   case RobotStates.
+    // }
+
+    _controller.periodic();
   }
 
-  public abstract void intake();
+  // /**
+  //  * Moves the subsystem down 
+  //  * @return
+  //  */
+  // public Command resetSubsystem() {
+  //   return runMotor(-0.5);
+  // }
 
-  public abstract void idle();
-
-  public abstract void manual();
-
-  public abstract void reset();
-
-  public abstract void POOPING();
-
-  public abstract void CLIMBING();
+  public Command runMotor(double percent) {
+    return Commands.startEnd(
+      () -> _controller.setPercent(percent), 
+      () -> _controller.stop(), 
+      this);
+  }
 }

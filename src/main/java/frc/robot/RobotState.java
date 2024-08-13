@@ -7,13 +7,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.Swerve.Swerve;
 
 public class RobotState {
-  public enum State {}
+  public enum RobotStates {
+    
+  }
 
-  private static State state;
+  private static RobotStates robotState;
   private static Pose2d robotPose = new Pose2d();
   private static AHRS navX = new AHRS();
   private static SwerveDrivePoseEstimator poseEstimator;
@@ -21,20 +24,20 @@ public class RobotState {
       NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
 
   /**
-   * @return state of the robot
+   * @return RobotStates of the robot
    */
-  public static State getState() {
-    return state;
+  public static RobotStates getRobotState() {
+    return robotState;
   }
 
   /**
-   * Sets the state of the robot to the given state
+   * Sets the RobotStates of the robot to the given RobotStates
    *
-   * @param state - the state to set the robot state to
+   * @param RobotStates - the RobotStates to set the robot RobotStates to
    * @return nothing
    */
-  public static void setState(State state) {
-    RobotState.state = state;
+  public static void setRobotState(RobotStates robotState) {
+    RobotState.robotState = robotState;
   }
 
   /**
@@ -85,8 +88,7 @@ public class RobotState {
    * @return yaw angle of the robot according to gyro
    */
   public static Rotation2d getGyroYaw() {
-    return Rotation2d.fromDegrees(
-        Constants.Swerve.kInvertGyro ? -navX.getAngle() : navX.getAngle());
+    return Rotation2d.fromDegrees(SwerveConstants.kInvertGyro ? -navX.getAngle() : navX.getAngle());
   }
 
   /**
@@ -104,7 +106,7 @@ public class RobotState {
   public static void initPoseEstimator() {
     poseEstimator =
         new SwerveDrivePoseEstimator(
-            Constants.Swerve.kSwerveKinematics,
+            SwerveConstants.kSwerveKinematics,
             getGyroYaw(),
             Swerve.getInstance().getModulePositions(),
             getRobotPose());

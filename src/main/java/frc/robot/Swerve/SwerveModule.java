@@ -12,7 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
 import frc.robot.Swerve.CANCoderUtil.CCUsage;
 import frc.robot.Swerve.CANSparkMaxUtil.Usage;
@@ -39,14 +39,14 @@ public class SwerveModule {
 
   private final SimpleMotorFeedforward feedforward =
       new SimpleMotorFeedforward(
-          Constants.Swerve.kDriveS, Constants.Swerve.kDriveV, Constants.Swerve.kDriveA);
+          SwerveConstants.kDriveS, SwerveConstants.kDriveV, SwerveConstants.kDriveA);
 
   public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants) {
     this.moduleNumber = moduleNumber;
-    this.m_angleKP = Constants.Swerve.kAngleP;
-    this.m_angleKI = Constants.Swerve.kAngleI;
-    this.m_angleKD = Constants.Swerve.kAngleD;
-    this.m_angleKFF = Constants.Swerve.kAngleFF;
+    this.m_angleKP = SwerveConstants.kAngleP;
+    this.m_angleKI = SwerveConstants.kAngleI;
+    this.m_angleKD = SwerveConstants.kAngleD;
+    this.m_angleKFF = SwerveConstants.kAngleFF;
     angleOffset = moduleConstants.angleOffset;
 
     /* Angle Encoder Config */
@@ -86,7 +86,7 @@ public class SwerveModule {
 
   private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
     if (isOpenLoop) {
-      double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.maxSpeed;
+      double percentOutput = desiredState.speedMetersPerSecond / SwerveConstants.maxSpeed;
       SmartDashboard.putNumber("driveWheels", percentOutput);
       driveMotor.set(percentOutput);
     } else {
@@ -101,7 +101,7 @@ public class SwerveModule {
   private void setAngle(SwerveModuleState desiredState) {
     // Prevent rotating module if speed is less then 1%. Prevents Jittering.
     Rotation2d angle =
-        (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.01))
+        (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxSpeed * 0.01))
             ? lastAngle
             : desiredState.angle;
 
@@ -142,20 +142,20 @@ public class SwerveModule {
     // limits can bus usage
     CANSparkMaxUtil.setCANSparkMaxBusUsage(angleMotor, Usage.kPositionOnly);
     // sets current limit
-    angleMotor.setSmartCurrentLimit(Constants.Swerve.kAngleContinuousCurrentLimit);
+    angleMotor.setSmartCurrentLimit(SwerveConstants.kAngleContinuousCurrentLimit);
     // sets inversion
-    angleMotor.setInverted(Constants.Swerve.angleInvert);
+    angleMotor.setInverted(SwerveConstants.angleInvert);
     // sets brake mode or not
-    angleMotor.setIdleMode(Constants.Swerve.angleNeutralMode);
+    angleMotor.setIdleMode(SwerveConstants.angleNeutralMode);
     // sets a conversion factor for the encoder so it output correlates with the
     // rotation of the module
-    integratedAngleEncoder.setPositionConversionFactor(Constants.Swerve.angleConversionFactor);
+    integratedAngleEncoder.setPositionConversionFactor(SwerveConstants.angleConversionFactor);
     // oops pid loop time sets the pid
     angleController.setP(m_angleKP);
     angleController.setI(m_angleKI);
     angleController.setD(m_angleKD);
     angleController.setFF(m_angleKFF);
-    angleMotor.enableVoltageCompensation(Constants.Swerve.kVoltageComp);
+    angleMotor.enableVoltageCompensation(SwerveConstants.kVoltageComp);
     // burns spark max
     angleMotor.burnFlash();
 
@@ -170,21 +170,21 @@ public class SwerveModule {
     // full utilisation on the can loop hell yea
     CANSparkMaxUtil.setCANSparkMaxBusUsage(driveMotor, Usage.kAll);
     // sets current limit
-    driveMotor.setSmartCurrentLimit(Constants.Swerve.kDriveContinuousCurrentLimit);
+    driveMotor.setSmartCurrentLimit(SwerveConstants.kDriveContinuousCurrentLimit);
     // sets inverted or not
-    driveMotor.setInverted(Constants.Swerve.driveInvert);
+    driveMotor.setInverted(SwerveConstants.driveInvert);
     // sets brake mode or not
-    driveMotor.setIdleMode(Constants.Swerve.driveNeutralMode);
+    driveMotor.setIdleMode(SwerveConstants.driveNeutralMode);
     // sets encoder to read velocities as meters per second
-    driveEncoder.setVelocityConversionFactor(Constants.Swerve.driveConversionVelocityFactor);
+    driveEncoder.setVelocityConversionFactor(SwerveConstants.driveConversionVelocityFactor);
     // sets encoder to read positions as meters traveled
-    driveEncoder.setPositionConversionFactor(Constants.Swerve.driveConversionPositionFactor);
+    driveEncoder.setPositionConversionFactor(SwerveConstants.driveConversionPositionFactor);
     // pid setting fun
-    driveController.setP(Constants.Swerve.kDriveP);
-    driveController.setI(Constants.Swerve.kDriveI);
-    driveController.setD(Constants.Swerve.kDriveD);
-    driveController.setFF(Constants.Swerve.kDriveFF);
-    driveMotor.enableVoltageCompensation(Constants.Swerve.kVoltageComp);
+    driveController.setP(SwerveConstants.kDriveP);
+    driveController.setI(SwerveConstants.kDriveI);
+    driveController.setD(SwerveConstants.kDriveD);
+    driveController.setFF(SwerveConstants.kDriveFF);
+    driveMotor.enableVoltageCompensation(SwerveConstants.kVoltageComp);
     // burns to spark max
     driveMotor.burnFlash();
     // resets encoder position to 0

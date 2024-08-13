@@ -2,10 +2,10 @@ package frc.robot.DataClasses;
 
 public class MainControllerConstants {
   /** Controller constants for the main controller in the subsystem */
-  public ControllerConstants main;
+  public ControllerConstants main = new ControllerConstants();
 
   /** Controller constants for the controllers that follow the main controller in the subsystem */
-  public ControllerConstants[] followers;
+  public ControllerConstants[] followers = new ControllerConstants[0];
 
   /** Current limit */
   public double currentLimit = 60;
@@ -25,7 +25,7 @@ public class MainControllerConstants {
 
   /**
    * The home position of the system where the limit switch is and is usually 0. when the limit
-   * switch is hit the encode will reset to this
+   * switch is hit the encoder will reset to this value
    */
   public double encoderHomePosition = 0;
 
@@ -46,7 +46,4 @@ public class MainControllerConstants {
 
   /** The up soft limit, makes the system unable to move above it */
   public double maxSoftLimit = 0;
-
-  /** Size of shuffleboard entries for this controller's tab in the dashboard */
-  public int shuffleboardEnteriesSize = 3;
 }

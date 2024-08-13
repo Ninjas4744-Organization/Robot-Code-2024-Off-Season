@@ -152,7 +152,7 @@ public abstract class NinjasController {
   }
 
   /**
-   * @return wheter or not the controller is at the goal, the target of PIDF / PID / Motion Magic...
+   * @return wether or not the controller is at the goal, the target of PIDF / PID / Motion Magic...
    *     Will return false if not in position or velocity control
    */
   public abstract boolean atGoal();

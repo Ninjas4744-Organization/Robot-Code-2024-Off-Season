@@ -1,5 +1,6 @@
 package frc.robot.AbstractClasses;
 
+import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -23,7 +24,8 @@ public class NinjasTalonFXController extends NinjasController {
     _main
         .getConfigurator()
         .apply(
-            new TalonFXConfiguration()
+            new TalonFXConfiguration().withAudio(new AudioConfigs()
+            .withBeepOnBoot(true))
                 .withMotorOutput(
                     new MotorOutputConfigs()
                         .withInverted(
@@ -72,8 +74,7 @@ public class NinjasTalonFXController extends NinjasController {
   public void setVelocity(double velocity) {
     super.setVelocity(velocity);
 
-    _main.setControl(
-        new MotionMagicVelocityVoltage(velocity / (_constants.encoderConversionFactor / 60)));
+    _main.setControl(new MotionMagicVelocityVoltage(velocity / (_constants.encoderConversionFactor / 60)));
   }
 
   @Override

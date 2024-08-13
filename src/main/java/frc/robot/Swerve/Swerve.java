@@ -15,7 +15,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
 import frc.robot.Vision.Vision;
 import java.util.Arrays;
@@ -42,32 +43,32 @@ public class Swerve extends SubsystemBase {
   private Swerve() {
     _modules =
         new SwerveModule[] {
-          new SwerveModule(0, Constants.Swerve.Mod0.constants),
-          new SwerveModule(1, Constants.Swerve.Mod1.constants),
-          new SwerveModule(2, Constants.Swerve.Mod2.constants),
-          new SwerveModule(3, Constants.Swerve.Mod3.constants)
+          new SwerveModule(0, SwerveConstants.Mod0.constants),
+          new SwerveModule(1, SwerveConstants.Mod1.constants),
+          new SwerveModule(2, SwerveConstants.Mod2.constants),
+          new SwerveModule(3, SwerveConstants.Mod3.constants)
         };
 
     _odometry =
         new SwerveDriveOdometry(
-            Constants.Swerve.kSwerveKinematics, RobotState.getGyroYaw(), getModulePositions());
+            SwerveConstants.kSwerveKinematics, RobotState.getGyroYaw(), getModulePositions());
     resetOdometry(new Pose2d());
 
     _driveAssistXPID =
         new PIDController(
-            Constants.Swerve.kDriveAssistP,
-            Constants.Swerve.kDriveAssistI,
-            Constants.Swerve.kDriveAssistD);
+            SwerveConstants.kDriveAssistP,
+            SwerveConstants.kDriveAssistI,
+            SwerveConstants.kDriveAssistD);
     _driveAssistYPID =
         new PIDController(
-            Constants.Swerve.kDriveAssistP,
-            Constants.Swerve.kDriveAssistI,
-            Constants.Swerve.kDriveAssistD);
+            SwerveConstants.kDriveAssistP,
+            SwerveConstants.kDriveAssistI,
+            SwerveConstants.kDriveAssistD);
     _anglePID =
         new PIDController(
-            Constants.Swerve.kSwerveAngleP,
-            Constants.Swerve.kSwerveAngleI,
-            Constants.Swerve.kSwerveAngleD);
+            SwerveConstants.kSwerveAngleP,
+            SwerveConstants.kSwerveAngleI,
+            SwerveConstants.kSwerveAngleD);
     _anglePID.enableContinuousInput(
         Rotation2d.fromDegrees(-180).getDegrees(), Rotation2d.fromDegrees(180).getDegrees());
   }
@@ -85,24 +86,24 @@ public class Swerve extends SubsystemBase {
       Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
     ChassisSpeeds drive =
         new ChassisSpeeds(
-            translation.getX() * Constants.Swerve.kSpeedFactor * Constants.Swerve.maxSpeed,
-            translation.getY() * Constants.Swerve.kSpeedFactor * Constants.Swerve.maxSpeed,
-            rotation * Constants.Swerve.kRotationSpeedFactor * Constants.Swerve.maxAngularVelocity);
+            translation.getX() * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+            translation.getY() * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+            rotation * SwerveConstants.kRotationSpeedFactor * SwerveConstants.maxAngularVelocity);
 
     if (isAnglePID)
       drive.omegaRadiansPerSecond =
           _anglePID.calculate(RobotState.getGyroYaw().getDegrees())
-              * Constants.Swerve.maxAngularVelocity;
+              * SwerveConstants.maxAngularVelocity;
 
     if (isDriveAssist && Vision.getInstance().hasTargets("Front")) {
       Pose2d targetPose = Vision.getInstance().getClosestTag("Front").pose.toPose2d();
       drive = calculateDriveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
     }
 
-    if (isBayblade) drive.omegaRadiansPerSecond = Constants.Swerve.maxAngularVelocity;
+    if (isBayblade) drive.omegaRadiansPerSecond = SwerveConstants.maxAngularVelocity;
 
     SwerveModuleState[] swerveModuleStates =
-        Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(
+        SwerveConstants.kSwerveKinematics.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw())
                 : drive);
@@ -116,7 +117,7 @@ public class Swerve extends SubsystemBase {
    */
   public void drive(ChassisSpeeds chassisSpeeds) {
     SwerveModuleState[] swerveModuleStates =
-        Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveConstants.kSwerveKinematics.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(swerveModuleStates, false);
   }
 
@@ -126,7 +127,7 @@ public class Swerve extends SubsystemBase {
    * @param desiredStates - the wanted state for each module
    */
   public void setModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveConstants.maxSpeed);
 
     for (SwerveModule mod : _modules)
       mod.setDesiredState(desiredStates[mod.moduleNumber], isOpenLoop);
@@ -144,7 +145,7 @@ public class Swerve extends SubsystemBase {
   }
 
   public ChassisSpeeds getChassisSpeeds() {
-    return Constants.Swerve.kSwerveKinematics.toChassisSpeeds(getModuleStates());
+    return SwerveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates());
   }
 
   /**
@@ -241,7 +242,7 @@ public class Swerve extends SubsystemBase {
     PathPlannerPath path =
         new PathPlannerPath(
             bezierPoints,
-            Constants.AutoConstants.constraints,
+            AutoConstants.constraints,
             new GoalEndState(0, targetPose.getRotation()));
 
     return AutoBuilder.followPath(path);
@@ -311,7 +312,7 @@ public class Swerve extends SubsystemBase {
     Rotation2d toTargetAngle = toTargetDirection.getAngle();
     Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
 
-    if (Math.abs(angleDiff.getDegrees()) < Constants.Swerve.kDriveAssistThreshold) {
+    if (Math.abs(angleDiff.getDegrees()) < SwerveConstants.kDriveAssistThreshold) {
       double anglePIDMeasurement = RobotState.getRobotPose().getRotation().getDegrees();
       double anglePIDSetpoint =
           isForTags
@@ -321,11 +322,11 @@ public class Swerve extends SubsystemBase {
       ChassisSpeeds driveAssist =
           new ChassisSpeeds(
               _driveAssistXPID.calculate(RobotState.getRobotPose().getX(), targetPose.getX())
-                  * Constants.Swerve.maxSpeed,
+                  * SwerveConstants.maxSpeed,
               _driveAssistYPID.calculate(RobotState.getRobotPose().getY(), targetPose.getY())
-                  * Constants.Swerve.maxSpeed,
+                  * SwerveConstants.maxSpeed,
               _anglePID.calculate(anglePIDMeasurement, anglePIDSetpoint)
-                  * Constants.Swerve.maxAngularVelocity);
+                  * SwerveConstants.maxAngularVelocity);
 
       SmartDashboard.putNumber(
           "Drive Assist X Error", targetPose.getX() - RobotState.getRobotPose().getX());

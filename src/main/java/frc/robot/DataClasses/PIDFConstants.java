@@ -61,10 +61,9 @@ public class PIDFConstants {
       double kP,
       double kI,
       double kD,
-      double kIZone,
       double kCruiseVelocity,
       double kAcceleration) {
-    this(kP, kI, kD, kIZone);
+    this(kP, kI, kD);
     this.kCruiseVelocity = kCruiseVelocity;
     this.kAcceleration = kAcceleration;
   }
@@ -78,7 +77,8 @@ public class PIDFConstants {
       int kPositionDeadband,
       double kCruiseVelocity,
       double kAcceleration) {
-    this(kP, kI, kD, kIZone, kCruiseVelocity, kAcceleration);
+    this(kP, kI, kD, kCruiseVelocity, kAcceleration);
+    this.kIZone = kIZone;
     this.kF = kF;
     this.kPositionDeadband = kPositionDeadband;
   }

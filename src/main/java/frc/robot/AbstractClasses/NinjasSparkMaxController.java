@@ -22,22 +22,7 @@ public class NinjasSparkMaxController extends NinjasController {
     _main.restoreFactoryDefaults();
 
     _main.setInverted(constants.main.inverted);
-    _main.setSmartCurrentLimit((int) constants.currentLimit);
-
-    _main.getPIDController().setP(constants.PIDFConstants.kP);
-    _main.getPIDController().setI(constants.PIDFConstants.kI);
-    _main.getPIDController().setD(constants.PIDFConstants.kD);
-    _main.getPIDController().setIZone(constants.PIDFConstants.kIZone);
-    _main.getPIDController().setFF(constants.PIDFConstants.kF);
-
-    _main.burnFlash();
-
-    _main = new CANSparkMax(constants.main.id, CANSparkMax.MotorType.kBrushless);
-
-    _main.restoreFactoryDefaults();
-
-    _main.setInverted(constants.main.inverted);
-    _main.setSmartCurrentLimit((int) constants.currentLimit);
+    _main.setSmartCurrentLimit((int)constants.currentLimit);
 
     _main.getPIDController().setP(constants.PIDFConstants.kP);
     _main.getPIDController().setI(constants.PIDFConstants.kI);
@@ -57,11 +42,14 @@ public class NinjasSparkMaxController extends NinjasController {
       _followers[i].follow(_main, constants.followers[i].inverted);
       _followers[i].burnFlash();
     }
+
+    _profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
   }
 
   @Override
   public void setPercent(double percent) {
     super.setPercent(percent);
+
     _main.set(percent);
   }
 
@@ -116,28 +104,12 @@ public class NinjasSparkMaxController extends NinjasController {
     switch (_controlState) {
       case PIDF_POSITION:
         if (!atGoal())
-          _main
-              .getPIDController()
-              .setReference(
-                  _profile.calculate(
-                          _trapozoidTimer.get(),
-                          new State(getPosition(), 0),
-                          new State(getGoal(), 0))
-                      .position,
-                  ControlType.kPosition);
+          _main.getPIDController().setReference(_profile.calculate(_trapozoidTimer.get(), new State(getPosition(), 0), new State(getGoal(), 0)).position, ControlType.kPosition);
         break;
 
       case PIDF_VELOCITY:
         if (!atGoal())
-          _main
-              .getPIDController()
-              .setReference(
-                  _profile.calculate(
-                          _trapozoidTimer.get(),
-                          new State(0, getVelocity()),
-                          new State(0, getGoal()))
-                      .velocity,
-                  ControlType.kVelocity);
+          _main.getPIDController().setReference(_profile.calculate(_trapozoidTimer.get(), new State(0, getVelocity()), new State(0, getGoal())).velocity, ControlType.kVelocity);
         break;
 
       default:

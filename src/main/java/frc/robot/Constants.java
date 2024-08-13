@@ -15,6 +15,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.DataClasses.MainControllerConstants;
+import frc.robot.DataClasses.PIDFConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,35 +25,29 @@ public final class Constants {
   public static final int kDriverJoystickPort = 0;
   public static final int kOperatorJoystickPort = 1;
 
-  public static final class PLACEHOLDER {
-    public static final int kMotorID = 21;
-    public static final int kLimitSwitchID = 1;
-    public static final int kCurrentLimit = 40;
-
-    public static final class States {
-      public static final double kUp = 120;
-      public static final double kDown = 70;
-      public static final double kAmp = 0;
-      public static final double kTrap = 87;
+  //PLACEHOLDER
+  public class ElevatorConstants {
+    public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+    static{
+      kControllerConstants.main.id = 24;
+      kControllerConstants.main.inverted = true;
+      kControllerConstants.currentLimit = 40;
+      kControllerConstants.subsystemName = "Elevator";
+      kControllerConstants.PIDFConstants = new PIDFConstants(5, 0, 0,8,8);
+      kControllerConstants.positionGoalTolerance = 0.01;
+      kControllerConstants.encoderConversionFactor = 0.0098174;
+      kControllerConstants.encoderHomePosition = 0;
     }
 
-    public static final class ControlConstants {
-      public static final double kEncoderPositionConversionFactor = 7.2;
-      public static final double kEncoderVelocityConversionFactor =
-          kEncoderPositionConversionFactor / 60.0;
+    public static final int kLimitSwitchID = 7;
 
-      public static final double kP = 0.0185;
-      public static final double kI = 0.0002;
-      public static final double kD = 0;
-
-      public static final double kMaxVelocity = 60;
-      public static final double kMaxAcceleration = 120;
-      public static final TrapezoidProfile.Constraints kConstraints =
-          new Constraints(kMaxVelocity, kMaxAcceleration);
+    public class States {
+      public static final double kUp = 0.4;
+      public static final double kDown = 0;
     }
   }
 
-  public static final class Swerve {
+  public static final class SwerveConstants {
     public static final double kSpeedFactor = 0.5;
     public static final double kRotationSpeedFactor = 0.25;
     public static final double kJoystickDeadband = 0.1;
@@ -232,7 +228,7 @@ public final class Constants {
             new PIDConstants(
                 Constants.AutoConstants.kPYController, 0.0, 0.0), // Rotation PID constants
             Constants.AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
-            Constants.Swerve
+            SwerveConstants
                 .kTrackWidth, // Drive base radius in meters. Distance from robot center to furthest
             // module.
             new ReplanningConfig() // Default path replanning config. See the API for the options
