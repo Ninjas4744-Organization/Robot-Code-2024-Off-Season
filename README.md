@@ -1,5 +1,8 @@
 # Ninjas #4744 - 2024 Offseason FRC Robot Code
 
+[![FRC - Ninjas #4744](https://img.shields.io/badge/FRC-Ninjas_%234744-blue?logo=First)](https://ninjas4744-website.vercel.app/)
+[![CI](https://github.com/Ninjas4744-Organization/Robot-Code-2024-Off-Season/actions/workflows/main.yml/badge.svg)](https://github.com/Ninjas4744-Organization/Robot-Code-2024-Off-Season/actions/workflows/main.yml)
+
 Welcome to the official repository for the 2024 offseason robot code for Team Ninjas #4744! This repository contains all the code, documentation, and resources related to our robotics development during the offseason in preparation for the 2025 FRC competition.
 
 ## 📚 About Us
