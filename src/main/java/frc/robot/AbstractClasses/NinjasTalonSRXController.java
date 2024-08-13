@@ -2,14 +2,11 @@ package frc.robot.AbstractClasses;
 
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import frc.robot.DataClasses.MainControllerConstants;
 
 public class NinjasTalonSRXController extends NinjasController {
   private TalonSRX _main;
   private TalonSRX[] _followers;
-  private double _positionConversionFactor;
-  private double _velocityConversionFactor;
 
   public NinjasTalonSRXController(MainControllerConstants constants) {
     super(constants);
@@ -25,9 +22,6 @@ public class NinjasTalonSRXController extends NinjasController {
     _main.config_kI(0, constants.PIDFConstants.kI);
     _main.config_kD(0, constants.PIDFConstants.kD);
     _main.config_kF(0, constants.PIDFConstants.kF);
-
-    _positionConversionFactor = constants.encoderConversionFactor;
-    _velocityConversionFactor = constants.encoderConversionFactor / 60;
 
     _followers = new TalonSRX[constants.followers.length];
     for (int i = 0; i < _followers.length; i++) {
@@ -46,15 +40,27 @@ public class NinjasTalonSRXController extends NinjasController {
   }
 
   @Override
-  public State getEncoder() {
-    return new State(
-        _main.getSelectedSensorPosition() * _positionConversionFactor,
-        _main.getSelectedSensorVelocity() * _velocityConversionFactor);
+  public void setPosition(double position) {
+    super.setPosition(position);
+
+    _main.set(TalonSRXControlMode.Position, position / _constants.encoderConversionFactor);
   }
 
   @Override
-  public void setEncoder(double position) {
-    _main.setSelectedSensorPosition(position / _positionConversionFactor);
+  public void setVelocity(double velocity) {
+    super.setVelocity(velocity);
+
+    _main.set(TalonSRXControlMode.Velocity, velocity / (_constants.encoderConversionFactor / 60));
+  }
+
+  @Override
+  public double getPosition() {
+    return _main.getSelectedSensorPosition() * _constants.encoderConversionFactor;
+  }
+
+  @Override
+  public double getVelocity() {
+    return _main.getSelectedSensorVelocity() * _constants.encoderConversionFactor / 60;
   }
 
   @Override
@@ -63,33 +69,16 @@ public class NinjasTalonSRXController extends NinjasController {
   }
 
   @Override
-  public void periodic() {
-    super.periodic();
-
-    switch (_controlState) {
-      case PIDF_POSITION:
-        _main.set(
-            TalonSRXControlMode.Position,
-            _profile.calculate(_trapozoidTimer.get(), getEncoder(), getGoal()).position);
-        break;
-
-      case PIDF_VELOCITY:
-        _main.set(
-            TalonSRXControlMode.Velocity,
-            _profile.calculate(_trapozoidTimer.get(), getEncoder(), getGoal()).velocity);
-        break;
-
-      default:
-        break;
-    }
+  public void setEncoder(double position) {
+    _main.setSelectedSensorPosition(position / _constants.encoderConversionFactor);
   }
 
   @Override
   public boolean atGoal() {
     if (_controlState == ControlState.PIDF_POSITION)
-      return Math.abs(getGoal().position - getEncoder().position) < _goalTolerance.position;
+      return Math.abs(getGoal() - getPosition()) < _constants.positionGoalTolerance;
     else if (_controlState == ControlState.PIDF_VELOCITY)
-      return Math.abs(getGoal().velocity - getEncoder().velocity) < _goalTolerance.velocity;
+      return Math.abs(getGoal() - getVelocity()) < _constants.velocityGoalTolerance;
 
     return false;
   }
