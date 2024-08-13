@@ -6,6 +6,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -272,11 +273,31 @@ public final class Constants {
     }
 
     public static AprilTagFieldLayout getFieldLayout() {
-      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) 
         return kBlueFieldLayout;
-      } else {
+      else 
         return kRedFieldLayout;
-      }
+    }
+
+    public static Pose2d getAmpPose(){
+      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) 
+        return getFieldLayout().getTagPose(6).get().toPose2d();
+      else 
+        return getFieldLayout().getTagPose(5).get().toPose2d();
+    }
+
+    public static Pose2d getSourcePose(){
+      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) 
+        return getFieldLayout().getTagPose(2).get().toPose2d();
+      else 
+        return getFieldLayout().getTagPose(9).get().toPose2d();
+    }
+
+    public static Pose2d getSpeakerPose(){
+      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) 
+        return getFieldLayout().getTagPose(7).get().toPose2d();
+      else 
+        return getFieldLayout().getTagPose(4).get().toPose2d();
     }
   }
 }

@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.RobotState.RobotStates;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Vision.Vision;
@@ -27,6 +29,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    new Trigger(() -> Vision.getInstance().atAmp()).onTrue(Commands.runOnce(() -> RobotState.setRobotState(RobotStates.PREPARE_AMP_OUTAKE), new RobotState()));
+
     configureDriverBindings();
     configureOperatorBindings();
   }
@@ -82,7 +86,9 @@ public class RobotContainer {
     // _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
   }
 
-  private void configureOperatorBindings() {}
+  private void configureOperatorBindings() {
+    _driverJoystick.cross().onTrue(Commands.runOnce(() -> nextState(), new RobotState()));
+  }
 
   public void periodic() {
     VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
@@ -94,5 +100,28 @@ public class RobotContainer {
   public void resetSubsystems() {
     TeleopCommandBuilder.resetGyro(false).schedule();
     TeleopCommandBuilder.resetSubsystems().schedule();
+  }
+
+  public static void nextState() {
+    switch (RobotState.getRobotState()) {
+      case AMP_OUTAKE_READY:
+        RobotState.setRobotState(RobotStates.OUTAKE);
+        break;
+
+      case TRAP_OUTAKE_READY:
+        RobotState.setRobotState(RobotStates.OUTAKE);
+        break;
+
+      case CLIMB_READY:
+        RobotState.setRobotState(RobotStates.CLIMB);
+        break;
+
+      case SHOOT_READY:
+        RobotState.setRobotState(RobotStates.SHOOT);
+        break;
+    
+      default:
+        break;
+    }
   }
 }

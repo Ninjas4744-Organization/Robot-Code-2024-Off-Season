@@ -7,26 +7,31 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.Swerve.Swerve;
 
-public class RobotState {
+public class RobotState extends SubsystemBase {
   public enum RobotStates {
     IDLE,
     PREPARE_INTAKE,
     INTAKE,
     PREPARE_AMP_OUTAKE,
+    AMP_OUTAKE_READY,
     PREPARE_TRAP_OUTAKE,
+    TRAP_OUTAKE_READY,
     OUTAKE,
     OUTAKE_CLOSE,
     CLOSE,
     RESET,
     PREPARE_SHOOT,
+    SHOOT_READY,
     SHOOT,
     NOTE_SEARCH,
     HOLDING_NOTE,
     PREPARE_CLIMB,
+    CLIMB_READY,
     CLIMB
   }
 

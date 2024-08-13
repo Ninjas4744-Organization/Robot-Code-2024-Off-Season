@@ -7,6 +7,8 @@ import frc.robot.Constants;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.DataClasses.VisionOutput;
 import java.util.HashMap;
+import frc.robot.RobotState;
+import frc.robot.Constants.VisionConstants;
 
 public class Vision extends SubsystemBase {
   private static Vision _instance;
@@ -125,5 +127,17 @@ public class Vision extends SubsystemBase {
     }
 
     return hasTargets;
+  }
+
+  public boolean atAmp(){
+    return RobotState.getRobotPose().getTranslation().getDistance(VisionConstants.getAmpPose().getTranslation()) < 0.5;
+  }
+
+  public boolean atSource(){
+    return RobotState.getRobotPose().getTranslation().getDistance(VisionConstants.getSourcePose().getTranslation()) < 0.5;
+  }
+
+  public boolean atSpeaker(){
+    return RobotState.getRobotPose().getTranslation().getDistance(VisionConstants.getSpeakerPose().getTranslation()) < 2.5;
   }
 }
