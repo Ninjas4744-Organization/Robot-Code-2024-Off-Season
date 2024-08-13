@@ -13,7 +13,21 @@ import frc.robot.Swerve.Swerve;
 
 public class RobotState {
   public enum RobotStates {
-    
+    IDLE,
+    PREPARE_INTAKE,
+    INTAKE,
+    PREPARE_AMP_OUTAKE,
+    PREPARE_TRAP_OUTAKE,
+    OUTAKE,
+    OUTAKE_CLOSE,
+    CLOSE,
+    RESET,
+    PREPARE_SHOOT,
+    SHOOT,
+    NOTE_SEARCH,
+    HOLDING_NOTE,
+    PREPARE_CLIMB,
+    CLIMB
   }
 
   private static RobotStates robotState;
