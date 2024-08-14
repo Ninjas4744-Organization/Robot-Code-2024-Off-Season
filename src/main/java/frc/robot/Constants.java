@@ -26,6 +26,8 @@ public final class Constants {
   public static final int kDriverJoystickPort = 0;
   public static final int kOperatorJoystickPort = 1;
 
+  public static final int kNoteDetectorID = 0;
+
   //PLACEHOLDER
   public class ElevatorConstants {
     public static final MainControllerConstants kControllerConstants = new MainControllerConstants();

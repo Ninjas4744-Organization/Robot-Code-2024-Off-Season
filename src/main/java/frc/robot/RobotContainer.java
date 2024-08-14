@@ -29,65 +29,37 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new Trigger(() -> Vision.getInstance().atAmp()).onTrue(Commands.runOnce(() -> RobotState.setRobotState(RobotStates.PREPARE_AMP_OUTAKE), new RobotState()));
+    new Trigger(() -> Vision.getInstance().atAmp()).onTrue(Commands.runOnce(() -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_AMP_OUTAKE), StateMachine.getInstance()));
+    new Trigger(() -> Vision.getInstance().atSource()).onTrue(Commands.runOnce(() -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_INTAKE), StateMachine.getInstance()));
+    new Trigger(() -> Vision.getInstance().atSpeaker()).onTrue(Commands.runOnce(() -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT), StateMachine.getInstance()));
 
     configureDriverBindings();
     configureOperatorBindings();
   }
 
   private void configureDriverBindings() {
-    Swerve.getInstance()
-        .setDefaultCommand(
-            TeleopCommandBuilder.swerveDrive(
-                () -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
-                () -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()),
-                true));
+    Swerve.getInstance().setDefaultCommand(TeleopCommandBuilder.swerveDrive(
+      () -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
+      () -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()),
+      true
+    ));
 
-    _driverJoystick
-        .circle()
-        .toggleOnTrue(
-            Commands.startEnd(
-                () -> {
-                  Swerve.getInstance().setBaybladeMode(true);
-                },
-                () -> {
-                  Swerve.getInstance().setBaybladeMode(false);
-                }));
+    _driverJoystick.circle().toggleOnTrue(Commands.startEnd(
+      () -> Swerve.getInstance().setBaybladeMode(true),
+      () -> Swerve.getInstance().setBaybladeMode(false)
+    ));
 
-    _driverJoystick
-        .L1()
-        .onTrue(
-            Commands.parallel(
-                TeleopCommandBuilder.resetGyro(false),
-                Commands.runOnce(
-                    () -> {
-                      Swerve.getInstance().resetModulesToAbsolute();
-                    },
-                    Swerve.getInstance())));
+    _driverJoystick.L1().onTrue(Commands.parallel(TeleopCommandBuilder.resetGyro(false), Commands.runOnce(() -> Swerve.getInstance().resetModulesToAbsolute(), Swerve.getInstance())));
 
-    _driverJoystick
-        .L2()
-        .onTrue(
-            Commands.parallel(
-                TeleopCommandBuilder.resetGyro(true),
-                Commands.runOnce(
-                    () -> {
-                      Swerve.getInstance().resetModulesToAbsolute();
-                    },
-                    Swerve.getInstance())));
+    _driverJoystick.L2().onTrue(Commands.parallel(TeleopCommandBuilder.resetGyro(true), Commands.runOnce(() -> Swerve.getInstance().resetModulesToAbsolute(), Swerve.getInstance())));
 
-    _driverJoystick
-        .R1()
-        .toggleOnTrue(
-            Commands.startEnd(
-                () -> Swerve.getInstance().setIsDriveAssist(true),
-                () -> Swerve.getInstance().setIsDriveAssist(false)));
+    _driverJoystick.R1().toggleOnTrue(Commands.startEnd(() -> Swerve.getInstance().setIsDriveAssist(true), () -> Swerve.getInstance().setIsDriveAssist(false)));
 
     // _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
   }
 
   private void configureOperatorBindings() {
-    _driverJoystick.cross().onTrue(Commands.runOnce(() -> nextState(), new RobotState()));
+    _driverJoystick.cross().onTrue(StateMachine.getInstance().Act());
   }
 
   public void periodic() {
@@ -100,28 +72,5 @@ public class RobotContainer {
   public void resetSubsystems() {
     TeleopCommandBuilder.resetGyro(false).schedule();
     TeleopCommandBuilder.resetSubsystems().schedule();
-  }
-
-  public static void nextState() {
-    switch (RobotState.getRobotState()) {
-      case AMP_OUTAKE_READY:
-        RobotState.setRobotState(RobotStates.OUTAKE);
-        break;
-
-      case TRAP_OUTAKE_READY:
-        RobotState.setRobotState(RobotStates.OUTAKE);
-        break;
-
-      case CLIMB_READY:
-        RobotState.setRobotState(RobotStates.CLIMB);
-        break;
-
-      case SHOOT_READY:
-        RobotState.setRobotState(RobotStates.SHOOT);
-        break;
-    
-      default:
-        break;
-    }
   }
 }

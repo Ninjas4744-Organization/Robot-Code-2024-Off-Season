@@ -50,10 +50,6 @@ public abstract class NinjasSubsystem extends SubsystemBase {
         outake();
         break;
 
-      case OUTAKE_CLOSE:
-        outakeClose();
-        break;
-
       case CLOSE:
         close();
         break;

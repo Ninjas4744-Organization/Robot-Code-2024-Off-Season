@@ -7,22 +7,22 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.Swerve.Swerve;
 
-public class RobotState extends SubsystemBase {
+public class RobotState {
   public enum RobotStates {
     IDLE,
     PREPARE_INTAKE,
+    INTAKE_READY,
     INTAKE,
     PREPARE_AMP_OUTAKE,
     AMP_OUTAKE_READY,
     PREPARE_TRAP_OUTAKE,
     TRAP_OUTAKE_READY,
     OUTAKE,
-    OUTAKE_CLOSE,
     CLOSE,
     RESET,
     PREPARE_SHOOT,
@@ -32,31 +32,31 @@ public class RobotState extends SubsystemBase {
     HOLDING_NOTE,
     PREPARE_CLIMB,
     CLIMB_READY,
-    CLIMB
+    CLIMB,
+    CLIMBED
   }
 
   private static RobotStates robotState;
   private static Pose2d robotPose = new Pose2d();
   private static AHRS navX = new AHRS();
   private static SwerveDrivePoseEstimator poseEstimator;
-  private static StructPublisher<Pose2d> publisher =
-      NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
+  private static StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
+  private static DigitalInput noteDetector = new DigitalInput(Constants.kNoteDetectorID);
 
   /**
-   * @return RobotStates of the robot
+   * @return State of the robot
    */
   public static RobotStates getRobotState() {
     return robotState;
   }
 
   /**
-   * Sets the RobotStates of the robot to the given RobotStates
+   * Sets the state of the robot to the given state
    *
-   * @param RobotStates - the RobotStates to set the robot RobotStates to
-   * @return nothing
+   * @param state - the state to set the robot state to
    */
-  public static void setRobotState(RobotStates robotState) {
-    RobotState.robotState = robotState;
+  public static void setRobotState(RobotStates state) {
+    RobotState.robotState = state;
   }
 
   /**
@@ -70,7 +70,6 @@ public class RobotState extends SubsystemBase {
    * Sets the robotPose variable to the given pose and updates the publisher
    *
    * @param pose - the pose to set the robotPose to
-   * @return nothing
    */
   public static void setRobotPose(Pose2d pose) {
     robotPose = pose;
@@ -129,5 +128,12 @@ public class RobotState extends SubsystemBase {
             getGyroYaw(),
             Swerve.getInstance().getModulePositions(),
             getRobotPose());
+  }
+
+  /**
+   * @return Wether or not there is a note in the robot
+   */
+  public static boolean hasNote() {
+    return noteDetector.get();
   }
 }
