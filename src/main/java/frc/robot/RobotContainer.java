@@ -5,72 +5,105 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.RobotState.RobotStates;
 import frc.robot.DataClasses.VisionEstimation;
+import frc.robot.RobotState.RobotStates;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Vision.Vision;
 
 public class RobotContainer {
-  private CommandPS5Controller _driverJoystick;
-  private Joystick _driverJoystick2;
-  private CommandPS5Controller _operatorJoystick;
+    private CommandPS5Controller _driverJoystick;
+    private Joystick _driverJoystick2;
+    private CommandPS5Controller _operatorJoystick;
 
-  public RobotContainer() {
-    _driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
-    _driverJoystick2 = new Joystick(1);
-    _operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
+    public RobotContainer() {
+        _driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
+        _driverJoystick2 = new Joystick(1);
 
-    RobotState.initPoseEstimator();
+        _operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
-    AutoCommandBuilder.configureAutoBuilder();
-    AutoCommandBuilder.registerCommands();
+        RobotState.initPoseEstimator();
 
-    configureBindings();
-  }
+        AutoCommandBuilder.configureAutoBuilder();
+        AutoCommandBuilder.registerCommands();
 
-  private void configureBindings() {
-    new Trigger(() -> Vision.getInstance().atAmp()).onTrue(Commands.runOnce(() -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_AMP_OUTAKE), StateMachine.getInstance()));
-    new Trigger(() -> Vision.getInstance().atSource()).onTrue(Commands.runOnce(() -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_INTAKE), StateMachine.getInstance()));
-    new Trigger(() -> Vision.getInstance().atSpeaker()).onTrue(Commands.runOnce(() -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT), StateMachine.getInstance()));
+        configureBindings();
+    }
 
-    configureDriverBindings();
-    configureOperatorBindings();
-  }
+    private void configureBindings() {
+        new Trigger(() -> Vision.getInstance().atAmp())
+                .onTrue(
+                        Commands.runOnce(
+                                () -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_AMP_OUTAKE),
+                                StateMachine.getInstance()));
+        new Trigger(() -> Vision.getInstance().atSource())
+                .onTrue(
+                        Commands.runOnce(
+                                () -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_INTAKE),
+                                StateMachine.getInstance()));
+        new Trigger(() -> Vision.getInstance().atSpeaker())
+                .onTrue(
+                        Commands.runOnce(
+                                () -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT),
+                                StateMachine.getInstance()));
 
-  private void configureDriverBindings() {
-    Swerve.getInstance().setDefaultCommand(TeleopCommandBuilder.swerveDrive(
-      () -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
-      () -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()),
-      true
-    ));
+        configureDriverBindings();
+        configureOperatorBindings();
+    }
 
-    _driverJoystick.circle().toggleOnTrue(Commands.startEnd(
-      () -> Swerve.getInstance().setBaybladeMode(true),
-      () -> Swerve.getInstance().setBaybladeMode(false)
-    ));
+    private void configureDriverBindings() {
+        Swerve.getInstance()
+                .setDefaultCommand(
+                        TeleopCommandBuilder.swerveDrive(
+                                () -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
+                                () -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()),
+                                true));
 
-    _driverJoystick.L1().onTrue(Commands.parallel(TeleopCommandBuilder.resetGyro(false), Commands.runOnce(() -> Swerve.getInstance().resetModulesToAbsolute(), Swerve.getInstance())));
+        _driverJoystick
+                .circle()
+                .toggleOnTrue(
+                        Commands.startEnd(
+                                () -> Swerve.getInstance().setBaybladeMode(true),
+                                () -> Swerve.getInstance().setBaybladeMode(false)));
 
-    _driverJoystick.L2().onTrue(Commands.parallel(TeleopCommandBuilder.resetGyro(true), Commands.runOnce(() -> Swerve.getInstance().resetModulesToAbsolute(), Swerve.getInstance())));
+        _driverJoystick
+                .L1()
+                .onTrue(
+                        Commands.parallel(
+                                TeleopCommandBuilder.resetGyro(false),
+                                Commands.runOnce(
+                                        () -> Swerve.getInstance().resetModulesToAbsolute(), Swerve.getInstance())));
 
-    _driverJoystick.R1().toggleOnTrue(Commands.startEnd(() -> Swerve.getInstance().setIsDriveAssist(true), () -> Swerve.getInstance().setIsDriveAssist(false)));
+        _driverJoystick
+                .L2()
+                .onTrue(
+                        Commands.parallel(
+                                TeleopCommandBuilder.resetGyro(true),
+                                Commands.runOnce(
+                                        () -> Swerve.getInstance().resetModulesToAbsolute(), Swerve.getInstance())));
 
-    // _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
-  }
+        _driverJoystick
+                .R1()
+                .toggleOnTrue(
+                        Commands.startEnd(
+                                () -> Swerve.getInstance().setIsDriveAssist(true),
+                                () -> Swerve.getInstance().setIsDriveAssist(false)));
 
-  private void configureOperatorBindings() {
-    _driverJoystick.cross().onTrue(StateMachine.getInstance().Act());
-  }
+        // _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
+    }
 
-  public void periodic() {
-    VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
+    private void configureOperatorBindings() {
+        _driverJoystick.cross().onTrue(StateMachine.getInstance().Act());
+    }
 
-    for (VisionEstimation estimation : estimations)
-      if (estimation != null) RobotState.updateRobotPose(estimation);
-  }
+    public void periodic() {
+        VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
 
-  public void resetSubsystems() {
-    TeleopCommandBuilder.resetGyro(false).schedule();
-    TeleopCommandBuilder.resetSubsystems().schedule();
-  }
+        for (VisionEstimation estimation : estimations)
+            if (estimation != null) RobotState.updateRobotPose(estimation);
+    }
+
+    public void resetSubsystems() {
+        TeleopCommandBuilder.resetGyro(false).schedule();
+        TeleopCommandBuilder.resetSubsystems().schedule();
+    }
 }

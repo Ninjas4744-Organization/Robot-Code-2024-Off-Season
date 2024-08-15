@@ -4,101 +4,54 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
+import frc.robot.RobotState.RobotStates;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class NinjasSubsystem extends SubsystemBase {
-  protected NinjasController _controller;
+    protected NinjasController _controller;
+    protected Map<RobotStates, Runnable> _functionMap;
 
-  // /**
-  //  * Resets the subsystem- moves the subsystem down until limit hit and then stops.
-  //  * @return the command that does that
-  //  */
-  // public Command resetSubsystem() {
-  //   return runMotor(-0.5);
-  // }
+    public NinjasSubsystem() {
+        _functionMap = new HashMap<>();
 
-  public Command runMotor(double percent) {
-    return Commands.startEnd(
-      () -> _controller.setPercent(percent), 
-      () -> _controller.stop(), 
-      this);
-  }
+        for (RobotStates state : RobotStates.values()) _functionMap.put(state, () -> {});
 
-  @Override
-  public void periodic() {
-    switch(RobotState.getRobotState()) {
-      case IDLE:
-        idle();
-        break;
-        
-      case PREPARE_INTAKE:
-        prepareIntake();
-        break;
-
-      case INTAKE:
-        intake();
-        break;
-
-      case PREPARE_AMP_OUTAKE:
-        prepareAmpOutake();
-        break;
-        
-      case PREPARE_TRAP_OUTAKE:
-        prepareTrapOutake();
-        break;
-
-      case OUTAKE:
-        outake();
-        break;
-
-      case CLOSE:
-        close();
-        break;
-
-      case RESET:
-        reset();
-        break;
-
-      case PREPARE_SHOOT:
-        prepareShoot();
-        break;
-
-      case SHOOT:
-        shoot();
-        break;
-
-      case NOTE_SEARCH:
-        noteSearch();
-        break;
-
-      case HOLDING_NOTE:
-        holdingNote();
-        break;
-
-      case PREPARE_CLIMB:
-        prepareClimb();
-        break;
-
-      case CLIMB:
-        climb();
-        break;
+        setFunctionMap();
     }
 
-    _controller.periodic();
-  }
+    /**
+      * Set in what state what function to run.
+      *
+      * <p>for example: _functionMap.put(RobotStates.INTAKE, () -> { System.out.println("Intaking");
+      * });
+      *
+      * <p>doing that will spam Intaking in the console when the robot is at INTAKE state.
+      */
+    protected abstract void setFunctionMap();
 
-  protected abstract void idle();
-  protected abstract void prepareIntake();
-  protected abstract void intake();
-  protected abstract void prepareAmpOutake();
-  protected abstract void prepareTrapOutake();
-  protected abstract void outake();
-  protected abstract void outakeClose();
-  protected abstract void close();
-  protected abstract void reset();
-  protected abstract void prepareShoot();
-  protected abstract void shoot();
-  protected abstract void noteSearch();
-  protected abstract void holdingNote();
-  protected abstract void prepareClimb();
-  protected abstract void climb();
+    /**
+      * Resets the subsystem- moves the subsystem down until limit hit and then stops.
+      *
+      * @return the command that does that
+      */
+    public Command resetSubsystem() {
+        return runMotor(-0.5).until(() -> _controller.getPosition() <= 0);
+    }
+
+    /**
+      * Runs the motor at the given percent.
+      *
+      * @param percent - how much to power the motor between -1 and 1
+      * @return a command that runs that on start and stops to motor on end
+      */
+    public Command runMotor(double percent) {
+        return Commands.startEnd(() -> _controller.setPercent(percent), () -> _controller.stop(), this);
+    }
+
+    @Override
+    public void periodic() {
+        _functionMap.get(RobotState.getRobotState()).run();
+        _controller.periodic();
+    }
 }
