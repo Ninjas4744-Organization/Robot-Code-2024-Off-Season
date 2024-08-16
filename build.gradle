@@ -126,9 +126,11 @@ spotless {
 		}
 		toggleOffOn()
 		googleJavaFormat()
-		indentWithTabs(1)
-		indentWithSpaces(2)
-		removeUnusedImports()
+//		prettier().config([
+//				'parser': 'java',
+//				'tabWidth': 4,
+//				'printWidth': 120
+//		])
 		trimTrailingWhitespace()
 		endWithNewline()
 	}

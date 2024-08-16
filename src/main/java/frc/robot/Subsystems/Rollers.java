@@ -8,34 +8,34 @@ import frc.robot.RobotState.RobotStates;
 import frc.robot.StateMachine;
 
 public class Rollers extends NinjasSubsystem {
-    public Rollers() {
-        super();
+  public Rollers() {
+    super();
 
-        _controller = new NinjasSparkMaxController(new MainControllerConstants());
-    }
+    _controller = new NinjasSparkMaxController(new MainControllerConstants());
+  }
 
-    @Override
-    protected void setFunctionMap() {
-        _functionMap.put(
-                RobotStates.INTAKE,
-                () -> {
-                    _controller.setPercent(-1);
+  @Override
+  protected void setFunctionMap() {
+    _functionMap.put(
+        RobotStates.INTAKE,
+        () -> {
+          _controller.setPercent(-1);
 
-                    if (RobotState.hasNote()) {
-                        StateMachine.getInstance().changeRobotState(RobotStates.HOLDING_NOTE);
-                        _controller.stop();
-                    }
-                });
+          if (RobotState.hasNote()) {
+            StateMachine.getInstance().changeRobotState(RobotStates.HOLDING_NOTE);
+            _controller.stop();
+          }
+        });
 
-        _functionMap.put(
-                RobotStates.OUTAKE,
-                () -> {
-                    _controller.setPercent(1);
+    _functionMap.put(
+        RobotStates.OUTAKE,
+        () -> {
+          _controller.setPercent(1);
 
-                    if (!RobotState.hasNote()) {
-                        StateMachine.getInstance().changeRobotState(RobotStates.NOTE_SEARCH);
-                        _controller.stop();
-                    }
-                });
-    }
+          if (!RobotState.hasNote()) {
+            StateMachine.getInstance().changeRobotState(RobotStates.NOTE_SEARCH);
+            _controller.stop();
+          }
+        });
+  }
 }
