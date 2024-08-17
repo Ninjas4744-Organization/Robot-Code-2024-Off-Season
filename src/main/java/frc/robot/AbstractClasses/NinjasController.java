@@ -138,9 +138,21 @@ public abstract class NinjasController {
    */
   public abstract void setEncoder(double position);
 
-  /** Resets the encoder, sets it to the home position */
+  /**
+   * Resets the encoder, sets it to the home position
+   *
+   * @see #isHomed
+   */
   public void resetEncoder() {
     setEncoder(_constants.encoderHomePosition);
+  }
+
+  /**
+   * @return Whether the subsystem is homed: the encoder is at its home position
+   * @see #resetEncoder
+   */
+  public boolean isHomed() {
+    return getPosition() == _constants.encoderHomePosition;
   }
 
   /**

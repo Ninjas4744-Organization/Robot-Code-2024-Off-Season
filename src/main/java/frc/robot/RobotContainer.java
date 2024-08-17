@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
+import frc.robot.Subsystems.Climber;
+import frc.robot.Subsystems.Elevator;
+import frc.robot.Subsystems.Rotation;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Vision.Vision;
 
@@ -31,20 +34,18 @@ public class RobotContainer {
 
   private void configureBindings() {
     new Trigger(() -> Vision.getInstance().atAmp())
-        .onTrue(
-            Commands.runOnce(
-                () -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_AMP_OUTAKE),
-                StateMachine.getInstance()));
+        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
     new Trigger(() -> Vision.getInstance().atSource())
-        .onTrue(
-            Commands.runOnce(
-                () -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_INTAKE),
-                StateMachine.getInstance()));
+        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
     new Trigger(() -> Vision.getInstance().atSpeaker())
-        .onTrue(
-            Commands.runOnce(
-                () -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT),
-                StateMachine.getInstance()));
+        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
+
+    new Trigger(
+            () ->
+                Elevator.getInstance().isHomed()
+                    && Rotation.getInstance().isHomed()
+                    && Climber.getInstance().isHomed())
+        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
 
     configureDriverBindings();
     configureOperatorBindings();
@@ -92,7 +93,11 @@ public class RobotContainer {
   }
 
   private void configureOperatorBindings() {
-    //        _driverJoystick.cross().onTrue(StateMachine.getInstance().Act());
+    _operatorJoystick.cross().onTrue(StateMachine.getInstance().Act());
+    _operatorJoystick
+        .triangle()
+        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_CLIMB));
+    _operatorJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
   }
 
   public void periodic() {
@@ -103,9 +108,7 @@ public class RobotContainer {
   }
 
   public void resetSubsystems() {
-    RobotState.setRobotState(RobotStates.IDLE);
-    StateMachine.getInstance().changeRobotState(RobotStates.NOTE_SEARCH);
+    StateMachine.getInstance().changeRobotState(RobotStates.RESET);
     TeleopCommandBuilder.resetGyro(false).schedule();
-    TeleopCommandBuilder.resetSubsystems().schedule();
   }
 }
