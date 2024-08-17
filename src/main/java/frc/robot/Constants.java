@@ -4,22 +4,15 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.DataClasses.MainControllerConstants;
 import frc.robot.DataClasses.PIDFConstants;
+import frc.robot.DataClasses.SimulatedControllerConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
-import java.io.IOException;
-import java.util.HashMap;
 
 public final class Constants {
   public static final int kDriverJoystickPort = 0;
@@ -29,6 +22,8 @@ public final class Constants {
   public static class ElevatorConstants {
     public static final MainControllerConstants kControllerConstants =
         new MainControllerConstants();
+    public static final SimulatedControllerConstants kSimulatedControllerConstants =
+        new SimulatedControllerConstants();
 
     static {
       kControllerConstants.main.id = 24;
@@ -39,6 +34,10 @@ public final class Constants {
       kControllerConstants.positionGoalTolerance = 0.01;
       kControllerConstants.encoderConversionFactor = 0.0098174;
       kControllerConstants.encoderHomePosition = 0;
+
+      kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+      kSimulatedControllerConstants.gearRatio = 1;
+      kSimulatedControllerConstants.motorTorque = 1;
     }
 
     public static final int kLimitSwitchID = 7;
@@ -53,6 +52,8 @@ public final class Constants {
   public static class ClimberConstants {
     public static final MainControllerConstants kControllerConstants =
         new MainControllerConstants();
+    public static final SimulatedControllerConstants kSimulatedControllerConstants =
+        new SimulatedControllerConstants();
 
     static {
       kControllerConstants.main.id = 24;
@@ -63,6 +64,10 @@ public final class Constants {
       kControllerConstants.positionGoalTolerance = 0.01;
       kControllerConstants.encoderConversionFactor = 0.0098174;
       kControllerConstants.encoderHomePosition = 0;
+
+      kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+      kSimulatedControllerConstants.gearRatio = 1;
+      kSimulatedControllerConstants.motorTorque = 1;
     }
 
     public static final int kLimitSwitchID = 7;
@@ -76,6 +81,8 @@ public final class Constants {
   public static class RotationConstants {
     public static final MainControllerConstants kControllerConstants =
         new MainControllerConstants();
+    public static final SimulatedControllerConstants kSimulatedControllerConstants =
+        new SimulatedControllerConstants();
 
     static {
       kControllerConstants.main.id = 24;
@@ -86,6 +93,10 @@ public final class Constants {
       kControllerConstants.positionGoalTolerance = 0.01;
       kControllerConstants.encoderConversionFactor = 0.0098174;
       kControllerConstants.encoderHomePosition = 0;
+
+      kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+      kSimulatedControllerConstants.gearRatio = 1;
+      kSimulatedControllerConstants.motorTorque = 1;
     }
 
     public static final int kLimitSwitchID = 7;
@@ -100,6 +111,8 @@ public final class Constants {
   public static class RollersConstants {
     public static final MainControllerConstants kControllerConstants =
         new MainControllerConstants();
+    public static final SimulatedControllerConstants kSimulatedControllerConstants =
+        new SimulatedControllerConstants();
 
     static {
       kControllerConstants.main.id = 24;
@@ -110,6 +123,10 @@ public final class Constants {
       kControllerConstants.positionGoalTolerance = 0.01;
       kControllerConstants.encoderConversionFactor = 0.0098174;
       kControllerConstants.encoderHomePosition = 0;
+
+      kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+      kSimulatedControllerConstants.gearRatio = 1;
+      kSimulatedControllerConstants.motorTorque = 1;
     }
 
     public static final int kLimitSwitchID = 7;
@@ -309,64 +326,67 @@ public final class Constants {
             );
   }
 
-  public static class VisionConstants {
-    public static final double kMaxAmbiguity = 0.7;
-
-    public static HashMap<String, Transform3d> getCamerasPoses() {
-      HashMap<String, Transform3d> cameras = new HashMap<String, Transform3d>();
-
-      double deg2rad = 0.0174533;
-      cameras.put("Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)));
-      cameras.put(
-          "BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, 120 * deg2rad)));
-      cameras.put(
-          "BackRight",
-          new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, -120 * deg2rad)));
-
-      return cameras;
-    }
-
-    public static final double kFieldLength = Units.feetToMeters(54.0);
-    public static AprilTagFieldLayout kBlueFieldLayout;
-    public static AprilTagFieldLayout kRedFieldLayout;
-
-    static {
-      try {
-        kBlueFieldLayout =
-            AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-        kBlueFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
-
-        kRedFieldLayout =
-            AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-        kRedFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    public static AprilTagFieldLayout getFieldLayout() {
-      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) return kBlueFieldLayout;
-      else return kRedFieldLayout;
-    }
-
-    public static Pose2d getAmpPose() {
-      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-        return getFieldLayout().getTagPose(6).get().toPose2d();
-      else return getFieldLayout().getTagPose(5).get().toPose2d();
-    }
-
-    public static Pose2d getSourcePose() {
-      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-        return getFieldLayout().getTagPose(2).get().toPose2d();
-      else return getFieldLayout().getTagPose(9).get().toPose2d();
-    }
-
-    public static Pose2d getSpeakerPose() {
-      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-        return getFieldLayout().getTagPose(7).get().toPose2d();
-      else return getFieldLayout().getTagPose(4).get().toPose2d();
-    }
-  }
+  //  public static class VisionConstants {
+  //    public static final double kMaxAmbiguity = 0.7;
+  //
+  //    public static HashMap<String, Transform3d> getCamerasPoses() {
+  //      HashMap<String, Transform3d> cameras = new HashMap<String, Transform3d>();
+  //
+  //      double deg2rad = 0.0174533;
+  //      cameras.put("Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)));
+  //      cameras.put(
+  //          "BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, 120 *
+  // deg2rad)));
+  //      cameras.put(
+  //          "BackRight",
+  //          new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, -120 * deg2rad)));
+  //
+  //      return cameras;
+  //    }
+  //
+  //    public static final double kFieldLength = Units.feetToMeters(54.0);
+  //    public static AprilTagFieldLayout kBlueFieldLayout;
+  //    public static AprilTagFieldLayout kRedFieldLayout;
+  //
+  //    static {
+  //      try {
+  //        kBlueFieldLayout =
+  //            AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+  //
+  // kBlueFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
+  //
+  //        kRedFieldLayout =
+  //            AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+  //        kRedFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
+  //      } catch (IOException e) {
+  //        throw new RuntimeException(e);
+  //      }
+  //    }
+  //
+  //    public static AprilTagFieldLayout getFieldLayout() {
+  //      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) return
+  // kBlueFieldLayout;
+  //      else return kRedFieldLayout;
+  //    }
+  //
+  //    public static Pose2d getAmpPose() {
+  //      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+  //        return getFieldLayout().getTagPose(6).get().toPose2d();
+  //      else return getFieldLayout().getTagPose(5).get().toPose2d();
+  //    }
+  //
+  //    public static Pose2d getSourcePose() {
+  //      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+  //        return getFieldLayout().getTagPose(2).get().toPose2d();
+  //      else return getFieldLayout().getTagPose(9).get().toPose2d();
+  //    }
+  //
+  //    public static Pose2d getSpeakerPose() {
+  //      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+  //        return getFieldLayout().getTagPose(7).get().toPose2d();
+  //      else return getFieldLayout().getTagPose(4).get().toPose2d();
+  //    }
+  //  }
 
   public static class NoteDetectionConstants {
     public static final double limelightMountAngleX = 18.22;

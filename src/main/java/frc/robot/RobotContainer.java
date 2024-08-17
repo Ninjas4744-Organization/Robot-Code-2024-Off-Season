@@ -5,13 +5,11 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Elevator;
 import frc.robot.Subsystems.Rotation;
 import frc.robot.Swerve.Swerve;
-import frc.robot.Vision.Vision;
 
 public class RobotContainer {
   private CommandPS5Controller _driverJoystick;
@@ -33,12 +31,12 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new Trigger(() -> Vision.getInstance().atAmp())
-        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
-    new Trigger(() -> Vision.getInstance().atSource())
-        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
-    new Trigger(() -> Vision.getInstance().atSpeaker())
-        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
+    //    new Trigger(() -> Vision.getInstance().atAmp())
+    //        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
+    //    new Trigger(() -> Vision.getInstance().atSource())
+    //        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
+    //    new Trigger(() -> Vision.getInstance().atSpeaker())
+    //        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
 
     new Trigger(
             () ->
@@ -101,10 +99,10 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
-
-    for (VisionEstimation estimation : estimations)
-      if (estimation != null) RobotState.updateRobotPose(estimation);
+    //    VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
+    //
+    //    for (VisionEstimation estimation : estimations)
+    //      if (estimation != null) RobotState.updateRobotPose(estimation);
   }
 
   public void resetSubsystems() {

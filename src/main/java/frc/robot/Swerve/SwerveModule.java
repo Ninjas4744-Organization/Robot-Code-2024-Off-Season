@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
+import frc.robot.RobotState;
 import frc.robot.Swerve.CANCoderUtil.CCUsage;
 import frc.robot.Swerve.CANSparkMaxUtil.Usage;
 
@@ -34,8 +35,8 @@ public class SwerveModule {
 
   private CANcoder angleEncoder;
 
-  private final SparkPIDController driveController;
-  private final SparkPIDController angleController;
+  private SparkPIDController driveController;
+  private SparkPIDController angleController;
 
   private final SimpleMotorFeedforward feedforward =
       new SimpleMotorFeedforward(
@@ -49,32 +50,35 @@ public class SwerveModule {
     this.m_angleKFF = SwerveConstants.kAngleFF;
     angleOffset = moduleConstants.angleOffset;
 
-    /* Angle Encoder Config */
-    angleEncoder = new CANcoder(moduleConstants.cancoderID);
-    configAngleEncoder();
+    if (!RobotState.isSimulated()) {
+      /* Angle Encoder Config */
+      angleEncoder = new CANcoder(moduleConstants.cancoderID);
+      configAngleEncoder();
 
-    /* Angle Motor Config */
-    angleMotor = new CANSparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
-    integratedAngleEncoder = angleMotor.getEncoder();
-    angleController = angleMotor.getPIDController();
-    configAngleMotor();
+      /* Angle Motor Config */
+      angleMotor = new CANSparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
+      integratedAngleEncoder = angleMotor.getEncoder();
+      angleController = angleMotor.getPIDController();
+      configAngleMotor();
 
-    /* Drive Motor Config */
-    driveMotor = new CANSparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
-    driveEncoder = driveMotor.getEncoder();
-    driveController = driveMotor.getPIDController();
-    configDriveMotor();
+      /* Drive Motor Config */
+      driveMotor = new CANSparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
+      driveEncoder = driveMotor.getEncoder();
+      driveController = driveMotor.getPIDController();
+      configDriveMotor();
+    }
 
     lastAngle = getState().angle;
   }
 
   public SwerveModuleState getState() {
-    return new SwerveModuleState(driveEncoder.getVelocity(), getAngle());
+    if (RobotState.isSimulated()) return new SwerveModuleState(0, getAngle());
+    else return new SwerveModuleState(driveEncoder.getVelocity(), getAngle());
   }
 
   public SwerveModulePosition getPosition() {
-    // return new SwerveModulePosition();
-    return new SwerveModulePosition(driveEncoder.getPosition(), getAngle());
+    if (RobotState.isSimulated()) return new SwerveModulePosition(0, getAngle());
+    else return new SwerveModulePosition(driveEncoder.getPosition(), getAngle());
   }
 
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
@@ -85,6 +89,8 @@ public class SwerveModule {
   }
 
   private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
+    if (RobotState.isSimulated()) return;
+
     if (isOpenLoop) {
       double percentOutput = desiredState.speedMetersPerSecond / SwerveConstants.maxSpeed;
       SmartDashboard.putNumber("driveWheels", percentOutput);
@@ -110,6 +116,8 @@ public class SwerveModule {
   }
 
   public void resetToAbsolute() {
+    if (RobotState.isSimulated()) return;
+
     double absolutePosition = getCanCoder().getDegrees() - angleOffset.getDegrees();
     // integratedAngleEncoder.setPosition(absolutePosition);
 
@@ -192,6 +200,7 @@ public class SwerveModule {
   }
 
   private Rotation2d getAngle() {
-    return Rotation2d.fromDegrees(integratedAngleEncoder.getPosition());
+    if (RobotState.isSimulated()) return new Rotation2d();
+    else return Rotation2d.fromDegrees(integratedAngleEncoder.getPosition());
   }
 }

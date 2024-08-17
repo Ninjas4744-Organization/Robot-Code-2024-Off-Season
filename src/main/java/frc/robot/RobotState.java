@@ -138,9 +138,13 @@ public class RobotState {
   }
 
   /**
-   * @return Wether or not there is a note in the robot
+   * @return Whether or not there is a note in the robot
    */
   public static boolean hasNote() {
     return noteDetector.get();
+  }
+
+  public static boolean isSimulated() {
+    return Robot.isSimulation();
   }
 }

@@ -1,9 +1,9 @@
 package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
 import frc.robot.AbstractClasses.NinjasSubsystem;
-import frc.robot.Constants;
 import frc.robot.Constants.RollersConstants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
@@ -19,27 +19,26 @@ public class Rollers extends NinjasSubsystem {
     return _instance;
   }
 
-  private Rollers() {
-    super();
-
+  @Override
+  protected void setControllers() {
     _controller = new NinjasSparkMaxController(RollersConstants.kControllerConstants);
+    _simulatedController =
+        new NinjasSimulatedController(RollersConstants.kSimulatedControllerConstants);
   }
 
   @Override
   protected void setFunctionMaps() {
     addFunctionToPeriodicMap(
         () -> {
-          _controller.setPosition(Constants.RotationConstants.States.kAmp);
+          controller().setPercent(RollersConstants.States.kIntake);
 
-          if (RobotState.hasNote()) {
-            StateMachine.getInstance().changeRobotState(RobotStates.CLOSE);
-          }
+          if (RobotState.hasNote()) StateMachine.getInstance().changeRobotState(RobotStates.CLOSE);
         },
         RobotStates.INTAKE);
 
     addFunctionToPeriodicMap(
         () -> {
-          _controller.setPercent(1);
+          controller().setPercent(RollersConstants.States.kOutake);
 
           if (_outakeTimer.get() > 1) {
             StateMachine.getInstance().changeRobotState(RobotStates.CLOSE);
@@ -48,7 +47,7 @@ public class Rollers extends NinjasSubsystem {
         RobotStates.OUTAKE);
 
     addFunctionToOnChangeMap(() -> _outakeTimer.restart(), RobotStates.OUTAKE);
-    addFunctionToOnChangeMap(() -> _controller.stop(), RobotStates.CLOSE);
-    addFunctionToOnChangeMap(() -> _controller.stop(), RobotStates.RESET);
+    addFunctionToOnChangeMap(() -> controller().stop(), RobotStates.CLOSE);
+    addFunctionToOnChangeMap(() -> controller().stop(), RobotStates.RESET);
   }
 }

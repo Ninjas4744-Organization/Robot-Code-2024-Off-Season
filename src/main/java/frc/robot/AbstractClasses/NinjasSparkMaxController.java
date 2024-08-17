@@ -11,8 +11,8 @@ public class NinjasSparkMaxController extends NinjasController {
   private CANSparkMax _main;
   private CANSparkMax[] _followers;
 
-  protected TrapezoidProfile _profile;
-  protected Timer _trapozoidTimer = new Timer();
+  private TrapezoidProfile _profile;
+  private Timer _trapozoidTimer = new Timer();
 
   public NinjasSparkMaxController(MainControllerConstants constants) {
     super(constants);

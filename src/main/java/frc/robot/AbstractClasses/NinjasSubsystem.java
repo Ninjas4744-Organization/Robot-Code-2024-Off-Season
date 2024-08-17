@@ -10,8 +10,10 @@ import java.util.Map;
 
 public abstract class NinjasSubsystem extends SubsystemBase {
   protected NinjasController _controller;
-  protected Map<RobotStates, Runnable> _periodicFunctionMap;
-  protected Map<RobotStates, Runnable> _onChangeFunctionMap;
+  protected NinjasSimulatedController _simulatedController;
+
+  private Map<RobotStates, Runnable> _periodicFunctionMap;
+  private Map<RobotStates, Runnable> _onChangeFunctionMap;
   private RobotStates previousRobotState;
 
   public NinjasSubsystem() {
@@ -23,8 +25,20 @@ public abstract class NinjasSubsystem extends SubsystemBase {
     for (RobotStates state : RobotStates.values()) _periodicFunctionMap.put(state, () -> {});
     for (RobotStates state : RobotStates.values()) _onChangeFunctionMap.put(state, () -> {});
 
+    setControllers();
     setFunctionMaps();
   }
+
+  /**
+   * Set the real and simulated controllers of the subsystems.
+   *
+   * <p>Set constants in the _controller for the real one,
+   *
+   * <p>and set constants in the _simulatedController for the simulated one.
+   *
+   * <p>The simulated controller is optional, only set it if for code simulation use.
+   */
+  protected abstract void setControllers();
 
   /**
    * Set in what state what function to run.
@@ -74,20 +88,25 @@ public abstract class NinjasSubsystem extends SubsystemBase {
     for (RobotStates state : states) _onChangeFunctionMap.put(state, function);
   }
 
+  protected NinjasController controller() {
+    if (RobotState.isSimulated()) return _simulatedController;
+    else return _controller;
+  }
+
   /**
    * Resets the subsystem: moves the subsystem down until limit hit and then stops.
    *
    * @return the command that does that
    */
   public Command resetSubsystem() {
-    return runMotor(-0.5).until(() -> _controller.getPosition() <= 0);
+    return runMotor(-0.5).until(() -> controller().getPosition() <= 0);
   }
 
   /**
    * @return Whether the subsystem is homed/reseted/closed
    */
   public boolean isHomed() {
-    return _controller.isHomed();
+    return controller().isHomed();
   }
 
   /**
@@ -97,7 +116,8 @@ public abstract class NinjasSubsystem extends SubsystemBase {
    * @return a command that runs that on start and stops to motor on end
    */
   public Command runMotor(double percent) {
-    return Commands.startEnd(() -> _controller.setPercent(percent), () -> _controller.stop(), this);
+    return Commands.startEnd(
+        () -> controller().setPercent(percent), () -> controller().stop(), this);
   }
 
   @Override
@@ -108,6 +128,6 @@ public abstract class NinjasSubsystem extends SubsystemBase {
 
     _periodicFunctionMap.get(RobotState.getRobotState()).run();
 
-    _controller.periodic();
+    controller().periodic();
   }
 }

@@ -19,7 +19,6 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
 import frc.robot.Vision.NoteDetection;
-import frc.robot.Vision.Vision;
 import java.util.Arrays;
 import java.util.List;
 
@@ -106,13 +105,15 @@ public class Swerve extends SubsystemBase {
           }
           break;
 
-        case HOLDING_NOTE:
-          if (Vision.getInstance().hasTargets("Front")) {
-            Pose2d targetPose = Vision.getInstance().getClosestTag("Front").pose.toPose2d();
-            drive =
-                calculateDriveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
-          }
-          break;
+          //        case HOLDING_NOTE:
+          //          if (Vision.getInstance().hasTargets("Front")) {
+          //            Pose2d targetPose =
+          // Vision.getInstance().getClosestTag("Front").pose.toPose2d();
+          //            drive =
+          //                calculateDriveAssist(translation, drive.omegaRadiansPerSecond,
+          // targetPose, true);
+          //          }
+          //          break;
       }
     }
 
