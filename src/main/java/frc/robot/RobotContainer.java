@@ -14,101 +14,87 @@ import frc.robot.Swerve.Swerve;
 import frc.robot.Vision.Vision;
 
 public class RobotContainer {
-  private CommandPS5Controller _driverJoystick;
-  private Joystick _driverJoystick2;
-  private CommandPS5Controller _operatorJoystick;
+	private CommandPS5Controller _driverJoystick;
+	private Joystick _driverJoystick2;
+	private CommandPS5Controller _operatorJoystick;
 
-  public RobotContainer() {
-    _driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
-    _driverJoystick2 = new Joystick(1);
+	public RobotContainer() {
+		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
+		_driverJoystick2 = new Joystick(1);
+		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
-    _operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
+		RobotState.initPoseEstimator();
 
-    RobotState.initPoseEstimator();
+		AutoCommandBuilder.configureAutoBuilder();
+		AutoCommandBuilder.registerCommands();
 
-    AutoCommandBuilder.configureAutoBuilder();
-    AutoCommandBuilder.registerCommands();
+		configureBindings();
+	}
 
-    configureBindings();
-  }
+	private void configureBindings() {
+		new Trigger(() -> Vision.getInstance().atAmp())
+				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
+		new Trigger(() -> Vision.getInstance().atSource())
+				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
+		new Trigger(() -> Vision.getInstance().atSpeaker())
+				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
 
-  private void configureBindings() {
-    new Trigger(() -> Vision.getInstance().atAmp())
-        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
-    new Trigger(() -> Vision.getInstance().atSource())
-        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
-    new Trigger(() -> Vision.getInstance().atSpeaker())
-        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
+		new Trigger(() -> Elevator.getInstance().isHomed()
+						&& Rotation.getInstance().isHomed()
+						&& Climber.getInstance().isHomed())
+				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
+		configureDriverBindings();
+		configureOperatorBindings();
+	}
 
-    new Trigger(
-            () ->
-                Elevator.getInstance().isHomed()
-                    && Rotation.getInstance().isHomed()
-                    && Climber.getInstance().isHomed())
-        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
+	private void configureDriverBindings() {
+		Swerve.getInstance()
+				.setDefaultCommand(TeleopCommandBuilder.swerveDrive(
+						() -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
+						() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()),
+						true));
 
-    configureDriverBindings();
-    configureOperatorBindings();
-  }
+		_driverJoystick
+				.circle()
+				.toggleOnTrue(
+						Commands.startEnd(() -> Swerve.getInstance().setBaybladeMode(true), () -> Swerve.getInstance()
+								.setBaybladeMode(false)));
 
-  private void configureDriverBindings() {
-    Swerve.getInstance()
-        .setDefaultCommand(
-            TeleopCommandBuilder.swerveDrive(
-                () -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
-                () -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()),
-                true));
+		_driverJoystick
+				.L1()
+				.onTrue(Commands.parallel(
+						TeleopCommandBuilder.resetGyro(false),
+						Commands.runOnce(() -> Swerve.getInstance().resetModulesToAbsolute(), Swerve.getInstance())));
 
-    _driverJoystick
-        .circle()
-        .toggleOnTrue(
-            Commands.startEnd(
-                () -> Swerve.getInstance().setBaybladeMode(true),
-                () -> Swerve.getInstance().setBaybladeMode(false)));
+		_driverJoystick
+				.L2()
+				.onTrue(Commands.parallel(
+						TeleopCommandBuilder.resetGyro(true),
+						Commands.runOnce(() -> Swerve.getInstance().resetModulesToAbsolute(), Swerve.getInstance())));
 
-    _driverJoystick
-        .L1()
-        .onTrue(
-            Commands.parallel(
-                TeleopCommandBuilder.resetGyro(false),
-                Commands.runOnce(
-                    () -> Swerve.getInstance().resetModulesToAbsolute(), Swerve.getInstance())));
+		_driverJoystick
+				.R1()
+				.toggleOnTrue(
+						Commands.startEnd(() -> Swerve.getInstance().setIsDriveAssist(true), () -> Swerve.getInstance()
+								.setIsDriveAssist(false)));
 
-    _driverJoystick
-        .L2()
-        .onTrue(
-            Commands.parallel(
-                TeleopCommandBuilder.resetGyro(true),
-                Commands.runOnce(
-                    () -> Swerve.getInstance().resetModulesToAbsolute(), Swerve.getInstance())));
+		// _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
+	}
 
-    _driverJoystick
-        .R1()
-        .toggleOnTrue(
-            Commands.startEnd(
-                () -> Swerve.getInstance().setIsDriveAssist(true),
-                () -> Swerve.getInstance().setIsDriveAssist(false)));
+	private void configureOperatorBindings() {
+		_operatorJoystick.cross().onTrue(StateMachine.getInstance().Act());
+		_operatorJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_CLIMB));
+		_operatorJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
+	}
 
-    // _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
-  }
+	public void periodic() {
+		VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
 
-  private void configureOperatorBindings() {
-    _operatorJoystick.cross().onTrue(StateMachine.getInstance().Act());
-    _operatorJoystick
-        .triangle()
-        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_CLIMB));
-    _operatorJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
-  }
+		for (VisionEstimation estimation : estimations) if (estimation != null) RobotState.updateRobotPose(estimation);
+	}
 
-  public void periodic() {
-    VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
-
-    for (VisionEstimation estimation : estimations)
-      if (estimation != null) RobotState.updateRobotPose(estimation);
-  }
-
-  public void resetSubsystems() {
-    StateMachine.getInstance().changeRobotState(RobotStates.RESET);
-    TeleopCommandBuilder.resetGyro(false).schedule();
-  }
+	public void resetSubsystems() {
+		StateMachine.getInstance().changeRobotState(RobotStates.RESET);
+		TeleopCommandBuilder.resetGyro(false).schedule();
+	}
 }

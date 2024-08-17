@@ -125,12 +125,9 @@ spotless {
 			exclude '**/build/**', '**/build-*/**'
 		}
 		toggleOffOn()
-		googleJavaFormat()
-//		prettier().config([
-//				'parser': 'java',
-//				'tabWidth': 4,
-//				'printWidth': 120
-//		])
+		palantirJavaFormat()
+		indentWithTabs(4)
+		removeUnusedImports()
 		trimTrailingWhitespace()
 		endWithNewline()
 	}
