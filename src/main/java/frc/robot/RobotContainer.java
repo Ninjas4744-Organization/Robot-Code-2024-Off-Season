@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Swerve.Swerve;
@@ -29,24 +30,21 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    //        new Trigger(() -> Vision.getInstance().atAmp())
-    //                .onTrue(
-    //                        Commands.runOnce(
-    //                                () ->
-    // StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_AMP_OUTAKE),
-    //                                StateMachine.getInstance()));
-    //        new Trigger(() -> Vision.getInstance().atSource())
-    //                .onTrue(
-    //                        Commands.runOnce(
-    //                                () ->
-    // StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_INTAKE),
-    //                                StateMachine.getInstance()));
-    //        new Trigger(() -> Vision.getInstance().atSpeaker())
-    //                .onTrue(
-    //                        Commands.runOnce(
-    //                                () ->
-    // StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT),
-    //                                StateMachine.getInstance()));
+    new Trigger(() -> Vision.getInstance().atAmp())
+        .onTrue(
+            Commands.runOnce(
+                () -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_AMP_OUTAKE),
+                StateMachine.getInstance()));
+    new Trigger(() -> Vision.getInstance().atSource())
+        .onTrue(
+            Commands.runOnce(
+                () -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_INTAKE),
+                StateMachine.getInstance()));
+    new Trigger(() -> Vision.getInstance().atSpeaker())
+        .onTrue(
+            Commands.runOnce(
+                () -> StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT),
+                StateMachine.getInstance()));
 
     configureDriverBindings();
     configureOperatorBindings();

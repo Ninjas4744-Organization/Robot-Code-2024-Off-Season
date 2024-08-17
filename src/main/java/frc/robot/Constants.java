@@ -28,7 +28,7 @@ public final class Constants {
   public static final int kNoteDetectorID = 0;
 
   // PLACEHOLDER
-  public class ElevatorConstants {
+  public static class ElevatorConstants {
     public static final MainControllerConstants kControllerConstants =
         new MainControllerConstants();
 
@@ -240,7 +240,7 @@ public final class Constants {
             );
   }
 
-  public class VisionConstants {
+  public static class VisionConstants {
     public static final double kMaxAmbiguity = 0.7;
 
     public static HashMap<String, Transform3d> getCamerasPoses() {
@@ -297,5 +297,12 @@ public final class Constants {
         return getFieldLayout().getTagPose(7).get().toPose2d();
       else return getFieldLayout().getTagPose(4).get().toPose2d();
     }
+  }
+
+  public static class NoteDetectionConstants {
+    public static final double limelightMountAngleX = 18.22;
+    public static final double limelightMountAngleY = 0;
+    public static final double limelightHeight = 0.395;
+    public static final double noteHeight = 0.0254;
   }
 }

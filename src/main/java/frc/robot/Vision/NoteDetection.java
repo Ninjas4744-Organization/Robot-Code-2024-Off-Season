@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.NoteDetectionConstants;
 import frc.robot.RobotState;
 
 public class NoteDetection {
@@ -20,25 +21,37 @@ public class NoteDetection {
     double tx = LimelightHelpers.getTX("");
     double ty = LimelightHelpers.getTY("");
 
-    double limelightMountAngleY = 90 - 71.78290480217515;
-    double limelightHeight = 0.395;
-    double targetHeight = 0.0254;
-    double distY =
-        (limelightHeight - targetHeight)
-            / Math.tan(Rotation2d.fromDegrees(limelightMountAngleY + ty).getRadians());
+    Translation2d translation = convertMeasurement(tx, ty);
 
-    double limelightMountAngleX = 0;
-    double distX = Math.tan(Rotation2d.fromDegrees(limelightMountAngleX + tx).getRadians()) * distY;
-    SmartDashboard.putNumber("Dist X", distX);
-    SmartDashboard.putNumber("Dist Y", distY);
+    SmartDashboard.putNumber("Dist X", translation.getX());
+    SmartDashboard.putNumber("Dist Y", translation.getY());
 
     Transform2d noteTransform =
         new Transform2d(
-            new Translation2d(distY, -distX).rotateBy(RobotState.getGyroYaw()), new Rotation2d());
+            new Translation2d(translation.getY(), -translation.getX())
+                .rotateBy(RobotState.getGyroYaw()),
+            new Rotation2d());
 
     Pose2d notePose = RobotState.getRobotPose().plus(noteTransform);
     publisher.set(notePose);
     return notePose;
+  }
+
+  /** Converts limelight's degrees measurement to meters */
+  private static Translation2d convertMeasurement(double tx, double ty) {
+    double distY =
+        (NoteDetectionConstants.limelightHeight - NoteDetectionConstants.noteHeight)
+            / Math.tan(
+                Rotation2d.fromDegrees(NoteDetectionConstants.limelightMountAngleX + ty)
+                    .getRadians());
+
+    double distX =
+        Math.tan(
+                Rotation2d.fromDegrees(NoteDetectionConstants.limelightMountAngleY + tx)
+                    .getRadians())
+            * distY;
+
+    return new Translation2d(distX, distY);
   }
 
   /**

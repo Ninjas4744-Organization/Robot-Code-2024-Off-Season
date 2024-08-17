@@ -31,7 +31,7 @@ public abstract class NinjasSubsystem extends SubsystemBase {
   protected abstract void setFunctionMap();
 
   /**
-   * Resets the subsystem- moves the subsystem down until limit hit and then stops.
+   * Resets the subsystem: moves the subsystem down until limit hit and then stops.
    *
    * @return the command that does that
    */
