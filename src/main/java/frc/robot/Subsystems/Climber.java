@@ -19,6 +19,10 @@ public class Climber extends NinjasSubsystem {
 	@Override
 	protected void setControllers() {
 		_controller = new NinjasSparkMaxController(ClimberConstants.kControllerConstants);
+	}
+
+	@Override
+	protected void setSimulationControllers() {
 		_simulatedController = new NinjasSimulatedController(ClimberConstants.kSimulatedControllerConstants);
 	}
 

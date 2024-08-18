@@ -28,7 +28,7 @@ public class RobotContainer {
 
 		AutoCommandBuilder.configureAutoBuilder();
 		AutoCommandBuilder.registerCommands();
-
+		RobotState.setRobotState(RobotStates.IDLE);
 		configureBindings();
 	}
 
@@ -45,7 +45,7 @@ public class RobotContainer {
 						&& Climber.getInstance().isHomed())
 				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
 
-		configureDriverBindings();
+		// configureDriverBindings();
 		configureOperatorBindings();
 	}
 

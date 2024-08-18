@@ -46,4 +46,10 @@ public class MainControllerConstants {
 
 	/** The up soft limit, makes the system unable to move above it */
 	public double maxSoftLimit = 0;
+
+	/**
+	 * Gear ratio between the motor output and the output after the gearbox, bigger values means
+	 * bigger reduction(1 / x)
+	 */
+	public double gearRatio = 1;
 }

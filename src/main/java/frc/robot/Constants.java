@@ -33,9 +33,9 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
+			kControllerConstants.gearRatio = 1;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.gearRatio = 1;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
@@ -62,9 +62,9 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
+			kControllerConstants.gearRatio = 1;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.gearRatio = 1;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
@@ -90,9 +90,9 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
+			kControllerConstants.gearRatio = 1;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.gearRatio = 1;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
@@ -119,9 +119,9 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
+			kControllerConstants.gearRatio = 1;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.gearRatio = 1;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 

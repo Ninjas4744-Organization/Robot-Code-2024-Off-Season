@@ -3,6 +3,7 @@ package frc.robot.AbstractClasses;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
 import java.util.HashMap;
@@ -25,7 +26,12 @@ public abstract class NinjasSubsystem extends SubsystemBase {
 		for (RobotStates state : RobotStates.values()) _periodicFunctionMap.put(state, () -> {});
 		for (RobotStates state : RobotStates.values()) _onChangeFunctionMap.put(state, () -> {});
 
-		setControllers();
+		if (Robot.isReal()) {
+			setControllers();
+		} else {
+			setSimulationControllers();
+		}
+
 		setFunctionMaps();
 	}
 
@@ -39,6 +45,17 @@ public abstract class NinjasSubsystem extends SubsystemBase {
 	 * <p>The simulated controller is optional, only set it if for code simulation use.
 	 */
 	protected abstract void setControllers();
+
+	/**
+	 * Set the real and simulated controllers of the subsystems.
+	 *
+	 * <p>Set constants in the _controller for the real one,
+	 *
+	 * <p>and set constants in the _simulatedController for the simulated one.
+	 *
+	 * <p>The simulated controller is optional, only set it if for code simulation use.
+	 */
+	protected abstract void setSimulationControllers();
 
 	/**
 	 * Set in what state what function to run.

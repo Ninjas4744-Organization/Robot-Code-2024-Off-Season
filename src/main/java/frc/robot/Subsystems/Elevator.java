@@ -19,6 +19,10 @@ public class Elevator extends NinjasSubsystem {
 	@Override
 	protected void setControllers() {
 		_controller = new NinjasSparkMaxController(ElevatorConstants.kControllerConstants);
+	}
+
+	@Override
+	protected void setSimulationControllers() {
 		_simulatedController = new NinjasSimulatedController(ElevatorConstants.kSimulatedControllerConstants);
 	}
 

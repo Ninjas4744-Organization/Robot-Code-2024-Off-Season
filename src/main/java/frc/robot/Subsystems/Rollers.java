@@ -11,6 +11,7 @@ import frc.robot.StateMachine;
 
 public class Rollers extends NinjasSubsystem {
 	private static Rollers _instance;
+
 	private Timer _outakeTimer = new Timer();
 
 	public static Rollers getInstance() {
@@ -22,6 +23,10 @@ public class Rollers extends NinjasSubsystem {
 	@Override
 	protected void setControllers() {
 		_controller = new NinjasSparkMaxController(RollersConstants.kControllerConstants);
+	}
+
+	@Override
+	protected void setSimulationControllers() {
 		_simulatedController = new NinjasSimulatedController(RollersConstants.kSimulatedControllerConstants);
 	}
 

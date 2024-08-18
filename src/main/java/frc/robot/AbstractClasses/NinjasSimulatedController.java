@@ -16,10 +16,37 @@ public class NinjasSimulatedController extends NinjasController {
 
 	public NinjasSimulatedController(SimulatedControllerConstants constants) {
 		super(constants.mainControllerConstants);
-		_main = new DCMotorSim(
-				DCMotor.getKrakenX60(constants.mainControllerConstants.followers.length + 1),
-				constants.gearRatio,
-				constants.motorTorque);
+
+		switch (constants.motorType) {
+			case KRAKEN:
+				_main = new DCMotorSim(
+						DCMotor.getKrakenX60(constants.mainControllerConstants.followers.length + 1),
+						constants.mainControllerConstants.gearRatio,
+						constants.motorTorque);
+				break;
+			case FALCON:
+				_main = new DCMotorSim(
+						DCMotor.getFalcon500(constants.mainControllerConstants.followers.length + 1),
+						constants.mainControllerConstants.gearRatio,
+						constants.motorTorque);
+			case NEO:
+				_main = new DCMotorSim(
+						DCMotor.getNEO(constants.mainControllerConstants.followers.length + 1),
+						constants.mainControllerConstants.gearRatio,
+						constants.motorTorque);
+			case VORTEX:
+				_main = new DCMotorSim(
+						DCMotor.getNeoVortex(constants.mainControllerConstants.followers.length + 1),
+						constants.mainControllerConstants.gearRatio,
+						constants.motorTorque);
+			case NEO550:
+				_main = new DCMotorSim(
+						DCMotor.getNeo550(constants.mainControllerConstants.followers.length + 1),
+						constants.mainControllerConstants.gearRatio,
+						constants.motorTorque);
+			default:
+				break;
+		}
 
 		_pid = new PIDController(
 				constants.mainControllerConstants.PIDFConstants.kP,

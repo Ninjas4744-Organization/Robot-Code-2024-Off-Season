@@ -19,6 +19,10 @@ public class Rotation extends NinjasSubsystem {
 	@Override
 	protected void setControllers() {
 		_controller = new NinjasSparkMaxController(RotationConstants.kControllerConstants);
+	}
+
+	@Override
+	protected void setSimulationControllers() {
 		_simulatedController = new NinjasSimulatedController(RotationConstants.kSimulatedControllerConstants);
 	}
 

@@ -46,9 +46,9 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
-				// case CLOSE, RESET:
-				// 	if (wantedState == RobotStates.IDLE) RobotState.setRobotState(wantedState);
-				// 	break;
+			case CLOSE, RESET:
+				RobotState.setRobotState(wantedState);
+				break;
 
 			case IDLE:
 				if (wantedState == RobotStates.HOLDING_NOTE
