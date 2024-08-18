@@ -24,7 +24,7 @@ public class RobotContainer {
 
 		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
-		RobotState.initPoseEstimator();
+		if (Robot.isReal()) RobotState.initPoseEstimator();
 
 		AutoCommandBuilder.configureAutoBuilder();
 		AutoCommandBuilder.registerCommands();
@@ -45,7 +45,7 @@ public class RobotContainer {
 						&& Climber.getInstance().isHomed())
 				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
 
-		// configureDriverBindings();
+		configureDriverBindings();
 		configureOperatorBindings();
 	}
 

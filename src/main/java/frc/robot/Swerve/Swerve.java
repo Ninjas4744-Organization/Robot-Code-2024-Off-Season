@@ -14,7 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
@@ -22,25 +21,20 @@ import frc.robot.Vision.NoteDetection;
 import java.util.Arrays;
 import java.util.List;
 
-public class Swerve extends SubsystemBase {
-	private static Swerve _instance = null;
-
-	public static Swerve getInstance() {
-		if (_instance == null) _instance = new Swerve();
-		return _instance;
-	}
+public class Swerve extends SwerveIO {
 
 	private SwerveModule[] _modules;
-	private SwerveDriveOdometry _odometry;
 	private PIDController _anglePID;
 	private PIDController _driveAssistXPID;
 	private PIDController _driveAssistYPID;
 	private boolean isDriveAssist = false;
 	private boolean isAnglePID = false;
 	private boolean isBayblade = false;
+	protected SwerveDriveOdometry _odometry;
 
 	/** Creates a new Swerve. */
-	private Swerve() {
+	Swerve() {
+
 		_modules = new SwerveModule[] {
 			new SwerveModule(0, SwerveConstants.Mod0.constants),
 			new SwerveModule(1, SwerveConstants.Mod1.constants),

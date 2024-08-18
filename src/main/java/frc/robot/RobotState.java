@@ -78,7 +78,8 @@ public class RobotState {
 	public static void setRobotPose(Pose2d pose) {
 		robotPose = pose;
 		publisher.set(pose);
-		poseEstimator.resetPosition(getGyroYaw(), Swerve.getInstance().getModulePositions(), pose);
+		if (Robot.isReal())
+			poseEstimator.resetPosition(getGyroYaw(), Swerve.getInstance().getModulePositions(), pose);
 	}
 
 	/**
