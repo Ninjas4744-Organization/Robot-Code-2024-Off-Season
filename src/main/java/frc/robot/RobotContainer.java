@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -14,6 +16,7 @@ import frc.robot.Swerve.Swerve;
 public class RobotContainer {
   private CommandPS5Controller _driverJoystick;
   private Joystick _driverJoystick2;
+  private CANSparkMax _test; // Remove
   private CommandPS5Controller _operatorJoystick;
 
   public RobotContainer() {
@@ -31,18 +34,17 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    //    new Trigger(() -> Vision.getInstance().atAmp())
-    //        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
-    //    new Trigger(() -> Vision.getInstance().atSource())
-    //        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
-    //    new Trigger(() -> Vision.getInstance().atSpeaker())
-    //        .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
+    // new Trigger(() -> Vision.getInstance().atAmp())
+    // .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
+    // new Trigger(() -> Vision.getInstance().atSource())
+    // .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
+    // new Trigger(() -> Vision.getInstance().atSpeaker())
+    // .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
 
     new Trigger(
-            () ->
-                Elevator.getInstance().isHomed()
-                    && Rotation.getInstance().isHomed()
-                    && Climber.getInstance().isHomed())
+        () -> Elevator.getInstance().isHomed()
+            && Rotation.getInstance().isHomed()
+            && Climber.getInstance().isHomed())
         .onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
 
     configureDriverBindings();
@@ -99,10 +101,10 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    //    VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
+    // VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
     //
-    //    for (VisionEstimation estimation : estimations)
-    //      if (estimation != null) RobotState.updateRobotPose(estimation);
+    // for (VisionEstimation estimation : estimations)
+    // if (estimation != null) RobotState.updateRobotPose(estimation);
   }
 
   public void resetSubsystems() {
