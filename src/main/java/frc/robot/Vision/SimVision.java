@@ -19,6 +19,7 @@ public class SimVision extends VisionIO {
 
 	// The simulated camera properties
 	SimCameraProperties cameraProp = new SimCameraProperties();
+	PhotonCameraSim cameraSim;
 
 	SimVision() {
 		visionSim.addAprilTags(Constants.VisionConstants.getFieldLayout());
@@ -26,14 +27,14 @@ public class SimVision extends VisionIO {
 		// A 640 x 480 camera with a 100 degree diagonal FOV.
 		cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
 		// Approximate detection noise with average and standard deviation error in pixels.
-		cameraProp.setCalibError(0.25, 0.08);
+		cameraProp.setCalibError(0.3, 0.5);
 		// Set the camera image capture framerate (Note: this is limited by robot loop rate).
 		cameraProp.setFPS(20);
 		// The average and standard deviation in milliseconds of image data latency.
 		cameraProp.setAvgLatencyMs(35);
 		cameraProp.setLatencyStdDevMs(5);
 		// The simulation of this camera. Its values used in real robot code will be updated.
-		PhotonCameraSim cameraSim = new PhotonCameraSim(_cameras[0].getCamera(), cameraProp);
+		cameraSim = new PhotonCameraSim(_cameras[0].getCamera(), cameraProp);
 		HashMap<String, Transform3d> camerasPoses = Constants.VisionConstants.getCamerasPoses();
 		String[] camerasNames = camerasPoses.keySet().toArray(new String[0]);
 

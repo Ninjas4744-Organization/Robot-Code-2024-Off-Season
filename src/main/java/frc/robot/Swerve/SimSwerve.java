@@ -21,8 +21,11 @@ public class SimSwerve extends SwerveIO {
 
 	@Override
 	public SwerveModulePosition[] getModulePositions() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getModulePositions'");
+		SwerveModulePosition[] positions = new SwerveModulePosition[4];
+		for (int i = 0; i < positions.length; i++) {
+			positions[i] = new SwerveModulePosition();
+		}
+		return positions;
 	}
 
 	@Override

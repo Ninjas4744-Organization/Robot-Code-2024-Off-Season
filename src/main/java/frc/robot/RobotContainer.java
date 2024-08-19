@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Elevator;
@@ -25,7 +26,7 @@ public class RobotContainer {
 
 		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
-		if (Robot.isReal()) RobotState.initPoseEstimator();
+		RobotState.initPoseEstimator();
 
 		AutoCommandBuilder.configureAutoBuilder();
 		AutoCommandBuilder.registerCommands();
@@ -97,10 +98,9 @@ public class RobotContainer {
 	}
 
 	public void periodic() {
-		// VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
-		//
-		// for (VisionEstimation estimation : estimations)
-		// if (estimation != null) RobotState.updateRobotPose(estimation);
+		VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
+
+		for (VisionEstimation estimation : estimations) if (estimation != null) RobotState.updateRobotPose(estimation);
 	}
 
 	public void resetSubsystems() {
