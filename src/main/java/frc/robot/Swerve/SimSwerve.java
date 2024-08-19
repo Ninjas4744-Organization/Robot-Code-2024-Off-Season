@@ -13,7 +13,6 @@ public class SimSwerve extends SwerveIO {
 
 	@Override
 	public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-		System.out.println(translation.getX());
 		_currentPose = new Pose2d(
 				_currentPose.getX() + translation.getX() * 0.1,
 				_currentPose.getY() + translation.getY() * 0.1,

@@ -10,6 +10,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.Swerve.Swerve;
 
@@ -147,5 +148,26 @@ public class RobotState {
 
 	public static boolean isSimulated() {
 		return Robot.isSimulation();
+	}
+
+	public static boolean atAmp() {
+		return RobotState.getRobotPose()
+						.getTranslation()
+						.getDistance(VisionConstants.getAmpPose().getTranslation())
+				< 0.5;
+	}
+
+	public static boolean atSource() {
+		return RobotState.getRobotPose()
+						.getTranslation()
+						.getDistance(VisionConstants.getSourcePose().getTranslation())
+				< 0.5;
+	}
+
+	public static boolean atSpeaker() {
+		return RobotState.getRobotPose()
+						.getTranslation()
+						.getDistance(VisionConstants.getSpeakerPose().getTranslation())
+				< 2.5;
 	}
 }

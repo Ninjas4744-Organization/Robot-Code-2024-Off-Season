@@ -2,6 +2,7 @@ package frc.robot.DataClasses;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 
 public class VisionOutput {
 	/** The pose of the robot */
@@ -17,7 +18,7 @@ public class VisionOutput {
 	public AprilTag farthestTag;
 
 	/** The tag which was detected the closest */
-	public AprilTag closestTag;
+	public AprilTag closestTag = new AprilTag(1, new Pose3d());
 
 	/** The ambiguity of the tag which was detected most ambiguously */
 	public double maxAmbiguity;
