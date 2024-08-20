@@ -6,9 +6,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.DataClasses.VisionOutput;
-import frc.robot.Robot;
 import frc.robot.RobotState;
-
 import java.util.HashMap;
 
 public abstract class VisionIO extends SubsystemBase {
@@ -25,7 +23,7 @@ public abstract class VisionIO extends SubsystemBase {
 		return _instance;
 	}
 
-	public VisionIO(){
+	public VisionIO() {
 		HashMap<String, Transform3d> camerasPoses = Constants.VisionConstants.getCamerasPoses();
 		String[] camerasNames = camerasPoses.keySet().toArray(new String[0]);
 

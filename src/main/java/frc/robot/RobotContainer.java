@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -14,12 +15,12 @@ import frc.robot.Vision.Vision;
 
 public class RobotContainer {
 	private CommandPS5Controller _driverJoystick;
-//	private Joystick _driverJoystick2;
+	//	private Joystick _driverJoystick2;
 	private CommandPS5Controller _operatorJoystick;
 
 	public RobotContainer() {
 		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
-//		_driverJoystick2 = new Joystick(1);
+		//		_driverJoystick2 = new Joystick(1);
 
 		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
@@ -31,23 +32,20 @@ public class RobotContainer {
 	}
 
 	private void configureBindings() {
-		 new Trigger(RobotState::atSpeaker)
-		 		.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
-		 new Trigger(RobotState::atAmp)
-		 		.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
-		 new Trigger(RobotState::atSource)
-		 		.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
+		new Trigger(RobotState::atSpeaker).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
+		new Trigger(RobotState::atAmp).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
+		new Trigger(RobotState::atSource).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
 
 		new Trigger(() -> Elevator.getInstance().isHomed()
 						&& Rotation.getInstance().isHomed()
 						&& Climber.getInstance().isHomed())
 				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
-		
-//		new Trigger(() -> {
-//					Pose2d _currentPose = RobotState.getRobotPose();
-//					return _currentPose.getX() < 3.5 && _currentPose.getY() > 6.5;
-//				})
-//				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
+
+		//		new Trigger(() -> {
+		//					Pose2d _currentPose = RobotState.getRobotPose();
+		//					return _currentPose.getX() < 3.5 && _currentPose.getY() > 6.5;
+		//				})
+		//				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
 
 		configureDriverBindings();
 		configureOperatorBindings();
@@ -60,29 +58,38 @@ public class RobotContainer {
 						() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()),
 						true));
 
-		 _driverJoystick
-		 		.circle()
-		 		.toggleOnTrue(
-		 				Commands.startEnd(() -> SwerveIO.getInstance().setBaybladeMode(true), () -> SwerveIO.getInstance()
-		 						.setBaybladeMode(false)));
+		_driverJoystick
+				.circle()
+				.toggleOnTrue(Commands.startEnd(
+						() -> SwerveIO.getInstance().setBaybladeMode(true),
+						() -> SwerveIO.getInstance().setBaybladeMode(false)));
 
-//		 _driverJoystick
-//		 		.L1()
-//		 		.onTrue(Commands.parallel(
-//		 				TeleopCommandBuilder.resetGyro(false),
-//		 				Commands.runOnce(() -> SwerveIO.getInstance().resetModulesToAbsolute(), SwerveIO.getInstance())));
-//
-//		 _driverJoystick
-//		 		.L2()
-//		 		.onTrue(Commands.parallel(
-//		 				TeleopCommandBuilder.resetGyro(true),
-//		 				Commands.runOnce(() -> SwerveIO.getInstance().resetModulesToAbsolute(), SwerveIO.getInstance())));
+		_driverJoystick
+				.L1()
+				.onTrue(Commands.runOnce(
+						() -> {
+							SmartDashboard.putBoolean(
+									"IS PID ANGLE", SwerveIO.getInstance().getANglePID());
+							SwerveIO.getInstance().toggleAnglePID();
+						},
+						SwerveIO.getInstance()));
+		//		 _driverJoystick
+		//		 		.L1()
+		//		 		.onTrue(Commands.parallel(
+		//		 				TeleopCommandBuilder.resetGyro(false),
+		//		 				Commands.runOnce(() -> SwerveIO.getInstance().resetModulesToAbsolute(), SwerveIO.getInstance())));
+		//
+		//		 _driverJoystick
+		//		 		.L2()
+		//		 		.onTrue(Commands.parallel(
+		//		 				TeleopCommandBuilder.resetGyro(true),
+		//		 				Commands.runOnce(() -> SwerveIO.getInstance().resetModulesToAbsolute(), SwerveIO.getInstance())));
 
-		 _driverJoystick
-		 		.R1()
-		 		.toggleOnTrue(
-		 				Commands.startEnd(() -> SwerveIO.getInstance().setIsDriveAssist(true), () -> SwerveIO.getInstance()
-		 						.setIsDriveAssist(false)));
+		_driverJoystick
+				.R1()
+				.toggleOnTrue(Commands.startEnd(
+						() -> SwerveIO.getInstance().setIsDriveAssist(true),
+						() -> SwerveIO.getInstance().setIsDriveAssist(false)));
 
 		// _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
 	}

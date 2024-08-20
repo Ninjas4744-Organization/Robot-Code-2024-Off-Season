@@ -5,9 +5,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Swerve.Swerve;
 import frc.robot.Swerve.SwerveIO;
-
 import java.util.Optional;
 
 public class AutoCommandBuilder {
@@ -17,7 +15,8 @@ public class AutoCommandBuilder {
 				RobotState::setRobotPose, // Method to reset odometry (will be called if your auto has a starting
 				// pose)
 				SwerveIO.getInstance()::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-				(drive) -> SwerveIO.getInstance().drive(drive, false), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+				(drive) -> SwerveIO.getInstance()
+						.drive(drive, false), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
 				Constants.AutoConstants.pathFollowerConfig,
 				// Boolean supplier that mirrors path if red alliance
 				() -> {

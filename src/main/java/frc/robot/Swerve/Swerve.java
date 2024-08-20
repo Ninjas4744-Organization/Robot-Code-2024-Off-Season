@@ -1,26 +1,15 @@
 package frc.robot.Swerve;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
-import frc.robot.Vision.NoteDetection;
-import java.util.Arrays;
-import java.util.List;
 
 public class Swerve extends SwerveIO {
 	private SwerveModule[] _modules;
@@ -44,7 +33,7 @@ public class Swerve extends SwerveIO {
 	@Override
 	public void drive(ChassisSpeeds drive, boolean fieldRelative) {
 		SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.kSwerveKinematics.toSwerveModuleStates(
-			fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive);
+				fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive);
 		setModuleStates(swerveModuleStates, SwerveConstants.kOpenLoop);
 	}
 
@@ -80,7 +69,6 @@ public class Swerve extends SwerveIO {
 	 *
 	 * @param pose - the pose to reset the odometry to
 	 */
-
 	public void resetOdometry(Pose2d pose) {
 		_odometry.resetPosition(RobotState.getGyroYaw(), getModulePositions(), pose);
 	}

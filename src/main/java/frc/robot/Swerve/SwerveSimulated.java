@@ -12,13 +12,17 @@ public class SwerveSimulated extends SwerveIO {
 
 	@Override
 	public void drive(ChassisSpeeds drive, boolean fieldRelative) {
-		currentChassisSpeeds = !fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive;
+		currentChassisSpeeds =
+				!fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive;
 
-		rotation = rotation.minus(Rotation2d.fromRadians(currentChassisSpeeds.omegaRadiansPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion));
+		rotation = rotation.minus(Rotation2d.fromRadians(
+				currentChassisSpeeds.omegaRadiansPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion));
 		RobotState.setRobotPose(new Pose2d(
-		RobotState.getRobotPose().getX() + currentChassisSpeeds.vxMetersPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion,
-		RobotState.getRobotPose().getY() + currentChassisSpeeds.vyMetersPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion,
-			 SwerveConstants.kInvertGyro ? rotation.unaryMinus() : rotation));
+				RobotState.getRobotPose().getX()
+						+ currentChassisSpeeds.vxMetersPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion,
+				RobotState.getRobotPose().getY()
+						+ currentChassisSpeeds.vyMetersPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion,
+				SwerveConstants.kInvertGyro ? rotation.unaryMinus() : rotation));
 	}
 
 	@Override

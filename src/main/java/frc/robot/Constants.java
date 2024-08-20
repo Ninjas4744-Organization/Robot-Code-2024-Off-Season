@@ -294,7 +294,7 @@ public final class Constants {
 					new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
 		}
 
-		public class Simulation{
+		public class Simulation {
 			public static final double kSimToRealSpeedConversion = 0.05;
 		}
 	}
@@ -371,36 +371,36 @@ public final class Constants {
 			} else return kBlueFieldLayout;
 		}
 
-		public class Simulation{
-			public final static int kResolutionWidth = 1280;
-			public final static int kResolutionHeight = 720;
-			public final static double kFOV = 70;
-			public final static double kAverageError = 0.3;
-			public final static double kErrorStdDev = 0.5;
-			public final static int kFPS = 15;
-			public final static int kAverageLatency = 35;
-			public final static int kLatencyStdDev = 5;
+		public class Simulation {
+			public static final int kResolutionWidth = 1280;
+			public static final int kResolutionHeight = 720;
+			public static final double kFOV = 70;
+			public static final double kAverageError = 0.3;
+			public static final double kErrorStdDev = 0.5;
+			public static final int kFPS = 15;
+			public static final int kAverageLatency = 35;
+			public static final int kLatencyStdDev = 5;
 		}
 
 		public static Pose2d getAmpPose() {
-			 if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-			 	return getFieldLayout().getTagPose(6).get().toPose2d();
-			 else return getFieldLayout().getTagPose(5).get().toPose2d();
-//			return new Pose2d();
+			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+				return getFieldLayout().getTagPose(6).get().toPose2d();
+			else return getFieldLayout().getTagPose(5).get().toPose2d();
+			//			return new Pose2d();
 		}
 
 		public static Pose2d getSourcePose() {
-			 if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-			 	return getFieldLayout().getTagPose(2).get().toPose2d();
-			 else return getFieldLayout().getTagPose(9).get().toPose2d();
-//			return new Pose2d();
+			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+				return getFieldLayout().getTagPose(2).get().toPose2d();
+			else return getFieldLayout().getTagPose(9).get().toPose2d();
+			//			return new Pose2d();
 		}
 
 		public static Pose2d getSpeakerPose() {
-			 if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-			 	return getFieldLayout().getTagPose(7).get().toPose2d();
-			 else return getFieldLayout().getTagPose(4).get().toPose2d();
-//			return new Pose2d();
+			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+				return getFieldLayout().getTagPose(7).get().toPose2d();
+			else return getFieldLayout().getTagPose(4).get().toPose2d();
+			//			return new Pose2d();
 		}
 	}
 
