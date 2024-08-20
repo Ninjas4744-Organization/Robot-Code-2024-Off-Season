@@ -38,7 +38,7 @@ public class RobotState {
 		CLIMBED
 	}
 
-	private static RobotStates robotState;
+	private static RobotStates robotState = RobotStates.IDLE;
 	private static Pose2d robotPose = new Pose2d();
 	private static AHRS navX = new AHRS();
 	private static SwerveDrivePoseEstimator poseEstimator;
@@ -115,7 +115,10 @@ public class RobotState {
 	 * @return yaw angle of the robot according to gyro
 	 */
 	public static Rotation2d getGyroYaw() {
-		return Rotation2d.fromDegrees(SwerveConstants.kInvertGyro ? -navX.getAngle() : navX.getAngle());
+		if(!isSimulated())
+			return Rotation2d.fromDegrees(SwerveConstants.kInvertGyro ? -navX.getAngle() : navX.getAngle());
+		else
+			return getRobotPose().getRotation();
 	}
 
 	/**
@@ -149,10 +152,10 @@ public class RobotState {
 	}
 
 	/**
-	 * @return Whether or not there is a note in the robot
+	 * @return Whether there is a note in the robot
 	 */
 	public static boolean hasNote() {
-		return noteDetector.get();
+		return isSimulated() || noteDetector.get();
 	}
 
 	public static boolean isSimulated() {

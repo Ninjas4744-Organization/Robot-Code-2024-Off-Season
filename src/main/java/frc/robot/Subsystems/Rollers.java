@@ -21,12 +21,12 @@ public class Rollers extends NinjasSubsystem {
 	}
 
 	@Override
-	protected void setControllers() {
+	protected void setController() {
 		_controller = new NinjasSparkMaxController(RollersConstants.kControllerConstants);
 	}
 
 	@Override
-	protected void setSimulationControllers() {
+	protected void setSimulationController() {
 		_simulatedController = new NinjasSimulatedController(RollersConstants.kSimulatedControllerConstants);
 	}
 

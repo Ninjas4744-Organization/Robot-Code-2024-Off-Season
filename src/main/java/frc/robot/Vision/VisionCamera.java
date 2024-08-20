@@ -36,10 +36,16 @@ public class VisionCamera {
 		_output = new VisionOutput();
 	}
 
+	/**
+	 * Updates the results of this camera, should run on periodic
+	 * @return The vision output of this camera
+	 */
 	public VisionOutput Update() {
 		PhotonPipelineResult result = _camera.getLatestResult();
 		_estimator.setFieldTags(Constants.VisionConstants.getFieldLayout());
 		Optional<EstimatedRobotPose> currentPose = _estimator.update(result);
+
+		_output.hasTargets = false;
 
 		if (!currentPose.isPresent()) return _output;
 
@@ -90,9 +96,13 @@ public class VisionCamera {
 		}
 	}
 
+	/**
+	 * @return The PhotonCamera that is being used by this VisionCamera
+	 */
 	public PhotonCamera getCamera() {
 		return _camera;
 	}
+
 	/**
 	 * @return name of the camera
 	 */

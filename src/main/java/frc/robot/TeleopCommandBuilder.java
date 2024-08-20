@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Swerve.Swerve;
+import frc.robot.Swerve.SwerveIO;
+
 import java.util.function.Supplier;
 
 public class TeleopCommandBuilder {
@@ -20,10 +22,10 @@ public class TeleopCommandBuilder {
 					double rx = -MathUtil.applyDeadband(rotation.get().getX(), SwerveConstants.kJoystickDeadband);
 					double ry = -MathUtil.applyDeadband(rotation.get().getY(), SwerveConstants.kJoystickDeadband);
 
-					Swerve.getInstance().drive(new Translation2d(ly, lx), rx, true, true);
-					if (isLookAt) Swerve.getInstance().lookAt(new Translation2d(ry, rx), 45);
+					SwerveIO.getInstance().drive(new Translation2d(ly, lx), rx);
+					if (isLookAt) SwerveIO.getInstance().lookAt(new Translation2d(ry, rx), 45);
 				},
-				Swerve.getInstance());
+			SwerveIO.getInstance());
 	}
 
 	public static Command resetGyro(boolean forceZero) {

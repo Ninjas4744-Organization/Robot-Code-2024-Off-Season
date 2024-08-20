@@ -26,11 +26,10 @@ public abstract class NinjasSubsystem extends SubsystemBase {
 		for (RobotStates state : RobotStates.values()) _periodicFunctionMap.put(state, () -> {});
 		for (RobotStates state : RobotStates.values()) _onChangeFunctionMap.put(state, () -> {});
 
-		if (Robot.isReal()) {
-			setControllers();
-		} else {
-			setSimulationControllers();
-		}
+		if (RobotState.isSimulated())
+			setSimulationController();
+		else
+			setController();
 
 		setFunctionMaps();
 	}
@@ -44,7 +43,7 @@ public abstract class NinjasSubsystem extends SubsystemBase {
 	 *
 	 * <p>The simulated controller is optional, only set it if for code simulation use.
 	 */
-	protected abstract void setControllers();
+	protected abstract void setController();
 
 	/**
 	 * Set the real and simulated controllers of the subsystems.
@@ -55,7 +54,7 @@ public abstract class NinjasSubsystem extends SubsystemBase {
 	 *
 	 * <p>The simulated controller is optional, only set it if for code simulation use.
 	 */
-	protected abstract void setSimulationControllers();
+	protected abstract void setSimulationController();
 
 	/**
 	 * Set in what state what function to run.

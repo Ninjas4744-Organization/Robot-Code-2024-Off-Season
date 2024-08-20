@@ -144,9 +144,14 @@ public final class Constants {
 	public static final class SwerveConstants {
 		public static final double kSpeedFactor = 0.5;
 		public static final double kRotationSpeedFactor = 0.25;
-		public static final double kJoystickDeadband = 0.2;
+		public static final double kJoystickDeadband = 0.3;
 
 		public static final boolean kInvertGyro = true; // Always ensure Gyro is CCW+ CW-
+
+		/** Whether to drive without velocity PID control */
+		public static final boolean kOpenLoop = true;
+		/** Whether to drive relative to the field or the robot */
+		public static final boolean kFieldRelative = true;
 
 		/** Drivetrain Constants */
 		public static final double kTrackWidth = Units.inchesToMeters(30);
@@ -288,6 +293,10 @@ public final class Constants {
 			public static final SwerveModuleConstants constants =
 					new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
 		}
+
+		public class Simulation{
+			public static final double kSimToRealSpeedConversion = 0.05;
+		}
 	}
 
 	public static final class AutoConstants {
@@ -362,25 +371,36 @@ public final class Constants {
 			} else return kBlueFieldLayout;
 		}
 
+		public class Simulation{
+			public final static int kResolutionWidth = 1280;
+			public final static int kResolutionHeight = 720;
+			public final static double kFOV = 70;
+			public final static double kAverageError = 0.3;
+			public final static double kErrorStdDev = 0.5;
+			public final static int kFPS = 15;
+			public final static int kAverageLatency = 35;
+			public final static int kLatencyStdDev = 5;
+		}
+
 		public static Pose2d getAmpPose() {
-			// if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-			// 	return getFieldLayout().getTagPose(6).get().toPose2d();
-			// else return getFieldLayout().getTagPose(5).get().toPose2d();
-			return new Pose2d();
+			 if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+			 	return getFieldLayout().getTagPose(6).get().toPose2d();
+			 else return getFieldLayout().getTagPose(5).get().toPose2d();
+//			return new Pose2d();
 		}
 
 		public static Pose2d getSourcePose() {
-			// if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-			// 	return getFieldLayout().getTagPose(2).get().toPose2d();
-			// else return getFieldLayout().getTagPose(9).get().toPose2d();
-			return new Pose2d();
+			 if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+			 	return getFieldLayout().getTagPose(2).get().toPose2d();
+			 else return getFieldLayout().getTagPose(9).get().toPose2d();
+//			return new Pose2d();
 		}
 
 		public static Pose2d getSpeakerPose() {
-			// if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-			// 	return getFieldLayout().getTagPose(7).get().toPose2d();
-			// else return getFieldLayout().getTagPose(4).get().toPose2d();
-			return new Pose2d();
+			 if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+			 	return getFieldLayout().getTagPose(7).get().toPose2d();
+			 else return getFieldLayout().getTagPose(4).get().toPose2d();
+//			return new Pose2d();
 		}
 	}
 

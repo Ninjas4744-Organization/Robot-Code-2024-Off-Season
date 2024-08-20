@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
 	public void teleopInit() {
 		if (_autoCommand != null) _autoCommand.cancel();
 
-		if (!isSimulation()) _robotContainer.resetSubsystems();
+		_robotContainer.resetSubsystems();
 	}
 
 	@Override
