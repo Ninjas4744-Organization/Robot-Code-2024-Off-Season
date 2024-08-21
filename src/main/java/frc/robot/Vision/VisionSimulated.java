@@ -17,11 +17,10 @@ public class VisionSimulated extends VisionIO {
 
 		_visionSystemSim.addAprilTags(VisionConstants.getFieldLayout());
 
-		int camerasCount = _cameras.length;
-		_simulatedCameras = new PhotonCameraSim[camerasCount];
-		_cameraProperties = new SimCameraProperties[camerasCount];
+		_simulatedCameras = new PhotonCameraSim[_cameras.length];
+		_cameraProperties = new SimCameraProperties[_cameras.length];
 
-		for (int i = 0; i < camerasCount; i++) {
+		for (int i = 0; i < _cameras.length; i++) {
 			_cameraProperties[i] = new SimCameraProperties();
 			_cameraProperties[i].setCalibration(
 					VisionConstants.Simulation.kResolutionWidth,
@@ -43,6 +42,6 @@ public class VisionSimulated extends VisionIO {
 	@Override
 	public void periodic() {
 		super.periodic();
-		_visionSystemSim.update(RobotState.getRobotPose());
+		_visionSystemSim.update(RobotState.getSimulationRobotPose());
 	}
 }

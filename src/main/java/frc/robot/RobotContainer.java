@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -32,14 +33,14 @@ public class RobotContainer {
 	}
 
 	private void configureBindings() {
-		new Trigger(RobotState::atSpeaker).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
-		new Trigger(RobotState::atAmp).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
-		new Trigger(RobotState::atSource).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
-
-		new Trigger(() -> Elevator.getInstance().isHomed()
-						&& Rotation.getInstance().isHomed()
-						&& Climber.getInstance().isHomed())
-				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
+//		new Trigger(RobotState::atSpeaker).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
+//		new Trigger(RobotState::atAmp).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
+//		new Trigger(RobotState::atSource).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
+//
+//		new Trigger(() -> Elevator.getInstance().isHomed()
+//						&& Rotation.getInstance().isHomed()
+//						&& Climber.getInstance().isHomed())
+//				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
 
 		//		new Trigger(() -> {
 		//					Pose2d _currentPose = RobotState.getRobotPose();
@@ -64,26 +65,18 @@ public class RobotContainer {
 						() -> SwerveIO.getInstance().setBaybladeMode(true),
 						() -> SwerveIO.getInstance().setBaybladeMode(false)));
 
-		_driverJoystick
-				.L1()
-				.onTrue(Commands.runOnce(
-						() -> {
-							SmartDashboard.putBoolean(
-									"IS PID ANGLE", SwerveIO.getInstance().getANglePID());
-							SwerveIO.getInstance().toggleAnglePID();
-						},
+		_driverJoystick.triangle().onTrue(Commands.startEnd(
+						() -> SwerveIO.getInstance().turnAnglePID(false),
+						() -> SwerveIO.getInstance().turnAnglePID(true),
 						SwerveIO.getInstance()));
-		//		 _driverJoystick
-		//		 		.L1()
-		//		 		.onTrue(Commands.parallel(
-		//		 				TeleopCommandBuilder.resetGyro(false),
-		//		 				Commands.runOnce(() -> SwerveIO.getInstance().resetModulesToAbsolute(), SwerveIO.getInstance())));
-		//
-		//		 _driverJoystick
-		//		 		.L2()
-		//		 		.onTrue(Commands.parallel(
-		//		 				TeleopCommandBuilder.resetGyro(true),
-		//		 				Commands.runOnce(() -> SwerveIO.getInstance().resetModulesToAbsolute(), SwerveIO.getInstance())));
+
+		 _driverJoystick
+				.L1()
+				.onTrue(TeleopCommandBuilder.resetGyro(false));
+
+		 _driverJoystick
+				.L2()
+				.onTrue(TeleopCommandBuilder.resetGyro(true));
 
 		_driverJoystick
 				.R1()
@@ -107,6 +100,7 @@ public class RobotContainer {
 	}
 
 	public void resetSubsystems() {
+		RobotState.setRobotPose(new Pose2d());
 		StateMachine.getInstance().changeRobotState(RobotStates.RESET);
 		StateMachine.getInstance().changeRobotState(RobotStates.IDLE);
 		TeleopCommandBuilder.resetGyro(false).schedule();

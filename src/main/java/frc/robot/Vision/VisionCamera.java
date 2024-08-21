@@ -47,7 +47,7 @@ public class VisionCamera {
 
 		_output.hasTargets = false;
 
-		if (!currentPose.isPresent()) return _output;
+		if (currentPose.isEmpty()) return _output;
 
 		_output.hasTargets = true;
 

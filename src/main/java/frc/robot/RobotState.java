@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -13,6 +14,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.Swerve.Swerve;
+import frc.robot.Swerve.SwerveIO;
 
 public class RobotState {
 	public enum RobotStates {
@@ -39,16 +41,20 @@ public class RobotState {
 	}
 
 	private static RobotStates robotState = RobotStates.IDLE;
-	private static Pose2d robotPose = new Pose2d();
 	private static AHRS navX = new AHRS();
 	private static SwerveDrivePoseEstimator poseEstimator;
-	private static StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
-			.getStructTopic("MyPose", Pose2d.struct)
+	private static DigitalInput noteDetector = new DigitalInput(Constants.kNoteDetectorID);
+	private static Pose2d robotSimulationPose = new Pose2d();
+
+	private static StructPublisher<Pose2d> _robotPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic("Robot Pose", Pose2d.struct)
 			.publish();
-	private static StructPublisher<Pose2d> publisherVisionEstimations = NetworkTableInstance.getDefault()
+	private static StructPublisher<Pose2d> _simulationRobotPosePublisher = NetworkTableInstance.getDefault()
+		.getStructTopic("Simulation Robot Pose", Pose2d.struct)
+		.publish();
+	private static StructPublisher<Pose2d> _visionTargetsPublisher = NetworkTableInstance.getDefault()
 			.getStructTopic("VisionTargets", Pose2d.struct)
 			.publish();
-	private static DigitalInput noteDetector = new DigitalInput(Constants.kNoteDetectorID);
 
 	/**
 	 * @return State of the robot
@@ -68,21 +74,51 @@ public class RobotState {
 	}
 
 	/**
-	 * @return position of the robot according to odometry and vision
+	 * @return position of the robot
 	 */
 	public static Pose2d getRobotPose() {
-		return robotPose;
+		return poseEstimator.getEstimatedPosition();
 	}
 
 	/**
-	 * Sets the robotPose variable to the given pose and updates the publisher
+	 * Set where the code thinks the robot is
 	 *
-	 * @param pose - the pose to set the robotPose to
+	 * @param pose - the pose to set the robot pose to
 	 */
 	public static void setRobotPose(Pose2d pose) {
-		robotPose = pose;
-		publisher.set(pose);
+		_robotPosePublisher.set(pose);
 		poseEstimator.resetPosition(getGyroYaw(), Swerve.getInstance().getModulePositions(), pose);
+	}
+
+	/**
+	 * Set the position of the robot in the simulation
+	 *
+	 * @param pose - the pose to set the simulated robot pose to
+	 */
+	public static void setSimulationRobotPose(Pose2d pose){
+		robotSimulationPose = pose;
+		_simulationRobotPosePublisher.set(pose);
+	}
+
+	/**
+	 * @return position of the robot in the simulation
+	 */
+	public static Pose2d getSimulationRobotPose() {
+		return robotSimulationPose;
+	}
+
+	/**
+	 * Move the position of the robot in the simulation
+	 *
+	 * @param transform - the transform to move the simulated robot to
+	 */
+	public static void moveSimulationRobotPose(Transform2d transform){
+		robotSimulationPose = new Pose2d(
+			robotSimulationPose.getX() + transform.getX(),
+			robotSimulationPose.getY() + transform.getY(),
+			robotSimulationPose.getRotation().plus(transform.getRotation())
+		);
+		_simulationRobotPosePublisher.set(robotSimulationPose);
 	}
 
 	/**
@@ -93,8 +129,7 @@ public class RobotState {
 	public static void updateRobotPose(SwerveModulePosition[] modulePositions) {
 		poseEstimator.update(getGyroYaw(), modulePositions);
 
-		robotPose = poseEstimator.getEstimatedPosition();
-		publisher.set(poseEstimator.getEstimatedPosition());
+		setRobotPose(poseEstimator.getEstimatedPosition());
 	}
 
 	/**
@@ -105,10 +140,9 @@ public class RobotState {
 	public static void updateRobotPose(VisionEstimation visionEstimation) {
 		if (visionEstimation.hasTargets)
 			poseEstimator.addVisionMeasurement(visionEstimation.pose, visionEstimation.timestamp);
-		publisherVisionEstimations.set(visionEstimation.pose);
+		_visionTargetsPublisher.set(visionEstimation.pose);
 
-		robotPose = poseEstimator.getEstimatedPosition();
-		publisher.set(poseEstimator.getEstimatedPosition());
+		_robotPosePublisher.set(poseEstimator.getEstimatedPosition());
 	}
 
 	/**
@@ -117,7 +151,7 @@ public class RobotState {
 	public static Rotation2d getGyroYaw() {
 		if (!isSimulated())
 			return Rotation2d.fromDegrees(SwerveConstants.kInvertGyro ? -navX.getAngle() : navX.getAngle());
-		else return getRobotPose().getRotation();
+		else return SwerveConstants.kInvertGyro ? getRobotPose().getRotation().unaryMinus() : getRobotPose().getRotation();
 	}
 
 	/**
@@ -126,10 +160,17 @@ public class RobotState {
 	 * @param angle - the angle to set the gyro to
 	 */
 	public static void resetGyro(Rotation2d angle) {
-		System.out.print("Gyro: " + navX.getAngle() + " -> ");
-		navX.reset();
-		navX.setAngleAdjustment(angle.getDegrees());
-		System.out.println(navX.getAngle());
+		if(!isSimulated()){
+			System.out.print("Gyro: " + navX.getAngle() + " -> ");
+			navX.reset();
+			navX.setAngleAdjustment(angle.getDegrees());
+			System.out.println(navX.getAngle());
+		}
+		else{
+			System.out.print("Gyro: " + getRobotPose().getRotation().getDegrees() + " -> ");
+			setRobotPose(new Pose2d(getRobotPose().getTranslation(), angle));
+			System.out.println(getRobotPose().getRotation().getDegrees());
+		}
 	}
 
 	/**
@@ -137,17 +178,16 @@ public class RobotState {
 	 * odometry
 	 */
 	public static void initPoseEstimator() {
-		poseEstimator = !isSimulated()
-				? new SwerveDrivePoseEstimator(
+		poseEstimator = !isSimulated() ? new SwerveDrivePoseEstimator(
 						SwerveConstants.kSwerveKinematics,
 						getGyroYaw(),
-						Swerve.getInstance().getModulePositions(),
+						SwerveIO.getInstance().getModulePositions(),
 						getRobotPose())
-				: new SwerveDrivePoseEstimator(
-						SwerveConstants.kSwerveKinematics,
-						new Rotation2d(),
-						Swerve.getInstance().getModulePositions(),
-						robotPose);
+						: new SwerveDrivePoseEstimator(
+							SwerveConstants.kSwerveKinematics,
+							new Rotation2d(),
+							SwerveIO.getInstance().getModulePositions(),
+							new Pose2d());
 	}
 
 	/**
@@ -157,10 +197,16 @@ public class RobotState {
 		return isSimulated() || noteDetector.get();
 	}
 
+	/**
+	 * @return Whether the robot is at simulation mode or deployed on a real robot
+	 */
 	public static boolean isSimulated() {
 		return Robot.isSimulation();
 	}
 
+	/**
+	 * @return Whether the robot is close to its alliance's amp
+	 */
 	public static boolean atAmp() {
 		return RobotState.getRobotPose()
 						.getTranslation()
@@ -168,6 +214,9 @@ public class RobotState {
 				< 0.5;
 	}
 
+	/**
+	 * @return Whether the robot is close to its alliance's source
+	 */
 	public static boolean atSource() {
 		return RobotState.getRobotPose()
 						.getTranslation()
@@ -175,6 +224,9 @@ public class RobotState {
 				< 0.5;
 	}
 
+	/**
+	 * @return Whether the robot is close to its alliance's speaker
+	 */
 	public static boolean atSpeaker() {
 		return RobotState.getRobotPose()
 						.getTranslation()

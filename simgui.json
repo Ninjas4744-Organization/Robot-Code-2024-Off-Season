@@ -14,7 +14,20 @@
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
     }
   },
+  "NetworkTables": {
+    "transitory": {
+      "Pose2d##v_MyPose": {
+        "Translation2d##v_translation": {
+          "open": true
+        },
+        "open": true
+      }
+    }
+  },
   "NetworkTables Info": {
+    "AdvantageScope@1": {
+      "open": true
+    },
     "visible": true
   }
 }

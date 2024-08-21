@@ -32,7 +32,7 @@ public abstract class VisionIO extends SubsystemBase {
 			_cameras[i] = new VisionCamera(camerasNames[i], camerasPoses.get(camerasNames[i]));
 
 		_estimationsData = new VisionEstimation[camerasNames.length];
-		_outputs = new HashMap<String, VisionOutput>();
+		_outputs = new HashMap<>();
 		for (String name : camerasNames) {
 			VisionOutput output = new VisionOutput();
 			_outputs.put(name, output);
