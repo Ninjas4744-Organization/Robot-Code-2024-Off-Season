@@ -11,9 +11,8 @@ public class SwerveSimulated extends SwerveIO {
 	private Rotation2d rotation = RobotState.getRobotPose().getRotation();
 
 	@Override
-	public void drive(ChassisSpeeds drive, boolean fieldRelative) {
-		currentChassisSpeeds =
-				!fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive;
+	public void drive(ChassisSpeeds drive) {
+		currentChassisSpeeds = true ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive;
 
 		rotation = rotation.minus(Rotation2d.fromRadians(
 				currentChassisSpeeds.omegaRadiansPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion));

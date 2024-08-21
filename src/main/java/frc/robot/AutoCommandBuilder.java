@@ -16,7 +16,7 @@ public class AutoCommandBuilder {
 				// pose)
 				SwerveIO.getInstance()::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
 				(drive) -> SwerveIO.getInstance()
-						.drive(drive, false), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+						.drive(drive), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
 				Constants.AutoConstants.pathFollowerConfig,
 				// Boolean supplier that mirrors path if red alliance
 				() -> {

@@ -31,9 +31,9 @@ public class Swerve extends SwerveIO {
 	}
 
 	@Override
-	public void drive(ChassisSpeeds drive, boolean fieldRelative) {
+	public void drive(ChassisSpeeds drive) {
 		SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.kSwerveKinematics.toSwerveModuleStates(
-				fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive);
+				true ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive);
 		setModuleStates(swerveModuleStates, SwerveConstants.kOpenLoop);
 	}
 

@@ -3,6 +3,9 @@ package frc.robot.Swerve;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
 import frc.robot.Vision.NoteDetection;
 import frc.robot.Vision.VisionIO;
@@ -55,6 +59,26 @@ public abstract class SwerveIO extends SubsystemBase {
 		_anglePID.enableContinuousInput(
 				Rotation2d.fromDegrees(-180).getDegrees(),
 				Rotation2d.fromDegrees(180).getDegrees());
+
+		// Configure AutoBuilder last
+		AutoBuilder.configureHolonomic(
+				RobotState::getRobotPose, // Robot pose supplier
+				RobotState::setRobotPose, // Method to reset odometry (will be called if your auto has a starting pose)
+				this::getChassisSpeeds,
+				this::drive, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+				new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
+						// Constants class
+						new PIDConstants(SwerveConstants.kDriveP, 0.0, 0.0), // Translation PID constants
+						new PIDConstants(SwerveConstants.kAngleP, 0.0, 0.0), // Rotation PID constants
+						4.5, // Max module speed, in m/s
+						0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+						new ReplanningConfig() // Default path replanning config. See the API for the options here
+						),
+				() -> {
+					return false;
+				},
+				this // Reference to this subsystem to set requirements
+				);
 	}
 
 	/**
@@ -100,7 +124,7 @@ public abstract class SwerveIO extends SubsystemBase {
 
 		if (isBayblade) drive.omegaRadiansPerSecond = Constants.SwerveConstants.maxAngularVelocity;
 
-		drive(drive, Constants.SwerveConstants.kFieldRelative);
+		drive(drive);
 	}
 
 	/**
@@ -109,7 +133,7 @@ public abstract class SwerveIO extends SubsystemBase {
 	 * @param drive - chassis speeds to drive according to
 	 * @param fieldRelative - Whether to move to robot relative to the field or the robot
 	 */
-	public abstract void drive(ChassisSpeeds drive, boolean fieldRelative);
+	public abstract void drive(ChassisSpeeds drive);
 
 	/**
 	 * @return drive encoder value of each module, angle of each module

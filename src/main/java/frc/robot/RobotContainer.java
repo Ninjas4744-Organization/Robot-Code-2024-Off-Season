@@ -91,7 +91,7 @@ public class RobotContainer {
 						() -> SwerveIO.getInstance().setIsDriveAssist(true),
 						() -> SwerveIO.getInstance().setIsDriveAssist(false)));
 
-		// _driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
+		_driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
 	}
 
 	private void configureOperatorBindings() {
