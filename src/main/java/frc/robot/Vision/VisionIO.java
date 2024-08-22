@@ -1,9 +1,11 @@
 package frc.robot.Vision;
 
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.DataClasses.VisionOutput;
 import frc.robot.RobotState;
@@ -24,7 +26,7 @@ public abstract class VisionIO extends SubsystemBase {
 	}
 
 	public VisionIO() {
-		HashMap<String, Transform3d> camerasPoses = Constants.VisionConstants.getCamerasPoses();
+		HashMap<String, Transform3d> camerasPoses = VisionConstants.getCamerasPoses();
 		String[] camerasNames = camerasPoses.keySet().toArray(new String[0]);
 
 		_cameras = new VisionCamera[camerasNames.length];
@@ -126,5 +128,32 @@ public abstract class VisionIO extends SubsystemBase {
 		}
 
 		return hasTargets;
+	}
+
+	/**
+	 * Get the camera that its looking direction is closest to the given direction,
+	 * for example if given direction (1, 0) and the robot is looking straight(gyro=0) it will return front camera
+	 * @param dir The direction to find the closest camera to, field relative
+	 * @return The name of the camera with the closest direction
+	 */
+	public String getCameraByDirection(Translation2d dir){
+		double dirAngle = dir.getAngle().rotateBy(RobotState.getGyroYaw().unaryMinus()).getDegrees();
+
+		String closestCamera = "";
+		double closestAngleDiff = Double.MAX_VALUE;
+
+		HashMap<String, Transform3d> camerasPoses = VisionConstants.getCamerasPoses();
+		String[] camerasNames = camerasPoses.keySet().toArray(new String[0]);
+
+		for(String camera : camerasNames){
+			double cameraAngle = camerasPoses.get(camera).getRotation().getZ();
+
+			if(Math.abs(dirAngle - cameraAngle) < closestAngleDiff){
+				closestAngleDiff = Math.abs(dirAngle - cameraAngle);
+				closestCamera = camera;
+			}
+		}
+
+		return closestCamera;
 	}
 }

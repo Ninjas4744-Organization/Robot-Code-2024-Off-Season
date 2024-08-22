@@ -108,12 +108,22 @@ public abstract class SwerveIO extends SubsystemBase {
 							VisionIO.getInstance().getClosestTag("BackRight").pose.toPose2d().getRotation().getDegrees()
 						}
 					);
+					String camera = VisionIO.getInstance().getCameraByDirection(translation);
+					NetworkTableInstance.getDefault().getTable("PhotonVisionTargets").getEntry("MovingDirCam").setDoubleArray(new double[]{
+							VisionIO.getInstance().getClosestTag(camera).pose.toPose2d().getX(),
+							VisionIO.getInstance().getClosestTag(camera).pose.toPose2d().getY(),
+							VisionIO.getInstance().getClosestTag(camera).pose.toPose2d().getRotation().getDegrees()
+						}
+					);
+					NetworkTableInstance.getDefault().getTable("PhotonVisionTargets").getEntry("MovingDirCamName").setString(camera);
+					NetworkTableInstance.getDefault().getTable("PhotonVisionTargets").getEntry("MovingDir").setDoubleArray(new double[]{
+							translation.getX(),
+							translation.getY()
+						}
+					);
 
-					if (VisionIO.getInstance().hasTargets("Front")) {
-						Pose2d targetPose = VisionIO.getInstance()
-								.getClosestTag("Front")
-								.pose
-								.toPose2d();
+					if (VisionIO.getInstance().hasTargets(camera)) {
+						Pose2d targetPose = VisionIO.getInstance().getClosestTag(camera).pose.toPose2d();
 						drive = calculateDriveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
 					}
 					break;
