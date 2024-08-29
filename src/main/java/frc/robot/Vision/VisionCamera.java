@@ -45,11 +45,9 @@ public class VisionCamera {
 		_estimator.setFieldTags(Constants.VisionConstants.getFieldLayout());
 		Optional<EstimatedRobotPose> currentPose = _estimator.update(result);
 
-		_output.hasTargets = false;
+		_output.hasTargets = result.hasTargets();
 
 		if (currentPose.isEmpty()) return _output;
-
-		_output.hasTargets = true;
 
 		_targets = currentPose.get().targetsUsed;
 		findMinMax(_output);

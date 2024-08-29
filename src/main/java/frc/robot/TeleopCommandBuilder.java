@@ -12,6 +12,8 @@ import frc.robot.RobotState.RobotStates;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.Vision;
+import frc.robot.Vision.VisionIO;
+
 import java.util.function.Supplier;
 
 public class TeleopCommandBuilder {
@@ -35,7 +37,9 @@ public class TeleopCommandBuilder {
 			if (forceZero)
 				RobotState.resetGyro(Rotation2d.fromDegrees(0));
 			else {
-				if (Vision.getInstance().hasTargets())
+				System.out.println("hasTargets = " + VisionIO.getInstance().hasTargets());
+				System.out.println("robotAngle = " + RobotState.getRobotPose().getRotation().unaryMinus().getDegrees());
+				if (VisionIO.getInstance().hasTargets())
 			 		RobotState.resetGyro(RobotState.getRobotPose().getRotation().unaryMinus());
 				else
 					RobotState.resetGyro(Rotation2d.fromDegrees(0));

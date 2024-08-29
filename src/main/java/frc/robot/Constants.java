@@ -180,30 +180,17 @@ public final class Constants {
 
 		public static final int kDriveContinuousCurrentLimit = 35;
 
-		/** Modules angle PID values */
+		/* Modules angle PID values */
 		public static final double kAngleP = 0.01;
-
 		public static final double kAngleI = 0.0;
 		public static final double kAngleD = 0.005;
 		public static final double kAngleFF = 0.0;
-
-		/** Swerve angle PID values */
-		public static final double kSwerveAngleP = 0.0035;
-
-		public static final double kSwerveAngleI = 0;
-		public static final double kSwerveAngleD = 0;
-
-		/** Swerve drive assist PID values */
-		public static final double kDriveAssistP = 0.1525;
-
-		public static final double kDriveAssistI = 0;
-		public static final double kDriveAssistD = 0;
 
 		/**
 		 * Swerve drive assist threshold, if the drive assist angle difference from driver angle is
 		 * bigger than this value, the drive assist will be ignored. degrees
 		 */
-		public static final double kDriveAssistThreshold = 30;
+		public static final double kDriveAssistThreshold = 60;
 
 		/** Modules drive PID values */
 		public static final double kDriveP = 0.0;
@@ -246,6 +233,17 @@ public final class Constants {
 
 		/** Angle Encoder Invert */
 		public static final boolean canCoderInvert = false;
+
+		/* Swerve angle PID values */
+		public static final double kSwerveAngleP = 0.0035;
+		public static final double kSwerveAngleI = 0;
+		public static final double kSwerveAngleD = 0;
+
+		/* Swerve drive assist PID values */
+		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints = new TrapezoidProfile.Constraints(maxSpeed, maxSpeed * 2);
+		public static final double kDriveAssistP = 0.1525*2.5 ;
+		public static final double kDriveAssistI = 0;
+		public static final double kDriveAssistD = 0.1;
 
 		/** Module Specific Constants */
 		/** Front Left Module - Module 0 */

@@ -52,9 +52,6 @@ public class RobotState {
 	private static StructPublisher<Pose2d> _simulationRobotPosePublisher = NetworkTableInstance.getDefault()
 		.getStructTopic("Simulation Robot Pose", Pose2d.struct)
 		.publish();
-	private static StructPublisher<Pose2d> _visionTargetsPublisher = NetworkTableInstance.getDefault()
-			.getStructTopic("VisionTargets", Pose2d.struct)
-			.publish();
 
 	/**
 	 * @return State of the robot
@@ -129,7 +126,7 @@ public class RobotState {
 	public static void updateRobotPose(SwerveModulePosition[] modulePositions) {
 		poseEstimator.update(getGyroYaw(), modulePositions);
 
-		setRobotPose(poseEstimator.getEstimatedPosition());
+		_robotPosePublisher.set(getRobotPose());
 	}
 
 	/**
@@ -140,9 +137,8 @@ public class RobotState {
 	public static void updateRobotPose(VisionEstimation visionEstimation) {
 		if (visionEstimation.hasTargets)
 			poseEstimator.addVisionMeasurement(visionEstimation.pose, visionEstimation.timestamp);
-		_visionTargetsPublisher.set(visionEstimation.pose);
 
-		_robotPosePublisher.set(poseEstimator.getEstimatedPosition());
+		_robotPosePublisher.set(getRobotPose());
 	}
 
 	/**
@@ -182,7 +178,7 @@ public class RobotState {
 						SwerveConstants.kSwerveKinematics,
 						getGyroYaw(),
 						SwerveIO.getInstance().getModulePositions(),
-						getRobotPose())
+						new Pose2d())
 						: new SwerveDrivePoseEstimator(
 							SwerveConstants.kSwerveKinematics,
 							new Rotation2d(),

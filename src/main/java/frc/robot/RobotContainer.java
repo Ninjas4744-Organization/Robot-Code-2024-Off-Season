@@ -13,6 +13,7 @@ import frc.robot.Subsystems.Elevator;
 import frc.robot.Subsystems.Rotation;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.Vision;
+import frc.robot.Vision.VisionIO;
 
 public class RobotContainer {
 	private CommandPS5Controller _driverJoystick;
@@ -94,7 +95,7 @@ public class RobotContainer {
 	}
 
 	public void periodic() {
-		VisionEstimation[] estimations = Vision.getInstance().getVisionEstimations();
+		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
 
 		for (VisionEstimation estimation : estimations) if (estimation != null) RobotState.updateRobotPose(estimation);
 	}
