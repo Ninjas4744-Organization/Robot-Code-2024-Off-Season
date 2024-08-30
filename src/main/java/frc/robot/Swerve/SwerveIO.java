@@ -37,6 +37,9 @@ public abstract class SwerveIO extends SubsystemBase {
 	private TrapezoidProfile _driveAssistYProfile;
 	private Timer _driveAssistProfileTimer;
 	private boolean isCurrentlyDriveAssisting = false;
+	private Pose2d _driveAssistProfileStartPose;
+	private ChassisSpeeds _driveAssistProfileStartSpeeds;
+	private Pose2d _driveAssistProfileTargetPose;
 
 	private boolean isDriveAssist = false;
 	private boolean isAnglePID = true;
@@ -106,10 +109,8 @@ public abstract class SwerveIO extends SubsystemBase {
 					break;
 
 				case HOLDING_NOTE:
-//					if (VisionIO.getInstance().hasTargets(camera)) {
-						Pose2d targetPose = Constants.VisionConstants.getFieldLayout().getTagPose(15).get().toPose2d();//VisionIO.getInstance().getClosestTag(camera).pose.toPose2d();
-						drive = calculateDriveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
-//					}
+					Pose2d targetPose = Constants.VisionConstants.getFieldLayout().getTagPose(6).get().toPose2d();
+					drive = calculateDriveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
 					break;
 			}
 		}
@@ -245,9 +246,8 @@ public abstract class SwerveIO extends SubsystemBase {
 		Rotation2d toTargetAngle = toTargetDirection.getAngle();
 		Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
 		// Compute the exponent
-		double assistCoefficent = exponentialFunc(targetPose.getTranslation().getDistance(RobotState.getRobotPose().getTranslation()));
-
-		SmartDashboard.putNumber("coef",assistCoefficent);
+//		double assistCoefficent = exponentialFunc(targetPose.getTranslation().getDistance(RobotState.getRobotPose().getTranslation()));
+		double assistCoefficent = 1;
 
 		if (Math.abs(angleDiff.getDegrees()) < Constants.SwerveConstants.kDriveAssistThreshold) {
 			double anglePIDMeasurement = RobotState.getRobotPose().getRotation().getDegrees();
@@ -258,28 +258,34 @@ public abstract class SwerveIO extends SubsystemBase {
 							.getDegrees()
 					: toTargetAngle.getDegrees();
 
-			if(!isCurrentlyDriveAssisting)
+			if(!isCurrentlyDriveAssisting){
+				_driveAssistProfileStartPose = RobotState.getRobotPose();
+				_driveAssistProfileStartSpeeds = getChassisSpeeds().plus(getChassisSpeeds());
+				_driveAssistProfileTargetPose = targetPose;
 				_driveAssistProfileTimer.restart();
+			}
 
 			isCurrentlyDriveAssisting = true;
-		double joysyicAmountX = movingDirection.getX() * (1 - assistCoefficent);
-		double joysyicAmountY = movingDirection.getY() * (1 - assistCoefficent);
 
-		ChassisSpeeds speeds = new ChassisSpeeds(
-			-1 * _driveAssistXPID.calculate(toTargetDirection.getX())
-				* SwerveConstants.maxSpeed * assistCoefficent + joysyicAmountX ,
-			-1 * _driveAssistYPID.calculate(toTargetDirection.getY())
-				* SwerveConstants.maxSpeed * assistCoefficent + joysyicAmountY,
-			_anglePID.calculate(anglePIDMeasurement, anglePIDSetpoint)
-				* SwerveConstants.maxAngularVelocity);
-		SmartDashboard.putNumber("x_speed", speeds.vxMetersPerSecond);
-		SmartDashboard.putNumber("y_speed", speeds.vyMetersPerSecond);
-      return speeds;
+			SmartDashboard.putNumber("Start Pose X", _driveAssistProfileStartPose.getX());
+			SmartDashboard.putNumber("Start Pose Y", _driveAssistProfileStartPose.getY());
+			SmartDashboard.putNumber("Start Speeds X", _driveAssistProfileStartSpeeds.vxMetersPerSecond);
+			SmartDashboard.putNumber("Start Speeds Y", _driveAssistProfileStartSpeeds.vyMetersPerSecond);
+			SmartDashboard.putNumber("Target Pose X", _driveAssistProfileTargetPose.getX());
+			SmartDashboard.putNumber("Target Pose Y", _driveAssistProfileTargetPose.getY());
+			SmartDashboard.putNumber("Timer", _driveAssistProfileTimer.get());
+
+			return new ChassisSpeeds(
+				_driveAssistXProfile.calculate(_driveAssistProfileTimer.get(), new TrapezoidProfile.State(_driveAssistProfileStartPose.getX(), _driveAssistProfileStartSpeeds.vxMetersPerSecond), new TrapezoidProfile.State(_driveAssistProfileTargetPose.getX(), 0)).velocity,
+				_driveAssistYProfile.calculate(_driveAssistProfileTimer.get(), new TrapezoidProfile.State(_driveAssistProfileStartPose.getY(), _driveAssistProfileStartSpeeds.vyMetersPerSecond), new TrapezoidProfile.State(_driveAssistProfileTargetPose.getY(), 0)).velocity,
+
+				_anglePID.calculate(anglePIDMeasurement, anglePIDSetpoint)
+					* SwerveConstants.maxAngularVelocity);
 		}
 		else
 			isCurrentlyDriveAssisting = false;
 
-		return new ChassisSpeeds(movingDirection.getX(), movingDirection.getY(), rotation);
+		return new ChassisSpeeds(movingDirection.getX() * SwerveConstants.maxSpeed, movingDirection.getY() * SwerveConstants.maxSpeed, rotation);
 	}
 
 	/**

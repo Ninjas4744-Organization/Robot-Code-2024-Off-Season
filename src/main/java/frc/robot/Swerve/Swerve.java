@@ -2,6 +2,7 @@ package frc.robot.Swerve;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -61,7 +62,7 @@ public class Swerve extends SwerveIO {
 
 	@Override
 	public ChassisSpeeds getChassisSpeeds() {
-		return SwerveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates());
+		return ChassisSpeeds.fromRobotRelativeSpeeds(SwerveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates()), RobotState.getGyroYaw());
 	}
 
 	/**
