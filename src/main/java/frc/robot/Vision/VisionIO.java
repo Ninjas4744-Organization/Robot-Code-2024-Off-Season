@@ -111,7 +111,6 @@ public abstract class VisionIO extends SubsystemBase {
 	 * @return if this camera has targets
 	 */
 	public boolean hasTargets(String camera) {
-//		System.out.println(camera + ": " + _outputs.get(camera).hasTargets);
 		return _outputs.get(camera).hasTargets;
 	}
 

@@ -3,43 +3,28 @@ package frc.robot.Swerve;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.RobotState;
 import frc.robot.Vision.NoteDetection;
-import frc.robot.Vision.VisionIO;
+
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class SwerveIO extends SubsystemBase {
 	private static SwerveIO _instance;
 	private PIDController _anglePID;
-
-	private PIDController _driveAssistXPID;
-	private PIDController _driveAssistYPID;
-	private TrapezoidProfile _driveAssistXProfile;
-	private TrapezoidProfile _driveAssistYProfile;
-	private Timer _driveAssistProfileTimer;
-	private boolean isCurrentlyDriveAssisting = false;
-	private Pose2d _driveAssistProfileStartPose;
-	private ChassisSpeeds _driveAssistProfileStartSpeeds;
-	private Pose2d _driveAssistProfileTargetPose;
+	private DriveAssist _driveAssist;
 
 	private boolean isDriveAssist = false;
 	private boolean isAnglePID = true;
@@ -55,28 +40,16 @@ public abstract class SwerveIO extends SubsystemBase {
 	}
 
 	public SwerveIO() {
-		_driveAssistXProfile = new TrapezoidProfile(SwerveConstants.kDriveAssistProfileConstraints);
-		_driveAssistYProfile = new TrapezoidProfile(SwerveConstants.kDriveAssistProfileConstraints);
-		_driveAssistProfileTimer = new Timer();
-
-		_driveAssistXPID = new PIDController(
-				Constants.SwerveConstants.kDriveAssistP,
-				Constants.SwerveConstants.kDriveAssistI,
-				Constants.SwerveConstants.kDriveAssistD);
-
-		_driveAssistYPID = new PIDController(
-				Constants.SwerveConstants.kDriveAssistP,
-				Constants.SwerveConstants.kDriveAssistI,
-				Constants.SwerveConstants.kDriveAssistD);
-
 		_anglePID = new PIDController(
-				Constants.SwerveConstants.kSwerveAngleP,
-				Constants.SwerveConstants.kSwerveAngleI,
-				Constants.SwerveConstants.kSwerveAngleD);
+				SwerveConstants.kSwerveAngleP,
+				SwerveConstants.kSwerveAngleI,
+				SwerveConstants.kSwerveAngleD);
 
 		_anglePID.enableContinuousInput(
 				Rotation2d.fromDegrees(-180).getDegrees(),
 				Rotation2d.fromDegrees(180).getDegrees());
+
+		_driveAssist = new DriveAssist(_anglePID);
 	}
 
 	/**
@@ -87,16 +60,16 @@ public abstract class SwerveIO extends SubsystemBase {
 	 */
 	public void drive(Translation2d translation, double rotation) {
 		ChassisSpeeds drive = new ChassisSpeeds(
-				translation.getX() * Constants.SwerveConstants.kSpeedFactor * Constants.SwerveConstants.maxSpeed,
-				translation.getY() * Constants.SwerveConstants.kSpeedFactor * Constants.SwerveConstants.maxSpeed,
+				translation.getX() * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+				translation.getY() * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
 				rotation
-						* Constants.SwerveConstants.kRotationSpeedFactor
-						* Constants.SwerveConstants.maxAngularVelocity);
+						* SwerveConstants.kRotationSpeedFactor
+						* SwerveConstants.maxAngularVelocity);
 
 		if (isAnglePID) {
 			drive.omegaRadiansPerSecond =
 					_anglePID.calculate(RobotState.getGyroYaw().getDegrees())
-							* Constants.SwerveConstants.maxAngularVelocity;
+							* SwerveConstants.maxAngularVelocity;
 		}
 
 		if (isDriveAssist) {
@@ -104,18 +77,18 @@ public abstract class SwerveIO extends SubsystemBase {
 				case NOTE_SEARCH:
 					if (NoteDetection.hasTarget()) {
 						Pose2d targetPose = NoteDetection.getNotePose();
-						drive = calculateDriveAssist(translation, drive.omegaRadiansPerSecond, targetPose, false);
+						drive = _driveAssist.driveAssist(translation, drive.omegaRadiansPerSecond, targetPose, false);
 					}
 					break;
 
 				case HOLDING_NOTE:
-					Pose2d targetPose = Constants.VisionConstants.getFieldLayout().getTagPose(6).get().toPose2d();
-					drive = calculateDriveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
+					Pose2d targetPose = VisionConstants.getFieldLayout().getTagPose(6).get().toPose2d();//VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(), 0.25);
+					drive = _driveAssist.driveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
 					break;
 			}
 		}
 
-		if (isBayblade) drive.omegaRadiansPerSecond = Constants.SwerveConstants.maxAngularVelocity;
+		if (isBayblade) drive.omegaRadiansPerSecond = SwerveConstants.maxAngularVelocity;
 
 		drive(drive, SwerveConstants.kFieldRelative);
 	}
@@ -173,7 +146,7 @@ public abstract class SwerveIO extends SubsystemBase {
 				targetPose.getTranslation());
 
 		PathPlannerPath path = new PathPlannerPath(
-				bezierPoints, Constants.AutoConstants.constraints, new GoalEndState(0, targetPose.getRotation()));
+				bezierPoints, AutoConstants.constraints, new GoalEndState(0, targetPose.getRotation()));
 
 		return AutoBuilder.followPath(path);
 	}
@@ -214,90 +187,35 @@ public abstract class SwerveIO extends SubsystemBase {
 	 * Turns off the angle PID so the swerve rotates according to given speed in drive function.
 	 * running lookAt will turn on the angle PID again
 	 */
-	public void turnAnglePID(boolean isAnglePID) {
+	public void setAnglePID(boolean isAnglePID) {
 		this.isAnglePID = isAnglePID;
 		SmartDashboard.putBoolean("Swerve Look At", isAnglePID);
 	}
 
-	private double exponentialFunc(double error){
-    return 1.13 * Math.exp(-0.334 * error);
+	/**
+	 * @return Whether angle pid is enabled (look at mode)
+	 */
+	public boolean getAnglePID(){
+		return isAnglePID;
 	}
 
 	/**
-	 * Calculates the drive assist
-	 *
-	 * @param movingDirection - the direction the robot is moving according to the driver input, field
-	 *     relative
-	 * @param rotation - the rotation movement of the robot according to the driver input, field
-	 *     relative
-	 * @param targetPose - the pose of the closest target(tags and notes), field relative
-	 * @param isForTags - if the drive assist is for tags and not notes
-	 * @return Calculated drive assist as chassis speeds(if the rotation is 0, use the rotation from
-	 *     the drive input), field relative
+	 * Enable/Disable drive assist
 	 */
-	private ChassisSpeeds calculateDriveAssist(
-			Translation2d movingDirection, double rotation, Pose2d targetPose, boolean isForTags) {
-		if (movingDirection.getX() == 0 && movingDirection.getY() == 0) return new ChassisSpeeds(0, 0, rotation);
-
-		Translation2d toTargetDirection =
-				targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
-
-		Rotation2d movingAngle = movingDirection.getAngle();
-		Rotation2d toTargetAngle = toTargetDirection.getAngle();
-		Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
-		// Compute the exponent
-//		double assistCoefficent = exponentialFunc(targetPose.getTranslation().getDistance(RobotState.getRobotPose().getTranslation()));
-		double assistCoefficent = 1;
-
-		if (Math.abs(angleDiff.getDegrees()) < Constants.SwerveConstants.kDriveAssistThreshold) {
-			double anglePIDMeasurement = RobotState.getRobotPose().getRotation().getDegrees();
-			double anglePIDSetpoint = isForTags
-					? targetPose
-							.getRotation()
-							.minus(Rotation2d.fromDegrees(180))
-							.getDegrees()
-					: toTargetAngle.getDegrees();
-
-			if(!isCurrentlyDriveAssisting){
-				_driveAssistProfileStartPose = RobotState.getRobotPose();
-				_driveAssistProfileStartSpeeds = getChassisSpeeds().plus(getChassisSpeeds());
-				_driveAssistProfileTargetPose = targetPose;
-				_driveAssistProfileTimer.restart();
-			}
-
-			isCurrentlyDriveAssisting = true;
-
-			SmartDashboard.putNumber("Start Pose X", _driveAssistProfileStartPose.getX());
-			SmartDashboard.putNumber("Start Pose Y", _driveAssistProfileStartPose.getY());
-			SmartDashboard.putNumber("Start Speeds X", _driveAssistProfileStartSpeeds.vxMetersPerSecond);
-			SmartDashboard.putNumber("Start Speeds Y", _driveAssistProfileStartSpeeds.vyMetersPerSecond);
-			SmartDashboard.putNumber("Target Pose X", _driveAssistProfileTargetPose.getX());
-			SmartDashboard.putNumber("Target Pose Y", _driveAssistProfileTargetPose.getY());
-			SmartDashboard.putNumber("Timer", _driveAssistProfileTimer.get());
-
-			return new ChassisSpeeds(
-				_driveAssistXProfile.calculate(_driveAssistProfileTimer.get(), new TrapezoidProfile.State(_driveAssistProfileStartPose.getX(), _driveAssistProfileStartSpeeds.vxMetersPerSecond), new TrapezoidProfile.State(_driveAssistProfileTargetPose.getX(), 0)).velocity,
-				_driveAssistYProfile.calculate(_driveAssistProfileTimer.get(), new TrapezoidProfile.State(_driveAssistProfileStartPose.getY(), _driveAssistProfileStartSpeeds.vyMetersPerSecond), new TrapezoidProfile.State(_driveAssistProfileTargetPose.getY(), 0)).velocity,
-
-				_anglePID.calculate(anglePIDMeasurement, anglePIDSetpoint)
-					* SwerveConstants.maxAngularVelocity);
-		}
-		else
-			isCurrentlyDriveAssisting = false;
-
-		return new ChassisSpeeds(movingDirection.getX() * SwerveConstants.maxSpeed, movingDirection.getY() * SwerveConstants.maxSpeed, rotation);
-	}
-
-	/**
-	 * Sets whether the drive assist is on
-	 */
-	public void setIsDriveAssist(boolean isDriveAssist) {
+	public void setDriveAssist(boolean isDriveAssist) {
 		this.isDriveAssist = isDriveAssist;
 
 		if(!isDriveAssist)
-			isCurrentlyDriveAssisting = false;
+			_driveAssist.turnOffDriveAssist();
 
 		SmartDashboard.putBoolean("Swerve Drive Assist", isDriveAssist);
+	}
+
+	/**
+	 * @return Whether drive assist is enabled
+	 */
+	public boolean getDriveAssist(){
+		return isDriveAssist;
 	}
 
 	/**
@@ -308,6 +226,13 @@ public abstract class SwerveIO extends SubsystemBase {
 	public void setBaybladeMode(boolean isBayblade) {
 		this.isBayblade = isBayblade;
 		SmartDashboard.putBoolean("Swerve Bayblade", isBayblade);
+	}
+
+	/**
+	 * @return Whether the swerve is in bayblade mode
+	 */
+	public boolean getBaybladeMode(){
+		return isBayblade;
 	}
 
 	/** Logs info about the modules and swerve */

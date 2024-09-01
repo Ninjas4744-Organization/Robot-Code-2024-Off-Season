@@ -42,6 +42,6 @@ public class VisionSimulated extends VisionIO {
 	@Override
 	public void periodic() {
 		super.periodic();
-		_visionSystemSim.update(RobotState.getSimulationRobotPose());
+		_visionSystemSim.update(RobotState.getRobotPose());
 	}
 }

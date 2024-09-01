@@ -2,17 +2,11 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
-import frc.robot.Subsystems.Climber;
-import frc.robot.Subsystems.Elevator;
-import frc.robot.Subsystems.Rotation;
 import frc.robot.Swerve.SwerveIO;
-import frc.robot.Vision.Vision;
 import frc.robot.Vision.VisionIO;
 
 public class RobotContainer {
@@ -66,9 +60,8 @@ public class RobotContainer {
 						() -> SwerveIO.getInstance().setBaybladeMode(true),
 						() -> SwerveIO.getInstance().setBaybladeMode(false)));
 
-		_driverJoystick.triangle().onTrue(Commands.startEnd(
-						() -> SwerveIO.getInstance().turnAnglePID(false),
-						() -> SwerveIO.getInstance().turnAnglePID(true),
+		_driverJoystick.triangle().onTrue(Commands.runOnce(
+						() -> SwerveIO.getInstance().setAnglePID(!SwerveIO.getInstance().getAnglePID()),
 						SwerveIO.getInstance()));
 
 		 _driverJoystick
@@ -82,16 +75,16 @@ public class RobotContainer {
 		_driverJoystick
 				.R1()
 				.toggleOnTrue(Commands.startEnd(
-						() -> SwerveIO.getInstance().setIsDriveAssist(true),
-						() -> SwerveIO.getInstance().setIsDriveAssist(false)));
+						() -> SwerveIO.getInstance().setDriveAssist(true),
+						() -> SwerveIO.getInstance().setDriveAssist(false)));
 
 		_driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
 	}
 
 	private void configureOperatorBindings() {
-		_driverJoystick.cross().onTrue(StateMachine.getInstance().Act());
-		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_CLIMB));
-		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
+//		_driverJoystick.cross().onTrue(StateMachine.getInstance().Act());
+//		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_CLIMB));
+//		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
 	}
 
 	public void periodic() {

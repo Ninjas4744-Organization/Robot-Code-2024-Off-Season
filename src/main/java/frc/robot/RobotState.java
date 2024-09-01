@@ -44,14 +44,10 @@ public class RobotState {
 	private static AHRS navX = new AHRS();
 	private static SwerveDrivePoseEstimator poseEstimator;
 	private static DigitalInput noteDetector = new DigitalInput(Constants.kNoteDetectorID);
-	private static Pose2d robotSimulationPose = new Pose2d();
 
 	private static StructPublisher<Pose2d> _robotPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic("Robot Pose", Pose2d.struct)
 			.publish();
-	private static StructPublisher<Pose2d> _simulationRobotPosePublisher = NetworkTableInstance.getDefault()
-		.getStructTopic("Simulation Robot Pose", Pose2d.struct)
-		.publish();
 
 	/**
 	 * @return State of the robot
@@ -85,37 +81,6 @@ public class RobotState {
 	public static void setRobotPose(Pose2d pose) {
 		_robotPosePublisher.set(pose);
 		poseEstimator.resetPosition(getGyroYaw(), Swerve.getInstance().getModulePositions(), pose);
-	}
-
-	/**
-	 * Set the position of the robot in the simulation
-	 *
-	 * @param pose - the pose to set the simulated robot pose to
-	 */
-	public static void setSimulationRobotPose(Pose2d pose){
-		robotSimulationPose = pose;
-		_simulationRobotPosePublisher.set(pose);
-	}
-
-	/**
-	 * @return position of the robot in the simulation
-	 */
-	public static Pose2d getSimulationRobotPose() {
-		return robotSimulationPose;
-	}
-
-	/**
-	 * Move the position of the robot in the simulation
-	 *
-	 * @param transform - the transform to move the simulated robot to
-	 */
-	public static void moveSimulationRobotPose(Transform2d transform){
-		robotSimulationPose = new Pose2d(
-			robotSimulationPose.getX() + transform.getX(),
-			robotSimulationPose.getY() + transform.getY(),
-			robotSimulationPose.getRotation().plus(transform.getRotation())
-		);
-		_simulationRobotPosePublisher.set(robotSimulationPose);
 	}
 
 	/**

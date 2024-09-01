@@ -4,13 +4,10 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -209,9 +206,9 @@ public final class Constants {
 		public static final double angleConversionFactor = 360.0 / 12.8;
 
 		/** Swerve Profiling Values */
-		public static final double maxSpeed = 4; // meters per second
+		public static final double maxSpeed = 6; // meters per second
 
-		public static final double maxAngularVelocity = 11.5;
+		public static final double maxAngularVelocity = 12;
 
 		/** Neutral Modes */
 		public static final com.revrobotics.CANSparkBase.IdleMode angleNeutralMode =
@@ -234,7 +231,7 @@ public final class Constants {
 		public static final double kSwerveAngleD = 0;
 
 		/* Swerve drive assist PID values */
-		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints = new TrapezoidProfile.Constraints(maxSpeed / 2, maxSpeed);
+		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints = new TrapezoidProfile.Constraints(maxSpeed, maxSpeed * 2);
 		public static final double kDriveAssistP = 0.1525;
 		public static final double kDriveAssistI = 0;
 		public static final double kDriveAssistD = 0;
@@ -243,7 +240,7 @@ public final class Constants {
 		 * Swerve drive assist threshold, if the drive assist angle difference from driver angle is
 		 * bigger than this value, the drive assist will be ignored. degrees
 		 */
-		public static final double kDriveAssistThreshold = 30;
+		public static final double kDriveAssistThreshold = 45;
 
 		/** Module Specific Constants */
 		/** Front Left Module - Module 0 */
@@ -293,7 +290,8 @@ public final class Constants {
 		}
 
 		public class Simulation {
-			public static final double kSimToRealSpeedConversion = 0.05;
+			public static final double kSimToRealSpeedConversion = 0.02; //meters per 0.02s -> meters per 1s
+			public static final double kAcceleration = 8;
 		}
 	}
 
@@ -399,6 +397,43 @@ public final class Constants {
 				return getFieldLayout().getTagPose(7).get().toPose2d();
 			else return getFieldLayout().getTagPose(4).get().toPose2d();
 			//			return new Pose2d();
+		}
+
+		public static Pose2d getTagPose(int id){
+			return getFieldLayout().getTagPose(id).get().toPose2d();
+		}
+
+		/**
+		 * Get the april tag that the translation between it and the robot is closest to the given direction,
+		 * for example if robot is moving to amp, the amp tag will be returned
+		 * @param dir The direction to find the closest camera to, field relative
+		 * @return The apriltag that is closest by direction
+		 */
+		public static AprilTag getTagByDirection(Translation2d dir){
+			Rotation2d dirAngle = dir.getAngle();
+			AprilTag closestTag = null;
+			Rotation2d closestAngleDiff = Rotation2d.fromDegrees(Double.MAX_VALUE);
+
+			for(AprilTag tag : getFieldLayout().getTags()){
+				Rotation2d robotToTagAngle = tag.pose.toPose2d().getTranslation().minus(RobotState.getRobotPose().getTranslation()).getAngle();
+
+				if(dirAngle.minus(robotToTagAngle).getDegrees() < closestAngleDiff.getDegrees()){
+					closestAngleDiff = dirAngle.minus(robotToTagAngle);
+					closestTag = tag;
+				}
+			}
+
+			return closestTag;
+		}
+
+		/**
+		 * Get offset april tag pose according to its looking direction
+		 * @param offset how much to offset the pose of the tag to its looking direction
+		 * @return the pose of the offset tag
+		 */
+		public static Pose2d getOffsetTagPose(Pose2d tagPose, double offset){
+			Translation2d offsetTranslation = new Translation2d(offset, tagPose.getRotation());
+			return tagPose.transformBy(new Transform2d(offsetTranslation, new Rotation2d()));
 		}
 	}
 

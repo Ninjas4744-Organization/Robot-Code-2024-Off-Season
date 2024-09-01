@@ -1,38 +1,32 @@
 package frc.robot.Swerve;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
 
 public class SwerveSimulated extends SwerveIO {
-	private ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds();
+	private ChassisSpeeds _currentChassisSpeeds = new ChassisSpeeds();
+	private SlewRateLimiter _xAcceleration = new SlewRateLimiter(SwerveConstants.Simulation.kAcceleration);
+	private SlewRateLimiter _yAcceleration = new SlewRateLimiter(SwerveConstants.Simulation.kAcceleration);
 
 	@Override
 	public void drive(ChassisSpeeds drive, boolean fieldRelative) {
-		currentChassisSpeeds = fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive;
-		currentChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(currentChassisSpeeds, RobotState.getSimulationRobotPose().getRotation());
-		
+		_currentChassisSpeeds = fieldRelative ? drive : ChassisSpeeds.fromRobotRelativeSpeeds(drive, RobotState.getGyroYaw());
+
 		RobotState.setRobotPose(new Pose2d(
 				RobotState.getRobotPose().getX()
-						+ currentChassisSpeeds.vxMetersPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion,
+						+ _xAcceleration.calculate(_currentChassisSpeeds.vxMetersPerSecond) * SwerveConstants.Simulation.kSimToRealSpeedConversion,
 				RobotState.getRobotPose().getY()
-						+ currentChassisSpeeds.vyMetersPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion,
-				RobotState.getRobotPose().getRotation().minus(Rotation2d.fromRadians(currentChassisSpeeds.omegaRadiansPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion))
-		));
-
-		RobotState.moveSimulationRobotPose(new Transform2d(
-			currentChassisSpeeds.vxMetersPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion,
-			currentChassisSpeeds.vyMetersPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion,
-			Rotation2d.fromRadians((SwerveConstants.kInvertGyro ? currentChassisSpeeds.omegaRadiansPerSecond : -currentChassisSpeeds.omegaRadiansPerSecond) * SwerveConstants.Simulation.kSimToRealSpeedConversion)
+						+ _yAcceleration.calculate(_currentChassisSpeeds.vyMetersPerSecond) * SwerveConstants.Simulation.kSimToRealSpeedConversion,
+				RobotState.getRobotPose().getRotation().minus(Rotation2d.fromRadians(_currentChassisSpeeds.omegaRadiansPerSecond * SwerveConstants.Simulation.kSimToRealSpeedConversion))
 		));
 	}
 
 	@Override
 	public ChassisSpeeds getChassisSpeeds() {
-		return currentChassisSpeeds;
+		return _currentChassisSpeeds;
 	}
 }
