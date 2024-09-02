@@ -1,116 +1,149 @@
 package frc.robot.Swerve;
 
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotState;
+import java.util.Arrays;
+import java.util.List;
 
 public class DriveAssist {
-    private PIDController _xPID;
-    private PIDController _yPID;
-    private TrapezoidProfile _xProfile;
-    private TrapezoidProfile _yProfile;
-    private Timer _profileTimer;
-    
-    private boolean isCurrentlyDriveAssisting = false;
-    
-    private Pose2d _startPose;
-    private ChassisSpeeds _startSpeeds;
-    
-    private PIDController _anglePID;
+	private PIDController translationPID;
 
-    public DriveAssist(PIDController anglePID){
-        _xProfile = new TrapezoidProfile(Constants.SwerveConstants.kDriveAssistProfileConstraints);
-        _yProfile = new TrapezoidProfile(Constants.SwerveConstants.kDriveAssistProfileConstraints);
-        _profileTimer = new Timer();
+	private Timer _profileTimer;
 
-        _xPID = new PIDController(
-            Constants.SwerveConstants.kDriveAssistP,
-            Constants.SwerveConstants.kDriveAssistI,
-            Constants.SwerveConstants.kDriveAssistD);
+	private boolean isCurrentlyDriveAssisting = false;
 
-        _yPID = new PIDController(
-            Constants.SwerveConstants.kDriveAssistP,
-            Constants.SwerveConstants.kDriveAssistI,
-            Constants.SwerveConstants.kDriveAssistD);
+	private PIDController rotationPID;
+	private PathPlannerTrajectory trajectory;
+	private static StructPublisher<Pose2d> _robotPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic("Wanted Pose", Pose2d.struct)
+			.publish();
 
-        _anglePID = anglePID;
-    }
+	private Field2d currentTraj = new Field2d();
 
-    public DriveAssist(){
-        this(new PIDController(0.001, 0, 0));
-    }
+	public DriveAssist(PIDController anglePID) {
 
-    /**
-     * Calculates the drive assist
-     *
-     * @param movingDirection - the direction the robot is moving according to the driver input, field
-     *     relative
-     * @param rotation - the rotation movement of the robot according to the driver input, field
-     *     relative
-     * @param targetPose - the pose of the closest target(tags and notes), field relative
-     * @param isForTags - if the drive assist is for tags and not notes
-     * @return Calculated drive assist as chassis speeds(if the rotation is 0, use the rotation from
-     *     the drive input), field relative
-     */
-    public ChassisSpeeds driveAssist(Translation2d movingDirection, double rotation, Pose2d targetPose, boolean isForTags) {
-        if (movingDirection.getX() == 0 && movingDirection.getY() == 0) return new ChassisSpeeds(0, 0, rotation);
+		_profileTimer = new Timer();
 
-        Translation2d toTargetDirection =
-            targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
+		translationPID = new PIDController(
+				Constants.SwerveConstants.kDriveAssistP,
+				Constants.SwerveConstants.kDriveAssistI,
+				Constants.SwerveConstants.kDriveAssistD);
+		rotationPID = anglePID;
+	}
 
-        Rotation2d movingAngle = movingDirection.getAngle();
-        Rotation2d toTargetAngle = toTargetDirection.getAngle();
-        Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
+	public DriveAssist() {
+		this(new PIDController(0.001, 0, 0));
+	}
 
-        if (Math.abs(angleDiff.getDegrees()) < Constants.SwerveConstants.kDriveAssistThreshold){
-            if(!isCurrentlyDriveAssisting)
-                startingDriveAssist();
-            isCurrentlyDriveAssisting = true;
+	/**
+	 * Calculates the drive assist
+	 *
+	 * @param movingDirection - the direction the robot is moving according to the driver input, field
+	 *     relative
+	 * @param rotation - the rotation movement of the robot according to the driver input, field
+	 *     relative
+	 * @param targetPose - the pose of the closest target(tags and notes), field relative
+	 * @param isForTags - if the drive assist is for tags and not notes
+	 * @return Calculated drive assist as chassis speeds(if the rotation is 0, use the rotation from
+	 *     the drive input), field relative
+	 */
+	public ChassisSpeeds driveAssist(
+			Translation2d movingDirection, double rotation, Pose2d targetPose, boolean isForTags) {
+		if (movingDirection.getX() == 0 && movingDirection.getY() == 0) return new ChassisSpeeds(0, 0, rotation);
 
-            return calculateDriveAssist(toTargetAngle, targetPose, isForTags);
-        }
-        else
-            isCurrentlyDriveAssisting = false;
+		Translation2d toTargetDirection =
+				targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
 
-        return new ChassisSpeeds(movingDirection.getX() * Constants.SwerveConstants.maxSpeed * Constants.SwerveConstants.kSpeedFactor, movingDirection.getY() * Constants.SwerveConstants.maxSpeed * Constants.SwerveConstants.kSpeedFactor, rotation);
-    }
+		Rotation2d movingAngle = movingDirection.getAngle();
+		Rotation2d toTargetAngle = toTargetDirection.getAngle();
+		Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
 
-    private ChassisSpeeds calculateDriveAssist(Rotation2d toTargetAngle, Pose2d targetPose, boolean isForTags){
-        double anglePIDMeasurement = (RobotState.isSimulated() ? -1 : 1) * RobotState.getRobotPose().getRotation().getDegrees();
-        double anglePIDSetpoint = (RobotState.isSimulated() ? -1 : 1) * (isForTags
-            ? targetPose
-            .getRotation()
-            .minus(Rotation2d.fromDegrees(180))
-            .getDegrees()
-            : toTargetAngle.getDegrees());
+		if (Math.abs(angleDiff.getDegrees()) < Constants.SwerveConstants.kDriveAssistThreshold) {
+			if (!isCurrentlyDriveAssisting) startingDriveAssist();
+			isCurrentlyDriveAssisting = true;
 
-        return new ChassisSpeeds(
-            _xProfile.calculate(_profileTimer.get(), new TrapezoidProfile.State(_startPose.getX(), _startSpeeds.vxMetersPerSecond), new TrapezoidProfile.State(targetPose.getX(), 0)).velocity,
-            _yProfile.calculate(_profileTimer.get(), new TrapezoidProfile.State(_startPose.getY(), _startSpeeds.vyMetersPerSecond), new TrapezoidProfile.State(targetPose.getY(), 0)).velocity,
-//              _xPID.calculate(RobotState.getRobotPose().getX(), targetPose.getX()) * Constants.SwerveConstants.maxSpeed,
-//              _yPID.calculate(RobotState.getRobotPose().getY(), targetPose.getY()) * Constants.SwerveConstants.maxSpeed,
+			return calculateDriveAssist(toTargetAngle, targetPose, isForTags);
+		} else isCurrentlyDriveAssisting = false;
 
-            _anglePID.calculate(anglePIDMeasurement, anglePIDSetpoint)
-                * Constants.SwerveConstants.maxAngularVelocity);
-    }
-    
-    private void startingDriveAssist(){
-        _startPose = RobotState.getRobotPose();
-        _startSpeeds = SwerveIO.getInstance().getChassisSpeeds();
-        _profileTimer.restart();
-    }
+		return new ChassisSpeeds(
+				movingDirection.getX() * Constants.SwerveConstants.maxSpeed * Constants.SwerveConstants.kSpeedFactor,
+				movingDirection.getY() * Constants.SwerveConstants.maxSpeed * Constants.SwerveConstants.kSpeedFactor,
+				rotation);
+	}
 
-    /**
-     * Call me when turning off drive assist.
-     * You need to call me when turning off drive assist for some logic going on in here. DON'T ASK!😁
-     */
-    public void turnOffDriveAssist(){
-        isCurrentlyDriveAssisting = false;
-    }
+	private ChassisSpeeds calculateDriveAssist(Rotation2d toTargetAngle, Pose2d targetPose, boolean isForTags) {
+
+		double currentTime = this._profileTimer.get();
+		// Determine desired state based on where the robot should be at the current time in the path
+		PathPlannerTrajectory.State desiredState = trajectory.sample(currentTime);
+		var currentPose = RobotState.getRobotPose();
+
+		Rotation2d heading = desiredState.heading;
+		// Calculate our target velocity based on current pose and desired state
+		var vx = desiredState.velocityMps * Math.cos(heading.getRadians());
+		var vy = desiredState.velocityMps * Math.sin(heading.getRadians());
+		_robotPosePublisher.accept(desiredState.getTargetHolonomicPose());
+
+		double desiredThetaSpeeds = rotationPID.calculate(
+				currentPose.getRotation().getDegrees(), desiredState.targetHolonomicRotation.getDegrees());
+		double xFeedback = translationPID.calculate(
+				currentPose.getX(), desiredState.getTargetHolonomicPose().getX());
+		double yFeedback = translationPID.calculate(
+				currentPose.getY(), desiredState.getTargetHolonomicPose().getY());
+
+		ChassisSpeeds chassisSpeeds = new ChassisSpeeds(vx + xFeedback, vy + yFeedback, desiredThetaSpeeds);
+		SmartDashboard.putNumber("vX speeds", vx);
+		SmartDashboard.putNumber("vY speeds", vy);
+		SmartDashboard.putNumber("vTheta speeds", desiredThetaSpeeds);
+		return chassisSpeeds;
+	}
+
+	private void startingDriveAssist() {
+		List<Translation2d> _points = Arrays.asList(
+				RobotState.getRobotPose().getTranslation(),
+				RobotState.getRobotPose().getTranslation(),
+				Constants.VisionConstants.getAmpPose().getTranslation().minus(new Translation2d(0, 2)),
+				Constants.VisionConstants.getAmpPose().getTranslation());
+
+		Pathfinding.setStartPosition(RobotState.getRobotPose().getTranslation());
+		Pathfinding.setGoalPosition(Constants.VisionConstants.getAmpPose().getTranslation());
+
+		PathPlannerPath _path = new PathPlannerPath(
+				_points,
+				Constants.AutoConstants.constraints,
+				new GoalEndState(
+						0, Constants.VisionConstants.getAmpPose().getRotation().unaryMinus()));
+
+		currentTraj.getObject("Trajectory").setPoses(_path.getPathPoses());
+		SmartDashboard.putData("traj", currentTraj);
+
+		trajectory = new PathPlannerTrajectory(
+				_path,
+				SwerveIO.getInstance().getChassisSpeeds(),
+				RobotState.getRobotPose().getRotation());
+
+		_profileTimer.restart();
+	}
+
+	/**
+	 * Call me when turning off drive assist.
+	 * You need to call me when turning off drive assist for some logic going on in here. DON'T ASK!😁
+	 */
+	public void turnOffDriveAssist() {
+		isCurrentlyDriveAssisting = false;
+	}
 }

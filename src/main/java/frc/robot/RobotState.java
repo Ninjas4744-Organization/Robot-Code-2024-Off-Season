@@ -4,7 +4,6 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -112,7 +111,10 @@ public class RobotState {
 	public static Rotation2d getGyroYaw() {
 		if (!isSimulated())
 			return Rotation2d.fromDegrees(SwerveConstants.kInvertGyro ? -navX.getAngle() : navX.getAngle());
-		else return SwerveConstants.kInvertGyro ? getRobotPose().getRotation().unaryMinus() : getRobotPose().getRotation();
+		else
+			return SwerveConstants.kInvertGyro
+					? getRobotPose().getRotation().unaryMinus()
+					: getRobotPose().getRotation();
 	}
 
 	/**
@@ -121,13 +123,12 @@ public class RobotState {
 	 * @param angle - the angle to set the gyro to
 	 */
 	public static void resetGyro(Rotation2d angle) {
-		if(!isSimulated()){
+		if (!isSimulated()) {
 			System.out.print("Gyro: " + navX.getAngle() + " -> ");
 			navX.reset();
 			navX.setAngleAdjustment(angle.getDegrees());
 			System.out.println(navX.getAngle());
-		}
-		else{
+		} else {
 			System.out.print("Gyro: " + getRobotPose().getRotation().getDegrees() + " -> ");
 			setRobotPose(new Pose2d(getRobotPose().getTranslation(), angle));
 			System.out.println(getRobotPose().getRotation().getDegrees());
@@ -139,16 +140,17 @@ public class RobotState {
 	 * odometry
 	 */
 	public static void initPoseEstimator() {
-		poseEstimator = !isSimulated() ? new SwerveDrivePoseEstimator(
+		poseEstimator = !isSimulated()
+				? new SwerveDrivePoseEstimator(
 						SwerveConstants.kSwerveKinematics,
 						getGyroYaw(),
 						SwerveIO.getInstance().getModulePositions(),
 						new Pose2d())
-						: new SwerveDrivePoseEstimator(
-							SwerveConstants.kSwerveKinematics,
-							new Rotation2d(),
-							SwerveIO.getInstance().getModulePositions(),
-							new Pose2d());
+				: new SwerveDrivePoseEstimator(
+						SwerveConstants.kSwerveKinematics,
+						new Rotation2d(),
+						SwerveIO.getInstance().getModulePositions(),
+						new Pose2d());
 	}
 
 	/**

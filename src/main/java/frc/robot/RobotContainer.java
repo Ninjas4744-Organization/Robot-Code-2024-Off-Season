@@ -28,14 +28,15 @@ public class RobotContainer {
 	}
 
 	private void configureBindings() {
-//		new Trigger(RobotState::atSpeaker).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
-//		new Trigger(RobotState::atAmp).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
-//		new Trigger(RobotState::atSource).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
-//
-//		new Trigger(() -> Elevator.getInstance().isHomed()
-//						&& Rotation.getInstance().isHomed()
-//						&& Climber.getInstance().isHomed())
-//				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
+		//		new Trigger(RobotState::atSpeaker).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
+		//		new
+		// Trigger(RobotState::atAmp).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
+		//		new Trigger(RobotState::atSource).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
+		//
+		//		new Trigger(() -> Elevator.getInstance().isHomed()
+		//						&& Rotation.getInstance().isHomed()
+		//						&& Climber.getInstance().isHomed())
+		//				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
 
 		//		new Trigger(() -> {
 		//					Pose2d _currentPose = RobotState.getRobotPose();
@@ -60,17 +61,16 @@ public class RobotContainer {
 						() -> SwerveIO.getInstance().setBaybladeMode(true),
 						() -> SwerveIO.getInstance().setBaybladeMode(false)));
 
-		_driverJoystick.triangle().onTrue(Commands.runOnce(
-						() -> SwerveIO.getInstance().setAnglePID(!SwerveIO.getInstance().getAnglePID()),
+		_driverJoystick
+				.triangle()
+				.onTrue(Commands.runOnce(
+						() -> SwerveIO.getInstance()
+								.setAnglePID(!SwerveIO.getInstance().getAnglePID()),
 						SwerveIO.getInstance()));
 
-		 _driverJoystick
-				.L1()
-				.onTrue(TeleopCommandBuilder.resetGyro(false));
+		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 
-		 _driverJoystick
-				.L2()
-				.onTrue(TeleopCommandBuilder.resetGyro(true));
+		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
 
 		_driverJoystick
 				.R1()
@@ -82,9 +82,9 @@ public class RobotContainer {
 	}
 
 	private void configureOperatorBindings() {
-//		_driverJoystick.cross().onTrue(StateMachine.getInstance().Act());
-//		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_CLIMB));
-//		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
+		//		_driverJoystick.cross().onTrue(StateMachine.getInstance().Act());
+		//		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_CLIMB));
+		//		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
 	}
 
 	public void periodic() {

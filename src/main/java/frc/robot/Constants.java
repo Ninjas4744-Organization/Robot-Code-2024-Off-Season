@@ -231,7 +231,8 @@ public final class Constants {
 		public static final double kSwerveAngleD = 0;
 
 		/* Swerve drive assist PID values */
-		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints = new TrapezoidProfile.Constraints(maxSpeed, maxSpeed * 2);
+		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints =
+				new TrapezoidProfile.Constraints(maxSpeed, maxSpeed * 2);
 		public static final double kDriveAssistP = 0.1525;
 		public static final double kDriveAssistI = 0;
 		public static final double kDriveAssistD = 0;
@@ -240,7 +241,7 @@ public final class Constants {
 		 * Swerve drive assist threshold, if the drive assist angle difference from driver angle is
 		 * bigger than this value, the drive assist will be ignored. degrees
 		 */
-		public static final double kDriveAssistThreshold = 45;
+		public static final double kDriveAssistThreshold = 120;
 
 		/** Module Specific Constants */
 		/** Front Left Module - Module 0 */
@@ -290,8 +291,8 @@ public final class Constants {
 		}
 
 		public class Simulation {
-			public static final double kSimToRealSpeedConversion = 0.02; //meters per 0.02s -> meters per 1s
-			public static final double kAcceleration = 8;
+			public static final double kSimToRealSpeedConversion = 0.02; // meters per 0.02s -> meters per 1s
+			public static final double kAcceleration = 20;
 		}
 	}
 
@@ -308,8 +309,8 @@ public final class Constants {
 		public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
 		public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 		public static final PathConstraints constraints = new PathConstraints(
-				maxVelocity,
-				maxAcceleration,
+				kMaxSpeedMetersPerSecond,
+				kMaxAccelerationMetersPerSecondSquared,
 				kMaxAngularSpeedRadiansPerSecond,
 				kMaxAngularSpeedRadiansPerSecondSquared);
 		public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
@@ -399,7 +400,7 @@ public final class Constants {
 			//			return new Pose2d();
 		}
 
-		public static Pose2d getTagPose(int id){
+		public static Pose2d getTagPose(int id) {
 			return getFieldLayout().getTagPose(id).get().toPose2d();
 		}
 
@@ -409,15 +410,19 @@ public final class Constants {
 		 * @param dir The direction to find the closest camera to, field relative
 		 * @return The apriltag that is closest by direction
 		 */
-		public static AprilTag getTagByDirection(Translation2d dir){
+		public static AprilTag getTagByDirection(Translation2d dir) {
 			Rotation2d dirAngle = dir.getAngle();
 			AprilTag closestTag = null;
 			Rotation2d closestAngleDiff = Rotation2d.fromDegrees(Double.MAX_VALUE);
 
-			for(AprilTag tag : getFieldLayout().getTags()){
-				Rotation2d robotToTagAngle = tag.pose.toPose2d().getTranslation().minus(RobotState.getRobotPose().getTranslation()).getAngle();
+			for (AprilTag tag : getFieldLayout().getTags()) {
+				Rotation2d robotToTagAngle = tag.pose
+						.toPose2d()
+						.getTranslation()
+						.minus(RobotState.getRobotPose().getTranslation())
+						.getAngle();
 
-				if(dirAngle.minus(robotToTagAngle).getDegrees() < closestAngleDiff.getDegrees()){
+				if (dirAngle.minus(robotToTagAngle).getDegrees() < closestAngleDiff.getDegrees()) {
 					closestAngleDiff = dirAngle.minus(robotToTagAngle);
 					closestTag = tag;
 				}
@@ -431,7 +436,7 @@ public final class Constants {
 		 * @param offset how much to offset the pose of the tag to its looking direction
 		 * @return the pose of the offset tag
 		 */
-		public static Pose2d getOffsetTagPose(Pose2d tagPose, double offset){
+		public static Pose2d getOffsetTagPose(Pose2d tagPose, double offset) {
 			Translation2d offsetTranslation = new Translation2d(offset, tagPose.getRotation());
 			return tagPose.transformBy(new Transform2d(offsetTranslation, new Rotation2d()));
 		}

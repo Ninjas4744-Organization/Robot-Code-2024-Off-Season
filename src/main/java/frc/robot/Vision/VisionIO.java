@@ -119,8 +119,7 @@ public abstract class VisionIO extends SubsystemBase {
 	 */
 	public boolean hasTargets() {
 		for (String camera : _outputs.keySet()) {
-			if (hasTargets(camera))
-				return true;
+			if (hasTargets(camera)) return true;
 		}
 		return false;
 	}
@@ -131,7 +130,7 @@ public abstract class VisionIO extends SubsystemBase {
 	 * @param dir The direction to find the closest camera to, field relative
 	 * @return The name of the camera with the closest direction
 	 */
-	public String getCameraByDirection(Translation2d dir){
+	public String getCameraByDirection(Translation2d dir) {
 		Rotation2d dirAngle = dir.getAngle().rotateBy(RobotState.getGyroYaw().unaryMinus());
 
 		String closestCamera = "";
@@ -140,10 +139,11 @@ public abstract class VisionIO extends SubsystemBase {
 		HashMap<String, Transform3d> camerasPoses = VisionConstants.getCamerasPoses();
 		String[] camerasNames = camerasPoses.keySet().toArray(new String[0]);
 
-		for(String camera : camerasNames){
-			Rotation2d cameraAngle = Rotation2d.fromRadians(camerasPoses.get(camera).getRotation().getZ());
+		for (String camera : camerasNames) {
+			Rotation2d cameraAngle = Rotation2d.fromRadians(
+					camerasPoses.get(camera).getRotation().getZ());
 
-			if(dirAngle.minus(cameraAngle).getDegrees() < closestAngleDiff.getDegrees()){
+			if (dirAngle.minus(cameraAngle).getDegrees() < closestAngleDiff.getDegrees()) {
 				closestAngleDiff = dirAngle.minus(cameraAngle);
 				closestCamera = camera;
 			}

@@ -79,7 +79,8 @@ public class PIDFConstants {
 	}
 
 	@Override
-	public String toString(){
-		return "kP: " + kP + " kI: " + kI + " kD: " + kD + " kIZone: " + kIZone + " kF: " + kF + " kPositionDeadband: " + kPositionDeadband + " kCruiseVelocity: " + kCruiseVelocity + " kAcceleration: " + kAcceleration;
+	public String toString() {
+		return "kP: " + kP + " kI: " + kI + " kD: " + kD + " kIZone: " + kIZone + " kF: " + kF + " kPositionDeadband: "
+				+ kPositionDeadband + " kCruiseVelocity: " + kCruiseVelocity + " kAcceleration: " + kAcceleration;
 	}
 }

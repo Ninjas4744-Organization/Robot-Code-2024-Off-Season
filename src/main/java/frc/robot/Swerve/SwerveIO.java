@@ -12,12 +12,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
 import frc.robot.Vision.NoteDetection;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,9 +40,7 @@ public abstract class SwerveIO extends SubsystemBase {
 
 	public SwerveIO() {
 		_anglePID = new PIDController(
-				SwerveConstants.kSwerveAngleP,
-				SwerveConstants.kSwerveAngleI,
-				SwerveConstants.kSwerveAngleD);
+				SwerveConstants.kSwerveAngleP, SwerveConstants.kSwerveAngleI, SwerveConstants.kSwerveAngleD);
 
 		_anglePID.enableContinuousInput(
 				Rotation2d.fromDegrees(-180).getDegrees(),
@@ -62,14 +59,11 @@ public abstract class SwerveIO extends SubsystemBase {
 		ChassisSpeeds drive = new ChassisSpeeds(
 				translation.getX() * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
 				translation.getY() * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
-				rotation
-						* SwerveConstants.kRotationSpeedFactor
-						* SwerveConstants.maxAngularVelocity);
+				rotation * SwerveConstants.kRotationSpeedFactor * SwerveConstants.maxAngularVelocity);
 
 		if (isAnglePID) {
 			drive.omegaRadiansPerSecond =
-					_anglePID.calculate(RobotState.getGyroYaw().getDegrees())
-							* SwerveConstants.maxAngularVelocity;
+					_anglePID.calculate(RobotState.getGyroYaw().getDegrees()) * SwerveConstants.maxAngularVelocity;
 		}
 
 		if (isDriveAssist) {
@@ -82,7 +76,10 @@ public abstract class SwerveIO extends SubsystemBase {
 					break;
 
 				case HOLDING_NOTE:
-					Pose2d targetPose = VisionConstants.getFieldLayout().getTagPose(6).get().toPose2d();//VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(), 0.25);
+					Pose2d targetPose = VisionConstants.getFieldLayout()
+							.getTagPose(6)
+							.get()
+							.toPose2d(); // VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(), 0.25);
 					drive = _driveAssist.driveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
 					break;
 			}
@@ -195,7 +192,7 @@ public abstract class SwerveIO extends SubsystemBase {
 	/**
 	 * @return Whether angle pid is enabled (look at mode)
 	 */
-	public boolean getAnglePID(){
+	public boolean getAnglePID() {
 		return isAnglePID;
 	}
 
@@ -205,8 +202,7 @@ public abstract class SwerveIO extends SubsystemBase {
 	public void setDriveAssist(boolean isDriveAssist) {
 		this.isDriveAssist = isDriveAssist;
 
-		if(!isDriveAssist)
-			_driveAssist.turnOffDriveAssist();
+		if (!isDriveAssist) _driveAssist.turnOffDriveAssist();
 
 		SmartDashboard.putBoolean("Swerve Drive Assist", isDriveAssist);
 	}
@@ -214,7 +210,7 @@ public abstract class SwerveIO extends SubsystemBase {
 	/**
 	 * @return Whether drive assist is enabled
 	 */
-	public boolean getDriveAssist(){
+	public boolean getDriveAssist() {
 		return isDriveAssist;
 	}
 
@@ -231,7 +227,7 @@ public abstract class SwerveIO extends SubsystemBase {
 	/**
 	 * @return Whether the swerve is in bayblade mode
 	 */
-	public boolean getBaybladeMode(){
+	public boolean getBaybladeMode() {
 		return isBayblade;
 	}
 
