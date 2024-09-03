@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -76,10 +77,11 @@ public abstract class SwerveIO extends SubsystemBase {
 					break;
 
 				case HOLDING_NOTE:
-					Pose2d targetPose = VisionConstants.getFieldLayout()
-							.getTagPose(6)
-							.get()
-							.toPose2d(); // VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(), 0.25);
+//					Pose2d targetPose = VisionConstants.getFieldLayout().getTagPose(6).get().toPose2d();
+//					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(), 0.5);
+					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 1.5);
+					NetworkTableInstance.getDefault().getTable("Assist Target Offset").getEntry("pose").setDoubleArray(new double[]{targetPose.getX(), targetPose.getY()});
+
 					drive = _driveAssist.driveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
 					break;
 			}

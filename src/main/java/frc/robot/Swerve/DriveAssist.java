@@ -73,10 +73,10 @@ public class DriveAssist {
 		Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
 
 		if (Math.abs(angleDiff.getDegrees()) < Constants.SwerveConstants.kDriveAssistThreshold) {
-			if (!isCurrentlyDriveAssisting) startingDriveAssist();
+			if (!isCurrentlyDriveAssisting) startingDriveAssist(targetPose, toTargetAngle, isForTags);
 			isCurrentlyDriveAssisting = true;
 
-			return calculateDriveAssist(toTargetAngle, targetPose, isForTags);
+			return calculateDriveAssist();
 		} else isCurrentlyDriveAssisting = false;
 
 		return new ChassisSpeeds(
@@ -85,8 +85,7 @@ public class DriveAssist {
 				rotation);
 	}
 
-	private ChassisSpeeds calculateDriveAssist(Rotation2d toTargetAngle, Pose2d targetPose, boolean isForTags) {
-
+	private ChassisSpeeds calculateDriveAssist() {
 		double currentTime = this._profileTimer.get();
 		// Determine desired state based on where the robot should be at the current time in the path
 		PathPlannerTrajectory.State desiredState = trajectory.sample(currentTime);
@@ -112,12 +111,12 @@ public class DriveAssist {
 		return chassisSpeeds;
 	}
 
-	private void startingDriveAssist() {
+	private void startingDriveAssist(Pose2d targetPose, Rotation2d toTargetAngle, boolean isForTags) {
 		List<Translation2d> _points = Arrays.asList(
 				RobotState.getRobotPose().getTranslation(),
 				RobotState.getRobotPose().getTranslation(),
-				Constants.VisionConstants.getAmpPose().getTranslation().minus(new Translation2d(0, 2)),
-				Constants.VisionConstants.getAmpPose().getTranslation());
+				targetPose.getTranslation(),
+				targetPose.getTranslation());
 
 		Pathfinding.setStartPosition(RobotState.getRobotPose().getTranslation());
 		Pathfinding.setGoalPosition(Constants.VisionConstants.getAmpPose().getTranslation());
@@ -126,7 +125,7 @@ public class DriveAssist {
 				_points,
 				Constants.AutoConstants.constraints,
 				new GoalEndState(
-						0, Constants.VisionConstants.getAmpPose().getRotation().unaryMinus()));
+						0, isForTags ? targetPose.getRotation().unaryMinus() : toTargetAngle));
 
 		currentTraj.getObject("Trajectory").setPoses(_path.getPathPoses());
 		SmartDashboard.putData("traj", currentTraj);
@@ -141,7 +140,7 @@ public class DriveAssist {
 
 	/**
 	 * Call me when turning off drive assist.
-	 * You need to call me when turning off drive assist for some logic going on in here. DON'T ASK!😁
+	 * You need to call me when turning off drive assist for some logic going on in here. DON'T ASK!
 	 */
 	public void turnOffDriveAssist() {
 		isCurrentlyDriveAssisting = false;
