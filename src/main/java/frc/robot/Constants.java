@@ -231,11 +231,15 @@ public final class Constants {
 		public static final double kSwerveAngleD = 0;
 
 		/* Swerve drive assist PID values */
-		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints =
-				new TrapezoidProfile.Constraints(maxSpeed / 3, maxSpeed);
+		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints = new TrapezoidProfile.Constraints(maxSpeed / 3, maxSpeed);
 		public static final double kDriveAssistP = 0.1525 * 1.5;
 		public static final double kDriveAssistI = 0;
 		public static final double kDriveAssistD = 0;
+
+		/* Swerve axis lock PID values */
+		public static final double kSwerveAxisLockP = 0.2;
+		public static final double kSwerveAxisLockI = 0.0;
+		public static final double kSwerveAxisLockD = 0.0;
 
 		/**
 		 * Swerve drive assist threshold, if the drive assist angle difference from driver angle is
@@ -334,7 +338,7 @@ public final class Constants {
 		public static final double kMaxAmbiguity = 0.7;
 
 		public static HashMap<String, Transform3d> getCamerasPoses() {
-			HashMap<String, Transform3d> cameras = new HashMap<String, Transform3d>();
+			HashMap<String, Transform3d> cameras = new HashMap<>();
 
 			double deg2rad = 0.0174533;
 			cameras.put("Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)));

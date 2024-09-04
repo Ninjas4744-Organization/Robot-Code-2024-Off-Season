@@ -45,10 +45,6 @@ public class DriveAssist {
 		rotationPID = anglePID;
 	}
 
-	public DriveAssist() {
-		this(new PIDController(0.001, 0, 0));
-	}
-
 	/**
 	 * Calculates the drive assist
 	 *

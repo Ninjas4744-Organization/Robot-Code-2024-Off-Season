@@ -17,23 +17,16 @@ import frc.robot.Vision.NoteDetection;
 
 public abstract class SwerveIO extends SubsystemBase {
 	private static SwerveIO _instance;
+
 	private PIDController _anglePID;
-	private PIDController _XController;
-	private PIDController _YController;
+	private PIDController _axisPID;
 	private DriveAssist _driveAssist;
-	private SwerveState _currSwerveState;
+
 	private boolean isDriveAssist = false;
 	private boolean isAnglePID = true;
 	private boolean isBayblade = false;
-	Translation2d translationDemand;
-	double rotation;
 
-	public enum SwerveState {
-		POSITION,
-		VELOCITY,
-		LOCKED_AXIS,
-		OPEN_LOOP
-	}
+	private SwerveDemand _demand;
 
 	/** Returns the swerve instance, simulated/real depends on if the code is simulated/real. */
 	public static SwerveIO getInstance() {
@@ -45,11 +38,6 @@ public abstract class SwerveIO extends SubsystemBase {
 	}
 
 	public SwerveIO() {
-		_XController = new PIDController(
-				SwerveConstants.kDriveAssistP, SwerveConstants.kDriveAssistI, SwerveConstants.kDriveAssistD);
-		_YController = new PIDController(
-				SwerveConstants.kDriveAssistP, SwerveConstants.kDriveAssistI, SwerveConstants.kDriveAssistD);
-
 		_anglePID = new PIDController(
 				SwerveConstants.kSwerveAngleP, SwerveConstants.kSwerveAngleI, SwerveConstants.kSwerveAngleD);
 
@@ -57,32 +45,28 @@ public abstract class SwerveIO extends SubsystemBase {
 				Rotation2d.fromDegrees(-180).getDegrees(),
 				Rotation2d.fromDegrees(180).getDegrees());
 
+		_axisPID = new PIDController(SwerveConstants.kSwerveAxisLockP, SwerveConstants.kSwerveAxisLockI, SwerveConstants.kSwerveAxisLockD);
+
 		_driveAssist = new DriveAssist(_anglePID);
 	}
 
 	/**
 	 * Drives the robot with the other cool stuff like drive assist and bayblade
 	 *
-	 * @param translation - speed percentage to move in x and y
-	 * @param rotation - speed percentage to rotate the robot, positive is counterclockwise
+	 * @param driverInput - speed percentage to move in x and y, and rotate the robot, positive is forward, left, counterclockwise
 	 */
-	public void drive(Translation2d translation, double rotation) {
+	private void drive(ChassisSpeeds driverInput) {
 		ChassisSpeeds drive = new ChassisSpeeds(
-				translation.getX() * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
-				translation.getY() * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
-				rotation * SwerveConstants.kRotationSpeedFactor * SwerveConstants.maxAngularVelocity);
-
-		if (isAnglePID) {
-			drive.omegaRadiansPerSecond =
-					_anglePID.calculate(RobotState.getGyroYaw().getDegrees()) * SwerveConstants.maxAngularVelocity;
-		}
+			driverInput.vxMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+			driverInput.vyMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+			driverInput.omegaRadiansPerSecond * SwerveConstants.kRotationSpeedFactor * SwerveConstants.maxAngularVelocity);
 
 		if (isDriveAssist) {
 			switch (RobotState.getRobotState()) {
 				case NOTE_SEARCH:
 					if (NoteDetection.hasTarget()) {
 						Pose2d targetPose = NoteDetection.getNotePose();
-						drive = _driveAssist.driveAssist(translation, drive.omegaRadiansPerSecond, targetPose, false);
+						drive = _driveAssist.driveAssist(new Translation2d(driverInput.vxMetersPerSecond, driverInput.vyMetersPerSecond), drive.omegaRadiansPerSecond, targetPose, false);
 					}
 					break;
 
@@ -97,7 +81,7 @@ public abstract class SwerveIO extends SubsystemBase {
 							.getEntry("pose")
 							.setDoubleArray(new double[] {targetPose.getX(), targetPose.getY()});
 
-					drive = _driveAssist.driveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
+					drive = _driveAssist.driveAssist(new Translation2d(driverInput.vxMetersPerSecond, driverInput.vyMetersPerSecond), drive.omegaRadiansPerSecond, targetPose, true);
 					break;
 			}
 		}
@@ -136,11 +120,11 @@ public abstract class SwerveIO extends SubsystemBase {
 	 *     rounded angle is 45 it won't round. if you write 1 as the roundToAngle there will be no
 	 *     rounding, DON'T USE 0 (division by zero error)
 	 */
-	public void lookAt(double angle, double roundToAngle) {
+	public double lookAt(double angle, double roundToAngle) {
 		double roundedAngle = Math.round(angle / roundToAngle) * roundToAngle;
 		angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundedAngle : angle;
 
-		_anglePID.setSetpoint(angle);
+		return _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle) * SwerveConstants.maxAngularVelocity;
 	}
 
 	/**
@@ -153,9 +137,11 @@ public abstract class SwerveIO extends SubsystemBase {
 	 *     given angle is 28 and the rounded angle is 45 it won't round. if you write 1 as the
 	 *     roundToAngle there will be no rounding, DON'T USE 0 (division by zero error)
 	 */
-	public void lookAt(Translation2d direction, double roundToAngle) {
+	public double lookAt(Translation2d direction, double roundToAngle) {
 		if (!(direction.getX() == 0 && direction.getY() == 0))
-			lookAt(direction.getAngle().getDegrees(), roundToAngle);
+			return lookAt(direction.getAngle().getDegrees(), roundToAngle);
+
+		return 0;
 	}
 
 	/**
@@ -188,7 +174,7 @@ public abstract class SwerveIO extends SubsystemBase {
 	/**
 	 * @return Whether drive assist is enabled
 	 */
-	public boolean getDriveAssist() {
+	public boolean isDriveAssist() {
 		return isDriveAssist;
 	}
 
@@ -205,60 +191,62 @@ public abstract class SwerveIO extends SubsystemBase {
 	/**
 	 * @return Whether the swerve is in bayblade mode
 	 */
-	public boolean getBaybladeMode() {
+	public boolean isBaybladeMode() {
 		return isBayblade;
 	}
 
 	/** Logs info about the modules and swerve */
-	public void log() {
+	private void log() {
 		// TODO: make this work
 	}
 
-	public void positionControl() {
-		drive(
-				new ChassisSpeeds(
-						_XController.calculate(RobotState.getRobotPose().getX()),
-						_YController.calculate(RobotState.getRobotPose().getY()),
-						rotation),
-				true);
+	private void goToPose(Pose2d pose) {
+		// TODO: make this work
 	}
 
-	public void velocityControl() {
-		drive(new ChassisSpeeds(translationDemand.getX(), translationDemand.getY(), rotation), true);
+	private void lockAxis(Translation2d axis, double phase, ChassisSpeeds driverInput) {
+		Translation2d perpendicularAxis = axis.rotateBy(Rotation2d.fromDegrees(90));
+
+		Translation2d robotPose = RobotState.getRobotPose().getTranslation();
+
+		double a = -axis.getY();
+		double b = axis.getX();
+		double c = -phase * Math.sqrt(a * a + b * b);
+		double error = Math.abs(a * robotPose.getX() + b * robotPose.getY() + c) / Math.sqrt(a * a + b * b);
+		Translation2d pid = perpendicularAxis.times(_axisPID.calculate(-error));
+
+		Translation2d driver = axis.times(driverInput.vxMetersPerSecond);
+
+		ChassisSpeeds speeds = new ChassisSpeeds(driver.getX() + pid.getX(), driver.getY() + pid.getY(), driverInput.omegaRadiansPerSecond);
+		drive(speeds);
 	}
 
-	public void lockedAxis() {
-
-		Translation2d heading = RobotState.getRobotPose().getTranslation().rotateBy(null);
-		Transform2d d = new Transform2d(
-				new Translation2d(
-						_XController.calculate(RobotState.getRobotPose().getX()),
-						_YController.calculate(RobotState.getRobotPose().getY())),
-				Rotation2d.fromDegrees(rotation));
-		drive(d.getTranslation(), d.getRotation().getDegrees());
-	}
-
-	public void setState(SwerveState newState) {
-		_currSwerveState = newState;
+	public void set(SwerveDemand demand) {
+		_demand = demand;
 	}
 
 	@Override
 	public void periodic() {
-		switch (_currSwerveState) {
-			case OPEN_LOOP:
-				drive(translationDemand, rotation);
-				break;
-			case POSITION:
-				positionControl();
-				break;
-			case VELOCITY:
-				velocityControl();
-				break;
-			case LOCKED_AXIS:
-				lockedAxis();
-			default:
-				break;
-		}
+		if(_demand != null)
+			switch (_demand.state) {
+				case DRIVER:
+					drive(_demand.chassisSpeeds);
+					break;
+
+				case POSITION:
+					goToPose(_demand.targetPose);
+					break;
+
+				case VELOCITY:
+					drive(_demand.chassisSpeeds, _demand.fieldRelative);
+					break;
+
+				case LOCKED_AXIS:
+					lockAxis(_demand.axis, _demand.phase, _demand.chassisSpeeds);
+
+				default:
+					break;
+			}
 		log();
 	}
 }

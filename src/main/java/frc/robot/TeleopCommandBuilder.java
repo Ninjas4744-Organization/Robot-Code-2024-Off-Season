@@ -3,10 +3,12 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState.RobotStates;
+import frc.robot.Swerve.SwerveDemand;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
 import java.util.function.Supplier;
@@ -22,8 +24,7 @@ public class TeleopCommandBuilder {
 							* MathUtil.applyDeadband(rotation.get().getX(), SwerveConstants.kJoystickDeadband);
 					double ry = -MathUtil.applyDeadband(rotation.get().getY(), SwerveConstants.kJoystickDeadband);
 
-					SwerveIO.getInstance().drive(new Translation2d(ly, lx), rx);
-					if (isLookAt) SwerveIO.getInstance().lookAt(new Translation2d(ry, rx), 45);
+					SwerveIO.getInstance().set(new SwerveDemand(new ChassisSpeeds(ly, lx, isLookAt ? SwerveIO.getInstance().lookAt(new Translation2d(ry, rx), 45) : rx)));
 				},
 				SwerveIO.getInstance());
 	}
