@@ -124,8 +124,7 @@ public class DriveAssist {
 		PathPlannerPath _path = new PathPlannerPath(
 				_points,
 				Constants.AutoConstants.constraints,
-				new GoalEndState(
-						0, isForTags ? targetPose.getRotation().unaryMinus() : toTargetAngle));
+				new GoalEndState(1, isForTags ? targetPose.getRotation().unaryMinus() : toTargetAngle));
 
 		currentTraj.getObject("Trajectory").setPoses(_path.getPathPoses());
 		SmartDashboard.putData("traj", currentTraj);

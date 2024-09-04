@@ -233,7 +233,7 @@ public final class Constants {
 		/* Swerve drive assist PID values */
 		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints =
 				new TrapezoidProfile.Constraints(maxSpeed / 3, maxSpeed);
-		public static final double kDriveAssistP = 0.1525*1.5;
+		public static final double kDriveAssistP = 0.1525 * 1.5;
 		public static final double kDriveAssistI = 0;
 		public static final double kDriveAssistD = 0;
 
@@ -437,7 +437,8 @@ public final class Constants {
 		 * @return the pose of the offset tag
 		 */
 		public static Pose2d getOffsetTagPose(Pose2d tagPose, double offset) {
-			Translation2d offsetTranslation = new Translation2d(offset, tagPose.getRotation().rotateBy(Rotation2d.fromDegrees(90)));
+			Translation2d offsetTranslation =
+					new Translation2d(offset, tagPose.getRotation().rotateBy(Rotation2d.fromDegrees(90)));
 			return tagPose.transformBy(new Transform2d(offsetTranslation, new Rotation2d()));
 		}
 	}

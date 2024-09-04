@@ -1,17 +1,13 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState.RobotStates;
-import frc.robot.Swerve.Swerve;
 import frc.robot.Swerve.SwerveIO;
-import frc.robot.Vision.Vision;
 import frc.robot.Vision.VisionIO;
 import java.util.function.Supplier;
 
@@ -41,33 +37,6 @@ public class TeleopCommandBuilder {
 				else RobotState.resetGyro(Rotation2d.fromDegrees(0));
 			}
 		});
-	}
-
-	private static Command goToTagCommand;
-	/**
-	 * Makes the robot auto drive to the closest tag infront of it
-	 *
-	 * @return the command that will make it drive
-	 */
-	public static Command goToTag() {
-		return Commands.startEnd(
-				() -> {
-					if (Vision.getInstance().hasTargets("Front")) {
-						Pose2d tagPose =
-								Vision.getInstance().getClosestTag("Front").pose.toPose2d();
-						tagPose = new Pose2d(
-								tagPose.getX(),
-								tagPose.getY(),
-								tagPose.getRotation().unaryMinus());
-
-						goToTagCommand = Swerve.getInstance().goTo(tagPose, 0);
-						goToTagCommand.schedule();
-					} else
-						Commands.print("Cannot auto go to tag because no tags were found infront of front camera")
-								.schedule();
-				},
-				() -> CommandScheduler.getInstance().cancel(goToTagCommand),
-				SwerveIO.getInstance());
 	}
 
 	public static Command changeRobotState(RobotStates state) {

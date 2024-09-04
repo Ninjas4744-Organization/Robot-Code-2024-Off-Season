@@ -65,7 +65,7 @@ public class RobotContainer {
 				.triangle()
 				.onTrue(Commands.runOnce(
 						() -> SwerveIO.getInstance()
-								.setAnglePID(!SwerveIO.getInstance().getAnglePID()),
+								.setAnglePID(!SwerveIO.getInstance().isAnglePID()),
 						SwerveIO.getInstance()));
 
 		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
@@ -77,8 +77,6 @@ public class RobotContainer {
 				.toggleOnTrue(Commands.startEnd(
 						() -> SwerveIO.getInstance().setDriveAssist(true),
 						() -> SwerveIO.getInstance().setDriveAssist(false)));
-
-		_driverJoystick.R2().whileTrue(TeleopCommandBuilder.goToTag());
 	}
 
 	private void configureOperatorBindings() {

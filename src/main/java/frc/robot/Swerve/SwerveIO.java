@@ -1,34 +1,39 @@
 package frc.robot.Swerve;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
 import frc.robot.Vision.NoteDetection;
-import java.util.Arrays;
-import java.util.List;
 
 public abstract class SwerveIO extends SubsystemBase {
 	private static SwerveIO _instance;
 	private PIDController _anglePID;
+	private PIDController _XController;
+	private PIDController _YController;
 	private DriveAssist _driveAssist;
-
+	private SwerveState _currSwerveState;
 	private boolean isDriveAssist = false;
 	private boolean isAnglePID = true;
 	private boolean isBayblade = false;
+	Translation2d translationDemand;
+	double rotation;
+
+	public enum SwerveState {
+		POSITION,
+		VELOCITY,
+		LOCKED_AXIS,
+		OPEN_LOOP
+	}
 
 	/** Returns the swerve instance, simulated/real depends on if the code is simulated/real. */
 	public static SwerveIO getInstance() {
@@ -40,6 +45,11 @@ public abstract class SwerveIO extends SubsystemBase {
 	}
 
 	public SwerveIO() {
+		_XController = new PIDController(
+				SwerveConstants.kDriveAssistP, SwerveConstants.kDriveAssistI, SwerveConstants.kDriveAssistD);
+		_YController = new PIDController(
+				SwerveConstants.kDriveAssistP, SwerveConstants.kDriveAssistI, SwerveConstants.kDriveAssistD);
+
 		_anglePID = new PIDController(
 				SwerveConstants.kSwerveAngleP, SwerveConstants.kSwerveAngleI, SwerveConstants.kSwerveAngleD);
 
@@ -77,10 +87,15 @@ public abstract class SwerveIO extends SubsystemBase {
 					break;
 
 				case HOLDING_NOTE:
-//					Pose2d targetPose = VisionConstants.getFieldLayout().getTagPose(6).get().toPose2d();
-//					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(), 0.5);
+					//					Pose2d targetPose = VisionConstants.getFieldLayout().getTagPose(6).get().toPose2d();
+					//					Pose2d targetPose =
+					// VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(),
+					// 0.5);
 					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 1.5);
-					NetworkTableInstance.getDefault().getTable("Assist Target Offset").getEntry("pose").setDoubleArray(new double[]{targetPose.getX(), targetPose.getY()});
+					NetworkTableInstance.getDefault()
+							.getTable("Assist Target Offset")
+							.getEntry("pose")
+							.setDoubleArray(new double[] {targetPose.getX(), targetPose.getY()});
 
 					drive = _driveAssist.driveAssist(translation, drive.omegaRadiansPerSecond, targetPose, true);
 					break;
@@ -110,45 +125,6 @@ public abstract class SwerveIO extends SubsystemBase {
 	}
 
 	public abstract ChassisSpeeds getChassisSpeeds();
-
-	/**
-	 * Auto drives the robot to a given pose with an offset from the target
-	 *
-	 * @param targetPose - the pose and rotation to drive to
-	 * @param offset - the distance from the target to stop at
-	 * @return following path command
-	 */
-	public Command goTo(Pose2d targetPose, double offset) {
-		Pose2d currentPose = RobotState.getRobotPose();
-
-		Translation2d offsetTranslation = new Translation2d(
-				offset * targetPose.getRotation().getCos(),
-				offset * targetPose.getRotation().getSin());
-
-		targetPose = new Pose2d(
-				targetPose.getX() + offsetTranslation.getX(),
-				targetPose.getY() + offsetTranslation.getY(),
-				targetPose.getRotation());
-
-		SmartDashboard.putNumber("Current X", currentPose.getX());
-		SmartDashboard.putNumber("Current Y", currentPose.getY());
-		SmartDashboard.putNumber("Current 0", currentPose.getRotation().getDegrees());
-
-		SmartDashboard.putNumber("Auto Target X", targetPose.getX());
-		SmartDashboard.putNumber("Auto Target Y", targetPose.getY());
-		SmartDashboard.putNumber("Auto Target 0", targetPose.getRotation().getDegrees());
-
-		List<Translation2d> bezierPoints = Arrays.asList(
-				currentPose.getTranslation(),
-				currentPose.getTranslation(),
-				targetPose.getTranslation(),
-				targetPose.getTranslation());
-
-		PathPlannerPath path = new PathPlannerPath(
-				bezierPoints, AutoConstants.constraints, new GoalEndState(0, targetPose.getRotation()));
-
-		return AutoBuilder.followPath(path);
-	}
 
 	/**
 	 * Makes the swerve use PID to look at the given angle
@@ -194,7 +170,7 @@ public abstract class SwerveIO extends SubsystemBase {
 	/**
 	 * @return Whether angle pid is enabled (look at mode)
 	 */
-	public boolean getAnglePID() {
+	public boolean isAnglePID() {
 		return isAnglePID;
 	}
 
@@ -238,8 +214,51 @@ public abstract class SwerveIO extends SubsystemBase {
 		// TODO: make this work
 	}
 
+	public void positionControl() {
+		drive(
+				new ChassisSpeeds(
+						_XController.calculate(RobotState.getRobotPose().getX()),
+						_YController.calculate(RobotState.getRobotPose().getY()),
+						rotation),
+				true);
+	}
+
+	public void velocityControl() {
+		drive(new ChassisSpeeds(translationDemand.getX(), translationDemand.getY(), rotation), true);
+	}
+
+	public void lockedAxis() {
+
+		Translation2d heading = RobotState.getRobotPose().getTranslation().rotateBy(null);
+		Transform2d d = new Transform2d(
+				new Translation2d(
+						_XController.calculate(RobotState.getRobotPose().getX()),
+						_YController.calculate(RobotState.getRobotPose().getY())),
+				Rotation2d.fromDegrees(rotation));
+		drive(d.getTranslation(), d.getRotation().getDegrees());
+	}
+
+	public void setState(SwerveState newState) {
+		_currSwerveState = newState;
+	}
+
 	@Override
 	public void periodic() {
+		switch (_currSwerveState) {
+			case OPEN_LOOP:
+				drive(translationDemand, rotation);
+				break;
+			case POSITION:
+				positionControl();
+				break;
+			case VELOCITY:
+				velocityControl();
+				break;
+			case LOCKED_AXIS:
+				lockedAxis();
+			default:
+				break;
+		}
 		log();
 	}
 }
