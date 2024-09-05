@@ -26,9 +26,9 @@ import java.util.List;
 public class Swerve extends SubsystemBase {
 	private static Swerve _instance = null;
 
+	// null-coalescing usage here
 	public static Swerve getInstance() {
-		if (_instance == null) _instance = new Swerve();
-		return _instance;
+		return _instance ??= new Swerve();
 	}
 
 	private SwerveModule[] _modules;
@@ -193,11 +193,11 @@ public class Swerve extends SubsystemBase {
 	 * where it is
 	 */
 	public void resetModulesToAbsolute() {
-		System.out.println("---------------Reseting modules to absolute---------------");
+		System.out.println("---------------Resetting modules to absolute---------------");
 
 		for (SwerveModule mod : _modules) mod.resetToAbsolute();
 
-		System.out.println("---------------Reseting modules to absolute---------------");
+		System.out.println("---------------Resetting modules to absolute---------------");
 	}
 
 	/**
