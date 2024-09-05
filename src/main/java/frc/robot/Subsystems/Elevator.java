@@ -1,5 +1,6 @@
 package frc.robot.Subsystems;
 
+import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
 import frc.robot.AbstractClasses.NinjasSubsystem;
 import frc.robot.Constants.ElevatorConstants;
@@ -15,32 +16,37 @@ public class Elevator extends NinjasSubsystem {
 		return _instance;
 	}
 
-	private Elevator() {
-		super();
-
+	@Override
+	protected void setController() {
 		_controller = new NinjasSparkMaxController(ElevatorConstants.kControllerConstants);
+	}
+
+	@Override
+	protected void setSimulationController() {
+		_simulatedController = new NinjasSimulatedController(ElevatorConstants.kSimulatedControllerConstants);
 	}
 
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-				() -> _controller.setPosition(ElevatorConstants.States.kAmp), RobotStates.PREPARE_AMP_OUTAKE);
+				() -> controller().setPosition(ElevatorConstants.States.kAmp), RobotStates.PREPARE_AMP_OUTAKE);
 		addFunctionToOnChangeMap(
-				() -> _controller.setPosition(ElevatorConstants.States.kTrap), RobotStates.PREPARE_TRAP_OUTAKE);
+				() -> controller().setPosition(ElevatorConstants.States.kTrap), RobotStates.PREPARE_TRAP_OUTAKE);
 
 		addFunctionToPeriodicMap(
 				() -> {
-					if (_controller.atGoal()) StateMachine.getInstance().changeRobotState(RobotStates.AMP_OUTAKE_READY);
+					if (controller().atGoal())
+						StateMachine.getInstance().changeRobotState(RobotStates.AMP_OUTAKE_READY);
 				},
 				RobotStates.PREPARE_AMP_OUTAKE);
 		addFunctionToPeriodicMap(
 				() -> {
-					if (_controller.atGoal())
+					if (controller().atGoal())
 						StateMachine.getInstance().changeRobotState(RobotStates.TRAP_OUTAKE_READY);
 				},
 				RobotStates.PREPARE_TRAP_OUTAKE);
 
-		addFunctionToOnChangeMap(() -> _controller.setPosition(ElevatorConstants.States.kClose), RobotStates.CLOSE);
+		addFunctionToOnChangeMap(() -> controller().setPosition(ElevatorConstants.States.kClose), RobotStates.CLOSE);
 		addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotStates.RESET);
 	}
 }

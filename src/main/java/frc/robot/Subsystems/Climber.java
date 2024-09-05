@@ -1,5 +1,6 @@
 package frc.robot.Subsystems;
 
+import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
 import frc.robot.AbstractClasses.NinjasSubsystem;
 import frc.robot.Constants.ClimberConstants;
@@ -15,24 +16,29 @@ public class Climber extends NinjasSubsystem {
 		return _instance;
 	}
 
-	private Climber() {
-		super();
-
+	@Override
+	protected void setController() {
 		_controller = new NinjasSparkMaxController(ClimberConstants.kControllerConstants);
 	}
 
 	@Override
+	protected void setSimulationController() {
+		_simulatedController = new NinjasSimulatedController(ClimberConstants.kSimulatedControllerConstants);
+	}
+
+	@Override
 	protected void setFunctionMaps() {
-		addFunctionToOnChangeMap(() -> _controller.setPosition(ClimberConstants.States.kUp), RobotStates.PREPARE_CLIMB);
+		addFunctionToOnChangeMap(
+				() -> controller().setPosition(ClimberConstants.States.kUp), RobotStates.PREPARE_CLIMB);
 
 		addFunctionToPeriodicMap(
 				() -> {
-					if (_controller.atGoal()) StateMachine.getInstance().changeRobotState(RobotStates.CLIMB_READY);
+					if (controller().atGoal()) StateMachine.getInstance().changeRobotState(RobotStates.CLIMB_READY);
 				},
 				RobotStates.PREPARE_CLIMB);
 
 		addFunctionToOnChangeMap(
-				() -> _controller.setPosition(ClimberConstants.States.kClose), RobotStates.CLOSE, RobotStates.CLIMB);
+				() -> controller().setPosition(ClimberConstants.States.kClose), RobotStates.CLOSE, RobotStates.CLIMB);
 		addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotStates.RESET);
 	}
 }

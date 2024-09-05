@@ -4,19 +4,17 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.DataClasses.MainControllerConstants;
 import frc.robot.DataClasses.PIDFConstants;
+import frc.robot.DataClasses.SimulatedControllerConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,8 +24,31 @@ public final class Constants {
 	public static final int kOperatorJoystickPort = 1;
 	public static final int kNoteDetectorID = 0;
 
+	public static class ShooterConstants {
+		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+		public static final SimulatedControllerConstants kSimulatedControllerConstants =
+			new SimulatedControllerConstants();
+
+		static {
+			kControllerConstants.main.id = 22;
+			kControllerConstants.main.inverted = false;
+			kControllerConstants.currentLimit = 40;
+			kControllerConstants.subsystemName = "Shooter";
+			kControllerConstants.PIDFConstants = new PIDFConstants(0.018, 0, 0, 60, 120);
+//			kControllerConstants.positionGoalTolerance = 5;
+			kControllerConstants.encoderConversionFactor = 7.2;
+			kControllerConstants.encoderHomePosition = 0;
+			kControllerConstants.gearRatio = 27;
+
+			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.motorTorque = 1;
+		}
+	}
+
 	public static class ElevatorConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+		public static final SimulatedControllerConstants kSimulatedControllerConstants =
+				new SimulatedControllerConstants();
 
 		static {
 			kControllerConstants.main.id = 24;
@@ -38,6 +59,10 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
+			kControllerConstants.gearRatio = 1;
+
+			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
 		public static final int kLimitSwitchID = 7;
@@ -51,6 +76,8 @@ public final class Constants {
 
 	public static class ClimberConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+		public static final SimulatedControllerConstants kSimulatedControllerConstants =
+				new SimulatedControllerConstants();
 
 		static {
 			kControllerConstants.main.id = 24;
@@ -61,6 +88,10 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
+			kControllerConstants.gearRatio = 1;
+
+			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
 		public static final int kLimitSwitchID = 7;
@@ -73,6 +104,8 @@ public final class Constants {
 
 	public static class RotationConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+		public static final SimulatedControllerConstants kSimulatedControllerConstants =
+				new SimulatedControllerConstants();
 
 		static {
 			kControllerConstants.main.id = 24;
@@ -83,6 +116,10 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
+			kControllerConstants.gearRatio = 1;
+
+			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
 		public static final int kLimitSwitchID = 7;
@@ -96,6 +133,8 @@ public final class Constants {
 
 	public static class RollersConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+		public static final SimulatedControllerConstants kSimulatedControllerConstants =
+				new SimulatedControllerConstants();
 
 		static {
 			kControllerConstants.main.id = 24;
@@ -106,6 +145,10 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
+			kControllerConstants.gearRatio = 1;
+
+			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
 		public static final int kLimitSwitchID = 7;
@@ -119,9 +162,14 @@ public final class Constants {
 	public static final class SwerveConstants {
 		public static final double kSpeedFactor = 0.5;
 		public static final double kRotationSpeedFactor = 0.25;
-		public static final double kJoystickDeadband = 0.2;
+		public static final double kJoystickDeadband = 0.3;
 
 		public static final boolean kInvertGyro = true; // Always ensure Gyro is CCW+ CW-
+
+		/** Whether to drive without velocity PID control */
+		public static final boolean kOpenLoop = true;
+		/** Whether to drive relative to the field or the robot */
+		public static final boolean kFieldRelative = true;
 
 		/** Drivetrain Constants */
 		public static final double kTrackWidth = Units.inchesToMeters(30);
@@ -150,30 +198,11 @@ public final class Constants {
 
 		public static final int kDriveContinuousCurrentLimit = 35;
 
-		/** Modules angle PID values */
+		/* Modules angle PID values */
 		public static final double kAngleP = 0.01;
-
 		public static final double kAngleI = 0.0;
 		public static final double kAngleD = 0.005;
 		public static final double kAngleFF = 0.0;
-
-		/** Swerve angle PID values */
-		public static final double kSwerveAngleP = 0.0035;
-
-		public static final double kSwerveAngleI = 0;
-		public static final double kSwerveAngleD = 0;
-
-		/** Swerve drive assist PID values */
-		public static final double kDriveAssistP = 0.1525;
-
-		public static final double kDriveAssistI = 0;
-		public static final double kDriveAssistD = 0;
-
-		/**
-		 * Swerve drive assist threshold, if the drive assist angle difference from driver angle is
-		 * bigger than this value, the drive assist will be ignored. degrees
-		 */
-		public static final double kDriveAssistThreshold = 30;
 
 		/** Modules drive PID values */
 		public static final double kDriveP = 0.0;
@@ -198,9 +227,9 @@ public final class Constants {
 		public static final double angleConversionFactor = 360.0 / 12.8;
 
 		/** Swerve Profiling Values */
-		public static final double maxSpeed = 4; // meters per second
+		public static final double maxSpeed = 6; // meters per second
 
-		public static final double maxAngularVelocity = 11.5;
+		public static final double maxAngularVelocity = 12;
 
 		/** Neutral Modes */
 		public static final com.revrobotics.CANSparkBase.IdleMode angleNeutralMode =
@@ -216,6 +245,28 @@ public final class Constants {
 
 		/** Angle Encoder Invert */
 		public static final boolean canCoderInvert = false;
+
+		/* Swerve angle PID values */
+		public static final double kSwerveAngleP = 0.0035;
+		public static final double kSwerveAngleI = 0;
+		public static final double kSwerveAngleD = 0;
+
+		/* Swerve drive assist PID values */
+		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints = new TrapezoidProfile.Constraints(maxSpeed / 3, maxSpeed);
+		public static final double kDriveAssistP = 0.1525 * 1.5;
+		public static final double kDriveAssistI = 0;
+		public static final double kDriveAssistD = 0;
+
+		/* Swerve axis lock PID values */
+		public static final double kSwerveAxisLockP = 0.2;
+		public static final double kSwerveAxisLockI = 0.0;
+		public static final double kSwerveAxisLockD = 0.0;
+
+		/**
+		 * Swerve drive assist threshold, if the drive assist angle difference from driver angle is
+		 * bigger than this value, the drive assist will be ignored. degrees
+		 */
+		public static final double kDriveAssistThreshold = 45;
 
 		/** Module Specific Constants */
 		/** Front Left Module - Module 0 */
@@ -263,6 +314,11 @@ public final class Constants {
 			public static final SwerveModuleConstants constants =
 					new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
 		}
+
+		public class Simulation {
+			public static final double kSimToRealSpeedConversion = 0.02; // meters per 0.02s -> meters per 1s
+			public static final double kAcceleration = 10;
+		}
 	}
 
 	public static final class AutoConstants {
@@ -278,8 +334,8 @@ public final class Constants {
 		public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
 		public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 		public static final PathConstraints constraints = new PathConstraints(
-				maxVelocity,
-				maxAcceleration,
+				kMaxSpeedMetersPerSecond,
+				kMaxAccelerationMetersPerSecondSquared,
 				kMaxAngularSpeedRadiansPerSecond,
 				kMaxAngularSpeedRadiansPerSecondSquared);
 		public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
@@ -303,7 +359,7 @@ public final class Constants {
 		public static final double kMaxAmbiguity = 0.7;
 
 		public static HashMap<String, Transform3d> getCamerasPoses() {
-			HashMap<String, Transform3d> cameras = new HashMap<String, Transform3d>();
+			HashMap<String, Transform3d> cameras = new HashMap<>();
 
 			double deg2rad = 0.0174533;
 			cameras.put("Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)));
@@ -320,6 +376,7 @@ public final class Constants {
 		static {
 			try {
 				kBlueFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+
 				kBlueFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
 
 				kRedFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
@@ -330,26 +387,84 @@ public final class Constants {
 		}
 
 		public static AprilTagFieldLayout getFieldLayout() {
-			if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) return kBlueFieldLayout;
-			else return kRedFieldLayout;
+			if (Robot.isReal()) {
+				if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) return kBlueFieldLayout;
+				else return kRedFieldLayout;
+			} else return kBlueFieldLayout;
+		}
+
+		public class Simulation {
+			public static final int kResolutionWidth = 1280;
+			public static final int kResolutionHeight = 720;
+			public static final double kFOV = 70;
+			public static final double kAverageError = 0.3;
+			public static final double kErrorStdDev = 0.5;
+			public static final int kFPS = 15;
+			public static final int kAverageLatency = 35;
+			public static final int kLatencyStdDev = 5;
 		}
 
 		public static Pose2d getAmpPose() {
-			if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
 				return getFieldLayout().getTagPose(6).get().toPose2d();
 			else return getFieldLayout().getTagPose(5).get().toPose2d();
+			//			return new Pose2d();
 		}
 
 		public static Pose2d getSourcePose() {
-			if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
 				return getFieldLayout().getTagPose(2).get().toPose2d();
 			else return getFieldLayout().getTagPose(9).get().toPose2d();
+			//			return new Pose2d();
 		}
 
 		public static Pose2d getSpeakerPose() {
-			if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
 				return getFieldLayout().getTagPose(7).get().toPose2d();
 			else return getFieldLayout().getTagPose(4).get().toPose2d();
+			//			return new Pose2d();
+		}
+
+		public static Pose2d getTagPose(int id) {
+			return getFieldLayout().getTagPose(id).get().toPose2d();
+		}
+
+		/**
+		 * Get the april tag that the translation between it and the robot is closest to the given direction,
+		 * for example if robot is moving to amp, the amp tag will be returned
+		 * @param dir The direction to find the closest camera to, field relative
+		 * @return The apriltag that is closest by direction
+		 */
+		public static AprilTag getTagByDirection(Translation2d dir) {
+			Rotation2d dirAngle = dir.getAngle();
+			AprilTag closestTag = null;
+			Rotation2d closestAngleDiff = Rotation2d.fromDegrees(Double.MAX_VALUE);
+
+			for (AprilTag tag : getFieldLayout().getTags()) {
+				Rotation2d robotToTagAngle = tag.pose
+						.toPose2d()
+						.getTranslation()
+						.minus(RobotState.getRobotPose().getTranslation())
+						.getAngle();
+
+				if (dirAngle.minus(robotToTagAngle).getDegrees() < closestAngleDiff.getDegrees()) {
+					closestAngleDiff = dirAngle.minus(robotToTagAngle);
+					closestTag = tag;
+				}
+			}
+
+			return closestTag;
+		}
+
+		/**
+		 * Get offset april tag pose according to its looking direction
+		 * @param offset how much to offset the pose of the tag to its looking direction
+		 * @return the pose of the offset tag
+		 */
+		public static Pose2d getOffsetTagPose(Pose2d tagPose, double offset) {
+			Translation2d offsetTranslation =
+					new Translation2d(offset, tagPose.getRotation().rotateBy(Rotation2d.fromDegrees(90)));
+			return tagPose.transformBy(new Transform2d(offsetTranslation, new Rotation2d()));
 		}
 	}
 

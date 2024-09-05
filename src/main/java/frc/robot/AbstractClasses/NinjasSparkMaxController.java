@@ -11,8 +11,8 @@ public class NinjasSparkMaxController extends NinjasController {
 	private CANSparkMax _main;
 	private CANSparkMax[] _followers;
 
-	protected TrapezoidProfile _profile;
-	protected Timer _trapozoidTimer = new Timer();
+	private TrapezoidProfile _profile;
+	private Timer _trapozoidTimer = new Timer();
 
 	public NinjasSparkMaxController(MainControllerConstants constants) {
 		super(constants);
@@ -42,6 +42,7 @@ public class NinjasSparkMaxController extends NinjasController {
 			_followers[i].follow(_main, constants.followers[i].inverted);
 			_followers[i].burnFlash();
 		}
+
 		_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
 				constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
 	}
@@ -49,6 +50,7 @@ public class NinjasSparkMaxController extends NinjasController {
 	@Override
 	public void setPercent(double percent) {
 		super.setPercent(percent);
+
 		_main.set(percent);
 	}
 
