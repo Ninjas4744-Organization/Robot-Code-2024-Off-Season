@@ -24,6 +24,27 @@ public final class Constants {
 	public static final int kOperatorJoystickPort = 1;
 	public static final int kNoteDetectorID = 0;
 
+	public static class ShooterConstants {
+		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+		public static final SimulatedControllerConstants kSimulatedControllerConstants =
+			new SimulatedControllerConstants();
+
+		static {
+			kControllerConstants.main.id = 22;
+			kControllerConstants.main.inverted = false;
+			kControllerConstants.currentLimit = 40;
+			kControllerConstants.subsystemName = "Shooter";
+			kControllerConstants.PIDFConstants = new PIDFConstants(0.018, 0, 0, 60, 120);
+//			kControllerConstants.positionGoalTolerance = 5;
+			kControllerConstants.encoderConversionFactor = 7.2;
+			kControllerConstants.encoderHomePosition = 0;
+			kControllerConstants.gearRatio = 27;
+
+			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.motorTorque = 1;
+		}
+	}
+
 	public static class ElevatorConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
 		public static final SimulatedControllerConstants kSimulatedControllerConstants =
