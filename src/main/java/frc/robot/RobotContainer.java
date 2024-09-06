@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
-import frc.robot.Subsystems.Shooter;
+import frc.robot.Subsystems.ShooterAngle;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
 
@@ -26,7 +26,7 @@ public class RobotContainer {
 		AutoCommandBuilder.configureAutoBuilder();
 		AutoCommandBuilder.registerCommands();
 
-		Shooter.getInstance();
+		ShooterAngle.getInstance();
 
 		configureBindings();
 	}
