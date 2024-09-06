@@ -73,12 +73,12 @@ public class NinjasTalonFXController extends NinjasController {
 
 	@Override
 	public double getPosition() {
-		return _main.getPosition().getValue() * _constants.encoderConversionFactor;
+		return _main.getPosition().getValueAsDouble() * _constants.encoderConversionFactor;
 	}
 
 	@Override
 	public double getVelocity() {
-		return _main.getVelocity().getValue() * _constants.encoderConversionFactor / 60;
+		return _main.getVelocity().getValueAsDouble() * _constants.encoderConversionFactor / 60;
 	}
 
 	@Override

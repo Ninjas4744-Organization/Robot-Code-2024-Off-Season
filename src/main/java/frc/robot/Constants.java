@@ -27,7 +27,7 @@ public final class Constants {
 	public static class ShooterConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
 		public static final SimulatedControllerConstants kSimulatedControllerConstants =
-			new SimulatedControllerConstants();
+				new SimulatedControllerConstants();
 
 		static {
 			kControllerConstants.main.id = 22;
@@ -35,7 +35,7 @@ public final class Constants {
 			kControllerConstants.currentLimit = 40;
 			kControllerConstants.subsystemName = "Shooter";
 			kControllerConstants.PIDFConstants = new PIDFConstants(0.018, 0, 0, 60, 120);
-//			kControllerConstants.positionGoalTolerance = 5;
+			//			kControllerConstants.positionGoalTolerance = 5;
 			kControllerConstants.encoderConversionFactor = 7.2;
 			kControllerConstants.encoderHomePosition = 0;
 			kControllerConstants.gearRatio = 27;
@@ -252,7 +252,8 @@ public final class Constants {
 		public static final double kSwerveAngleD = 0;
 
 		/* Swerve drive assist PID values */
-		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints = new TrapezoidProfile.Constraints(maxSpeed / 3, maxSpeed);
+		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints =
+				new TrapezoidProfile.Constraints(maxSpeed / 3, maxSpeed);
 		public static final double kDriveAssistP = 0.1525 * 1.5;
 		public static final double kDriveAssistI = 0;
 		public static final double kDriveAssistD = 0;

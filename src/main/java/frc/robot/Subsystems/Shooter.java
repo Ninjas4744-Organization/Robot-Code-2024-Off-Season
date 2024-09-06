@@ -9,40 +9,46 @@ import frc.robot.Constants;
 import frc.robot.RobotState;
 
 public class Shooter extends NinjasSubsystem {
-  private static Shooter _instance;
+	private static Shooter _instance;
 
-  public static Shooter getInstance(){
-    if(_instance == null) _instance = new Shooter();
+	public static Shooter getInstance() {
+		if (_instance == null) _instance = new Shooter();
 
-    return _instance;
-  }
+		return _instance;
+	}
 
-  private PIDController _pid = new PIDController(Constants.ShooterConstants.kControllerConstants.PIDFConstants.kP,
-    Constants.ShooterConstants.kControllerConstants.PIDFConstants.kI,
-    Constants.ShooterConstants.kControllerConstants.PIDFConstants.kD);
+	private PIDController _pid = new PIDController(
+			Constants.ShooterConstants.kControllerConstants.PIDFConstants.kP,
+			Constants.ShooterConstants.kControllerConstants.PIDFConstants.kI,
+			Constants.ShooterConstants.kControllerConstants.PIDFConstants.kD);
 
-  @Override
-  protected void setController() {
-    _controller = new NinjasSparkMaxController(Constants.ShooterConstants.kControllerConstants);
-  }
+	@Override
+	protected void setController() {
+		_controller = new NinjasSparkMaxController(Constants.ShooterConstants.kControllerConstants);
+	}
 
-  @Override
-  protected void setSimulationController() {
-    _simulatedController = new NinjasSimulatedController(Constants.ShooterConstants.kSimulatedControllerConstants);
-  }
+	@Override
+	protected void setSimulationController() {
+		_simulatedController = new NinjasSimulatedController(Constants.ShooterConstants.kSimulatedControllerConstants);
+	}
 
-  @Override
-  protected void setFunctionMaps() {
-    addFunctionToPeriodicMap(() -> {
-      double shooterHeight = 0.55;
-      double targetHeight = 2.25;
+	@Override
+	protected void setFunctionMaps() {
+		addFunctionToPeriodicMap(
+				() -> {
+					double shooterHeight = 0.55;
+					double targetHeight = 2.25;
 
-      double dist = RobotState.getRobotPose().getTranslation().getDistance(Constants.VisionConstants.getTagPose(15).getTranslation());
-      Rotation2d angle = Rotation2d.fromRadians(Math.atan2(targetHeight - shooterHeight, dist));
-      System.out.println(dist);
-      double a = Math.min(Math.max(angle.getDegrees() + 30, 0), 120);
+					double dist = RobotState.getRobotPose()
+							.getTranslation()
+							.getDistance(
+									Constants.VisionConstants.getTagPose(15).getTranslation());
+					Rotation2d angle = Rotation2d.fromRadians(Math.atan2(targetHeight - shooterHeight, dist));
+					// System.out.println(dist);
+					double a = Math.min(Math.max(angle.getDegrees() + 30, 0), 120);
 
-      controller().setPercent(_pid.calculate(controller().getPosition(), a));
-    }, RobotState.RobotStates.HOLDING_NOTE);
-  }
+					controller().setPercent(_pid.calculate(controller().getPosition(), a));
+				},
+				RobotState.RobotStates.HOLDING_NOTE);
+	}
 }

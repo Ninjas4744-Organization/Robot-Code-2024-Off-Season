@@ -25,6 +25,8 @@ public abstract class NinjasController {
 	 */
 	public NinjasController(MainControllerConstants constants) {
 		_constants = constants;
+		int shuffleboardColumnPosition = 0; // Starting column position
+		int shuffleboardRowPosition = 0; // Starting row position
 
 		_shuffleboardEnteries.put(
 				"position",
@@ -32,7 +34,11 @@ public abstract class NinjasController {
 						.add("Position", 0)
 						.withWidget("Graph")
 						.withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
+						.withPosition(shuffleboardColumnPosition, shuffleboardRowPosition)
 						.getEntry());
+
+		// Move to the next column for the next widget (no space)
+		shuffleboardColumnPosition += shuffleboardEnteriesSize;
 
 		_shuffleboardEnteries.put(
 				"velocity",
@@ -40,7 +46,10 @@ public abstract class NinjasController {
 						.add("Velocity", 0)
 						.withWidget("Graph")
 						.withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
+						.withPosition(shuffleboardColumnPosition, shuffleboardRowPosition)
 						.getEntry());
+
+		shuffleboardColumnPosition += shuffleboardEnteriesSize;
 
 		_shuffleboardEnteries.put(
 				"output",
@@ -48,7 +57,12 @@ public abstract class NinjasController {
 						.add("Output", 0)
 						.withWidget("Graph")
 						.withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
+						.withPosition(shuffleboardColumnPosition, shuffleboardRowPosition)
 						.getEntry());
+
+		// Move to the next row for smaller widgets
+		shuffleboardRowPosition += shuffleboardEnteriesSize;
+		shuffleboardColumnPosition = 0;
 
 		_shuffleboardEnteries.put(
 				"goal",
@@ -56,7 +70,10 @@ public abstract class NinjasController {
 						.add("Goal", 0)
 						.withWidget("Number Bar")
 						.withSize(shuffleboardEnteriesSize / 2, shuffleboardEnteriesSize)
+						.withPosition(shuffleboardColumnPosition, shuffleboardRowPosition)
 						.getEntry());
+
+		shuffleboardColumnPosition += shuffleboardEnteriesSize / 2;
 
 		_shuffleboardEnteries.put(
 				"controlState",
@@ -64,6 +81,7 @@ public abstract class NinjasController {
 						.add("Control State", 0)
 						.withWidget("Text View")
 						.withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize / 2)
+						.withPosition(shuffleboardColumnPosition, shuffleboardRowPosition)
 						.getEntry());
 	}
 

@@ -24,7 +24,11 @@ public class TeleopCommandBuilder {
 							* MathUtil.applyDeadband(rotation.get().getX(), SwerveConstants.kJoystickDeadband);
 					double ry = -MathUtil.applyDeadband(rotation.get().getY(), SwerveConstants.kJoystickDeadband);
 
-					SwerveIO.getInstance().set(new SwerveDemand(new ChassisSpeeds(ly, lx, isLookAt ? SwerveIO.getInstance().lookAt(new Translation2d(ry, rx), 45) : rx)));
+					SwerveIO.getInstance()
+							.set(new SwerveDemand(new ChassisSpeeds(
+									ly,
+									lx,
+									isLookAt ? SwerveIO.getInstance().lookAt(new Translation2d(ry, rx), 45) : rx)));
 				},
 				SwerveIO.getInstance());
 	}

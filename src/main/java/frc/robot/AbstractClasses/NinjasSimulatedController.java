@@ -86,6 +86,7 @@ public class NinjasSimulatedController extends NinjasController {
 
 	@Override
 	public double getVelocity() {
+
 		return _main.getAngularVelocityRPM() * _constants.encoderConversionFactor / 60;
 	}
 

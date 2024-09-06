@@ -3,7 +3,6 @@ package frc.robot.Swerve;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -45,7 +44,8 @@ public abstract class SwerveIO extends SubsystemBase {
 				Rotation2d.fromDegrees(-180).getDegrees(),
 				Rotation2d.fromDegrees(180).getDegrees());
 
-		_axisPID = new PIDController(SwerveConstants.kSwerveAxisLockP, SwerveConstants.kSwerveAxisLockI, SwerveConstants.kSwerveAxisLockD);
+		_axisPID = new PIDController(
+				SwerveConstants.kSwerveAxisLockP, SwerveConstants.kSwerveAxisLockI, SwerveConstants.kSwerveAxisLockD);
 
 		_driveAssist = new DriveAssist(_anglePID);
 	}
@@ -57,16 +57,22 @@ public abstract class SwerveIO extends SubsystemBase {
 	 */
 	private void drive(ChassisSpeeds driverInput) {
 		ChassisSpeeds drive = new ChassisSpeeds(
-			driverInput.vxMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
-			driverInput.vyMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
-			driverInput.omegaRadiansPerSecond * SwerveConstants.kRotationSpeedFactor * SwerveConstants.maxAngularVelocity);
+				driverInput.vxMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+				driverInput.vyMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+				driverInput.omegaRadiansPerSecond
+						* SwerveConstants.kRotationSpeedFactor
+						* SwerveConstants.maxAngularVelocity);
 
 		if (isDriveAssist) {
 			switch (RobotState.getRobotState()) {
 				case NOTE_SEARCH:
 					if (NoteDetection.hasTarget()) {
 						Pose2d targetPose = NoteDetection.getNotePose();
-						drive = _driveAssist.driveAssist(new Translation2d(driverInput.vxMetersPerSecond, driverInput.vyMetersPerSecond), drive.omegaRadiansPerSecond, targetPose, false);
+						drive = _driveAssist.driveAssist(
+								new Translation2d(driverInput.vxMetersPerSecond, driverInput.vyMetersPerSecond),
+								drive.omegaRadiansPerSecond,
+								targetPose,
+								false);
 					}
 					break;
 
@@ -81,7 +87,11 @@ public abstract class SwerveIO extends SubsystemBase {
 							.getEntry("pose")
 							.setDoubleArray(new double[] {targetPose.getX(), targetPose.getY()});
 
-					drive = _driveAssist.driveAssist(new Translation2d(driverInput.vxMetersPerSecond, driverInput.vyMetersPerSecond), drive.omegaRadiansPerSecond, targetPose, true);
+					drive = _driveAssist.driveAssist(
+							new Translation2d(driverInput.vxMetersPerSecond, driverInput.vyMetersPerSecond),
+							drive.omegaRadiansPerSecond,
+							targetPose,
+							true);
 					break;
 			}
 		}
@@ -217,7 +227,8 @@ public abstract class SwerveIO extends SubsystemBase {
 
 		Translation2d driver = axis.times(driverInput.vxMetersPerSecond);
 
-		ChassisSpeeds speeds = new ChassisSpeeds(driver.getX() + pid.getX(), driver.getY() + pid.getY(), driverInput.omegaRadiansPerSecond);
+		ChassisSpeeds speeds = new ChassisSpeeds(
+				driver.getX() + pid.getX(), driver.getY() + pid.getY(), driverInput.omegaRadiansPerSecond);
 		drive(speeds);
 	}
 
@@ -227,7 +238,7 @@ public abstract class SwerveIO extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		if(_demand != null)
+		if (_demand != null)
 			switch (_demand.state) {
 				case DRIVER:
 					drive(_demand.chassisSpeeds);
