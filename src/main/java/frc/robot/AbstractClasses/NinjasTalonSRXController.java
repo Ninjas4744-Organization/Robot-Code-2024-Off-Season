@@ -2,6 +2,8 @@ package frc.robot.AbstractClasses;
 
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import frc.robot.DataClasses.MainControllerConstants;
 
 public class NinjasTalonSRXController extends NinjasController {
@@ -22,6 +24,8 @@ public class NinjasTalonSRXController extends NinjasController {
 		_main.config_kI(0, constants.PIDFConstants.kI);
 		_main.config_kD(0, constants.PIDFConstants.kD);
 		_main.config_kF(0, constants.PIDFConstants.kF);
+		_main.configMotionCruiseVelocity(constants.PIDFConstants.kCruiseVelocity / 10);
+		_main.configMotionAcceleration(constants.PIDFConstants.kAcceleration / 10);
 
 		_followers = new TalonSRX[constants.followers.length];
 		for (int i = 0; i < _followers.length; i++) {
@@ -43,14 +47,35 @@ public class NinjasTalonSRXController extends NinjasController {
 	public void setPosition(double position) {
 		super.setPosition(position);
 
-		_main.set(TalonSRXControlMode.Position, position / _constants.encoderConversionFactor);
+		switch (_controlState) {
+			case PIDF_POSITION:
+				_main.set(TalonSRXControlMode.MotionMagic, position / _constants.encoderConversionFactor);
+				break;
+
+			case PID_POSITION:
+				_main.set(TalonSRXControlMode.Position, position / _constants.encoderConversionFactor);
+				break;
+
+			case FF_POSITION:
+				throw new UnsupportedOperationException("Feedforward control not supported on Talon SRX");
+		}
 	}
 
 	@Override
 	public void setVelocity(double velocity) {
 		super.setVelocity(velocity);
 
-		_main.set(TalonSRXControlMode.Velocity, velocity / (_constants.encoderConversionFactor / 60));
+		switch (_controlState) {
+			case PIDF_VELOCITY:
+				throw new UnsupportedOperationException("PIDF control for velocity not supported on Talon SRX");
+
+			case PID_VELOCITY:
+				_main.set(TalonSRXControlMode.Velocity, (_constants.encoderConversionFactor / 60));
+				break;
+
+			case FF_VELOCITY:
+				throw new UnsupportedOperationException("Feedforward control not supported on Talon SRX");
+		}
 	}
 
 	@Override

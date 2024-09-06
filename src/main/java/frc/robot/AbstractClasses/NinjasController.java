@@ -9,7 +9,11 @@ public abstract class NinjasController {
 	public enum ControlState {
 		PERCENT_OUTPUT,
 		PIDF_POSITION,
-		PIDF_VELOCITY
+		PIDF_VELOCITY,
+		PID_POSITION,
+		PID_VELOCITY,
+		FF_POSITION,
+		FF_VELOCITY
 	}
 
 	private final int shuffleboardEnteriesSize = 3;
@@ -106,7 +110,19 @@ public abstract class NinjasController {
 	 * @see #stop()
 	 */
 	public void setPosition(double position) {
-		_controlState = ControlState.PIDF_POSITION;
+		if(_constants.PIDFConstants.kP != 0 && _constants.PIDFConstants.kI != 0 && _constants.PIDFConstants.kD != 0) {
+			if(_constants.PIDFConstants.kCruiseVelocity != 0 && _constants.PIDFConstants.kAcceleration != 0)
+				_controlState = ControlState.PIDF_POSITION;
+			else
+				_controlState = ControlState.PID_POSITION;
+		}
+		else{
+			if(_constants.PIDFConstants.kCruiseVelocity != 0 && _constants.PIDFConstants.kAcceleration != 0)
+				_controlState = ControlState.FF_POSITION;
+			else
+				throw new UnsupportedOperationException("PIDF constants were not given for this controller");
+		}
+
 		_goal = position;
 	}
 
@@ -119,7 +135,19 @@ public abstract class NinjasController {
 	 * @see #stop()
 	 */
 	public void setVelocity(double velocity) {
-		_controlState = ControlState.PIDF_VELOCITY;
+		if(_constants.PIDFConstants.kP != 0 && _constants.PIDFConstants.kI != 0 && _constants.PIDFConstants.kD != 0) {
+			if(_constants.PIDFConstants.kCruiseVelocity != 0 && _constants.PIDFConstants.kAcceleration != 0)
+				_controlState = ControlState.PIDF_VELOCITY;
+			else
+				_controlState = ControlState.PID_VELOCITY;
+		}
+		else{
+			if(_constants.PIDFConstants.kCruiseVelocity != 0 && _constants.PIDFConstants.kAcceleration != 0)
+				_controlState = ControlState.FF_VELOCITY;
+			else
+				throw new UnsupportedOperationException("PIDF constants were not given for this controller");
+		}
+
 		_goal = velocity;
 	}
 
