@@ -1,6 +1,7 @@
 package frc.robot.Swerve;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
@@ -16,6 +17,6 @@ public class SwerveDemand {
 	public ChassisSpeeds velocity = new ChassisSpeeds(0, 0, 0);
 	public boolean fieldRelative = true;
 	public Pose2d targetPose = new Pose2d();
-	public Translation2d axis = new Translation2d();
+	public Rotation2d angle = new Rotation2d();
 	public double phase = 0;
 }
