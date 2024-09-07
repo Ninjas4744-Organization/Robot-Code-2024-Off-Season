@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Shooter;
+import frc.robot.Swerve.SwerveDemand;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
 
@@ -70,8 +71,13 @@ public class RobotContainer {
 		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
 
 		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
-
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
+
+		_driverJoystick.square().onTrue(Commands.runOnce(() -> {
+			SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOCKED_AXIS);
+//			SwerveIO.getInstance().updateDemand(new Translation2d(0.5, -0.87), 6.5);
+			SwerveIO.getInstance().updateDemand(new Translation2d(1, 0), 8);
+		}));
 
 		_driverJoystick
 				.R1()
