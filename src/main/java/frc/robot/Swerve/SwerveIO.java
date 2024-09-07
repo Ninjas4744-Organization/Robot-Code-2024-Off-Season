@@ -13,6 +13,8 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
 import frc.robot.Vision.NoteDetection;
+import frc.robot.Swerve.SwerveDemand;
+import frc.robot.Swerve.SwerveDemand.SwerveState;
 
 public abstract class SwerveIO extends SubsystemBase {
 	private static SwerveIO _instance;
@@ -22,10 +24,10 @@ public abstract class SwerveIO extends SubsystemBase {
 	private DriveAssist _driveAssist;
 
 	private boolean isDriveAssist = false;
-	private boolean isAnglePID = true;
 	private boolean isBayblade = false;
 
 	private SwerveDemand _demand;
+	private SwerveState _state;
 
 	/** Returns the swerve instance, simulated/real depends on if the code is simulated/real. */
 	public static SwerveIO getInstance() {
@@ -37,6 +39,9 @@ public abstract class SwerveIO extends SubsystemBase {
 	}
 
 	public SwerveIO() {
+		_state = SwerveState.DRIVER;
+		_demand = new SwerveDemand();
+
 		_anglePID = new PIDController(
 				SwerveConstants.kSwerveAngleP, SwerveConstants.kSwerveAngleI, SwerveConstants.kSwerveAngleD);
 
@@ -81,7 +86,7 @@ public abstract class SwerveIO extends SubsystemBase {
 					//					Pose2d targetPose =
 					// VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(),
 					// 0.5);
-					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 1.5);
+					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 0.25);
 					NetworkTableInstance.getDefault()
 							.getTable("Assist Target Offset")
 							.getEntry("pose")
@@ -155,22 +160,6 @@ public abstract class SwerveIO extends SubsystemBase {
 	}
 
 	/**
-	 * Turns off the angle PID so the swerve rotates according to given speed in drive function.
-	 * running lookAt will turn on the angle PID again
-	 */
-	public void setAnglePID(boolean isAnglePID) {
-		this.isAnglePID = isAnglePID;
-		SmartDashboard.putBoolean("Swerve Look At", isAnglePID);
-	}
-
-	/**
-	 * @return Whether angle pid is enabled (look at mode)
-	 */
-	public boolean isAnglePID() {
-		return isAnglePID;
-	}
-
-	/**
 	 * Enable/Disable drive assist
 	 */
 	public void setDriveAssist(boolean isDriveAssist) {
@@ -232,32 +221,49 @@ public abstract class SwerveIO extends SubsystemBase {
 		drive(speeds);
 	}
 
-	public void set(SwerveDemand demand) {
-		_demand = demand;
+	public void setState(SwerveState state) {
+		_state = state;
+	}
+
+	public void updateDemand(ChassisSpeeds driverInput) {
+		_demand.driverInput = driverInput;
+	}
+
+	public void updateDemand(ChassisSpeeds velocity, boolean fieldRelative) {
+		_demand.velocity = velocity;
+		_demand.fieldRelative = fieldRelative;
+	}
+
+	public void updateDemand(Pose2d targetPose) {
+		_demand.targetPose = targetPose;
+	}
+
+	public void updateDemand(Translation2d axis, double phase) {
+		_demand.axis = axis;
+		_demand.phase = phase;
 	}
 
 	@Override
 	public void periodic() {
-		if (_demand != null)
-			switch (_demand.state) {
-				case DRIVER:
-					drive(_demand.chassisSpeeds);
-					break;
+		switch (_state) {
+			case DRIVER:
+				drive(_demand.driverInput);
+				break;
 
-				case POSITION:
-					goToPose(_demand.targetPose);
-					break;
+			case POSITION:
+				goToPose(_demand.targetPose);
+				break;
 
-				case VELOCITY:
-					drive(_demand.chassisSpeeds, _demand.fieldRelative);
-					break;
+			case VELOCITY:
+				drive(_demand.velocity, _demand.fieldRelative);
+				break;
 
-				case LOCKED_AXIS:
-					lockAxis(_demand.axis, _demand.phase, _demand.chassisSpeeds);
+			case LOCKED_AXIS:
+				lockAxis(_demand.axis, _demand.phase, _demand.driverInput);
 
-				default:
-					break;
-			}
+			default:
+				break;
+		}
 		log();
 	}
 }

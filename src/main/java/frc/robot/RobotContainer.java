@@ -15,6 +15,8 @@ public class RobotContainer {
 	//	private Joystick _driverJoystick2;
 	private CommandPS5Controller _operatorJoystick;
 
+	private boolean isSwerveLookAt = true;
+
 	public RobotContainer() {
 		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
 		//		_driverJoystick2 = new Joystick(1);
@@ -57,7 +59,7 @@ public class RobotContainer {
 				.setDefaultCommand(TeleopCommandBuilder.swerveDrive(
 						() -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
 						() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()),
-						true));
+					() -> isSwerveLookAt));
 
 		_driverJoystick
 				.circle()
@@ -65,12 +67,7 @@ public class RobotContainer {
 						() -> SwerveIO.getInstance().setBaybladeMode(true),
 						() -> SwerveIO.getInstance().setBaybladeMode(false)));
 
-		_driverJoystick
-				.triangle()
-				.onTrue(Commands.runOnce(
-						() -> SwerveIO.getInstance()
-								.setAnglePID(!SwerveIO.getInstance().isAnglePID()),
-						SwerveIO.getInstance()));
+		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
 
 		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 

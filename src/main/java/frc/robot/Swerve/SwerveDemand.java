@@ -12,39 +12,10 @@ public class SwerveDemand {
 		LOCKED_AXIS,
 	}
 
-	public ChassisSpeeds chassisSpeeds;
-	public boolean fieldRelative;
-
-	public Pose2d targetPose;
-
-	public Translation2d axis;
-	public double phase;
-
-	public SwerveState state;
-
-	public SwerveDemand(ChassisSpeeds driverInput) {
-		this.chassisSpeeds = driverInput;
-
-		state = SwerveState.DRIVER;
-	}
-
-	public SwerveDemand(ChassisSpeeds chassisSpeeds, boolean fieldRelative) {
-		this.chassisSpeeds = chassisSpeeds;
-		this.fieldRelative = fieldRelative;
-
-		state = SwerveState.VELOCITY;
-	}
-
-	public SwerveDemand(Pose2d targetPose) {
-		this.targetPose = targetPose;
-
-		state = SwerveState.POSITION;
-	}
-
-	public SwerveDemand(Translation2d axis, double phase) {
-		this.axis = axis;
-		this.phase = phase;
-
-		state = SwerveState.LOCKED_AXIS;
-	}
+	public ChassisSpeeds driverInput = new ChassisSpeeds(0, 0, 0);
+	public ChassisSpeeds velocity = new ChassisSpeeds(0, 0, 0);
+	public boolean fieldRelative = true;
+	public Pose2d targetPose = new Pose2d();
+	public Translation2d axis = new Translation2d();
+	public double phase = 0;
 }

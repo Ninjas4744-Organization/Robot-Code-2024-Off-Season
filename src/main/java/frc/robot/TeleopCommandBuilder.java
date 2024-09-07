@@ -11,11 +11,13 @@ import frc.robot.RobotState.RobotStates;
 import frc.robot.Swerve.SwerveDemand;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class TeleopCommandBuilder {
 	public static Command swerveDrive(
-			Supplier<Translation2d> translation, Supplier<Translation2d> rotation, boolean isLookAt) {
+		Supplier<Translation2d> translation, Supplier<Translation2d> rotation, BooleanSupplier isLookAt) {
 		return Commands.runOnce(
 				() -> {
 					double lx = -MathUtil.applyDeadband(translation.get().getX(), SwerveConstants.kJoystickDeadband);
@@ -25,10 +27,8 @@ public class TeleopCommandBuilder {
 					double ry = -MathUtil.applyDeadband(rotation.get().getY(), SwerveConstants.kJoystickDeadband);
 
 					SwerveIO.getInstance()
-							.set(new SwerveDemand(new ChassisSpeeds(
-									ly,
-									lx,
-									isLookAt ? SwerveIO.getInstance().lookAt(new Translation2d(ry, rx), 45) : rx)));
+						.updateDemand(new ChassisSpeeds(ly, lx,
+							isLookAt.getAsBoolean() ? SwerveIO.getInstance().lookAt(new Translation2d(ry, rx), 45) : rx));
 				},
 				SwerveIO.getInstance());
 	}

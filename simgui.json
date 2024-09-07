@@ -11,7 +11,8 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
+      "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d",
+      "/SmartDashboard/traj": "Field2d"
     },
     "windows": {
       "/SmartDashboard/VisionSystemSim-main/Sim Field": {
