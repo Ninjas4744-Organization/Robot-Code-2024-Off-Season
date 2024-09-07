@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
@@ -28,6 +29,7 @@ public abstract class SwerveIO extends SubsystemBase {
 
 	private SwerveDemand _demand;
 	private SwerveState _state;
+	private SwerveState _previousState;
 
 	/** Returns the swerve instance, simulated/real depends on if the code is simulated/real. */
 	public static SwerveIO getInstance() {
@@ -39,7 +41,8 @@ public abstract class SwerveIO extends SubsystemBase {
 	}
 
 	public SwerveIO() {
-		_state = SwerveState.DRIVER;
+		_state = SwerveState.DEFAULT;
+		_previousState = SwerveState.DEFAULT;
 		_demand = new SwerveDemand();
 
 		_anglePID = new PIDController(
@@ -82,10 +85,7 @@ public abstract class SwerveIO extends SubsystemBase {
 					break;
 
 				case HOLDING_NOTE:
-					//					Pose2d targetPose = VisionConstants.getFieldLayout().getTagPose(6).get().toPose2d();
-					//					Pose2d targetPose =
-					// VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(),
-					// 0.5);
+//					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(), 0.5);
 					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 0.25);
 					NetworkTableInstance.getDefault()
 							.getTable("Assist Target Offset")
@@ -177,23 +177,6 @@ public abstract class SwerveIO extends SubsystemBase {
 		return isDriveAssist;
 	}
 
-	/**
-	 * Sets whether the bayblade mode is on, if it is on the swerve will rotate full speed nonstop
-	 *
-	 * @param isBayblade - true if bayblade mode should be on
-	 */
-	public void setBaybladeMode(boolean isBayblade) {
-		this.isBayblade = isBayblade;
-		SmartDashboard.putBoolean("Swerve Bayblade", isBayblade);
-	}
-
-	/**
-	 * @return Whether the swerve is in bayblade mode
-	 */
-	public boolean isBaybladeMode() {
-		return isBayblade;
-	}
-
 	/** Logs info about the modules and swerve */
 	private void log() {
 		// TODO: make this work
@@ -222,7 +205,18 @@ public abstract class SwerveIO extends SubsystemBase {
 	}
 
 	public void setState(SwerveState state) {
+		_previousState = _state;
 		_state = state;
+
+		SmartDashboard.putString("Swerve State", _state.toString());
+	}
+
+	public SwerveState getState() {
+		return _state;
+	}
+
+	public SwerveState getPreviousState() {
+		return _previousState;
 	}
 
 	public void updateDemand(ChassisSpeeds driverInput) {
@@ -243,11 +237,28 @@ public abstract class SwerveIO extends SubsystemBase {
 		_demand.phase = phase;
 	}
 
+	public void updateDemand(Translation2d lookAtTranslation) {
+		_demand.lookAtTranslation = lookAtTranslation;
+	}
+
 	@Override
 	public void periodic() {
 		switch (_state) {
-			case DRIVER:
+			case DEFAULT:
 				drive(_demand.driverInput);
+				break;
+
+			case BAYBLADE:
+				drive(new ChassisSpeeds(_demand.driverInput.vxMetersPerSecond, _demand.driverInput.vyMetersPerSecond, SwerveConstants.maxAngularVelocity));
+				break;
+
+			case LOOK_AT_ANGLE:
+				drive(new ChassisSpeeds(_demand.driverInput.vxMetersPerSecond, _demand.driverInput.vyMetersPerSecond, lookAt(_demand.lookAtTranslation, 45)));
+				break;
+
+			case LOOK_AT_TARGET:
+				Translation2d lookAtTranslation = _demand.targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
+				drive(new ChassisSpeeds(_demand.driverInput.vxMetersPerSecond, _demand.driverInput.vyMetersPerSecond, lookAt(new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY()), 45)));
 				break;
 
 			case POSITION:

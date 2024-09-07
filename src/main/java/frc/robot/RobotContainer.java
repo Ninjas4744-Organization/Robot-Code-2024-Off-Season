@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Shooter;
+import frc.robot.Swerve.SwerveDemand;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
 
@@ -14,8 +15,6 @@ public class RobotContainer {
 	private CommandPS5Controller _driverJoystick;
 	//	private Joystick _driverJoystick2;
 	private CommandPS5Controller _operatorJoystick;
-
-	private boolean isSwerveLookAt = true;
 
 	public RobotContainer() {
 		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
@@ -58,19 +57,33 @@ public class RobotContainer {
 		SwerveIO.getInstance()
 				.setDefaultCommand(TeleopCommandBuilder.swerveDrive(
 						() -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
-						() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()),
-					() -> isSwerveLookAt));
+					() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY())));
 
-		_driverJoystick
-				.circle()
-				.toggleOnTrue(Commands.startEnd(
-						() -> SwerveIO.getInstance().setBaybladeMode(true),
-						() -> SwerveIO.getInstance().setBaybladeMode(false)));
+		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(
+			() -> {
+				if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.BAYBLADE)
+					SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+				else
+					SwerveIO.getInstance().setState(SwerveDemand.SwerveState.BAYBLADE);
+			}));
 
-		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
+		_driverJoystick.triangle().onTrue(Commands.runOnce(
+			() -> {
+				if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOOK_AT_ANGLE)
+					SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+				else
+					SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE);
+			}));
+
+		_driverJoystick.povUp().toggleOnTrue(Commands.runOnce(
+			() -> {
+				if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOOK_AT_TARGET)
+					SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+				else
+					SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_TARGET);
+			}));
 
 		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
-
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
 
 		_driverJoystick

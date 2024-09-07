@@ -6,13 +6,17 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class SwerveDemand {
 	public enum SwerveState {
-		DRIVER,
+		DEFAULT,
 		POSITION,
 		VELOCITY,
 		LOCKED_AXIS,
+		LOOK_AT_ANGLE,
+		LOOK_AT_TARGET,
+		BAYBLADE
 	}
 
 	public ChassisSpeeds driverInput = new ChassisSpeeds(0, 0, 0);
+	public Translation2d lookAtTranslation = new Translation2d();
 	public ChassisSpeeds velocity = new ChassisSpeeds(0, 0, 0);
 	public boolean fieldRelative = true;
 	public Pose2d targetPose = new Pose2d();
