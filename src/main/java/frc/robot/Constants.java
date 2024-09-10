@@ -45,7 +45,7 @@ public final class Constants {
 		}
 	}
 
-	public static class ElevatorConstants {
+	public static class  ElevatorConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
 		public static final SimulatedControllerConstants kSimulatedControllerConstants =
 				new SimulatedControllerConstants();
