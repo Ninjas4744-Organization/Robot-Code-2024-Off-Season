@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -85,6 +86,12 @@ public class RobotContainer {
 
 		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
+
+		_driverJoystick.square().onTrue(Commands.runOnce(() -> {
+			SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOCKED_AXIS);
+//			SwerveIO.getInstance().updateDemand(Rotation2d.fromDegrees(-60), 6.25);
+			SwerveIO.getInstance().updateDemand(Rotation2d.fromDegrees(0), 7.6);
+		}));
 
 		_driverJoystick
 				.R1()

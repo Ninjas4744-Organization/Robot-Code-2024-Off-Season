@@ -186,9 +186,9 @@ public abstract class SwerveIO extends SubsystemBase {
 		// TODO: make this work
 	}
 
-	private void lockAxis(Translation2d axis, double phase, ChassisSpeeds driverInput) {
+	private void lockAxis(Rotation2d angle, double phase, ChassisSpeeds driverInput) {
+		Translation2d axis = new Translation2d(1, angle);
 		Translation2d perpendicularAxis = axis.rotateBy(Rotation2d.fromDegrees(90));
-
 		Translation2d robotPose = RobotState.getRobotPose().getTranslation();
 
 		double a = -axis.getY();
@@ -197,7 +197,7 @@ public abstract class SwerveIO extends SubsystemBase {
 		double error = Math.abs(a * robotPose.getX() + b * robotPose.getY() + c) / Math.sqrt(a * a + b * b);
 		Translation2d pid = perpendicularAxis.times(_axisPID.calculate(-error));
 
-		Translation2d driver = axis.times(driverInput.vxMetersPerSecond);
+		Translation2d driver = axis.times(-driverInput.vyMetersPerSecond);
 
 		ChassisSpeeds speeds = new ChassisSpeeds(
 				driver.getX() + pid.getX(), driver.getY() + pid.getY(), driverInput.omegaRadiansPerSecond);
@@ -232,8 +232,8 @@ public abstract class SwerveIO extends SubsystemBase {
 		_demand.targetPose = targetPose;
 	}
 
-	public void updateDemand(Translation2d axis, double phase) {
-		_demand.axis = axis;
+	public void updateDemand(Rotation2d angle, double phase) {
+		_demand.angle = angle;
 		_demand.phase = phase;
 	}
 
@@ -270,7 +270,7 @@ public abstract class SwerveIO extends SubsystemBase {
 				break;
 
 			case LOCKED_AXIS:
-				lockAxis(_demand.axis, _demand.phase, _demand.driverInput);
+				lockAxis(_demand.angle, _demand.phase, _demand.driverInput);
 
 			default:
 				break;
