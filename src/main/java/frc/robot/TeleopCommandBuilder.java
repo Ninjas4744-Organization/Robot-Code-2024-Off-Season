@@ -8,11 +8,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState.RobotStates;
-import frc.robot.Swerve.SwerveDemand;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class TeleopCommandBuilder {
@@ -28,7 +26,6 @@ public class TeleopCommandBuilder {
 
 					SwerveIO.getInstance().updateDemand(new ChassisSpeeds(ly, lx, rx));
 					SwerveIO.getInstance().updateDemand(new Translation2d(ry, rx));
-					SwerveIO.getInstance().updateDemand(Constants.VisionConstants.getTagPose(15));
 				},
 				SwerveIO.getInstance());
 	}

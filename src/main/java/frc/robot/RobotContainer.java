@@ -42,7 +42,7 @@ public class RobotContainer {
 						() -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
 					() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY())));
 
-		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(
+		_driverJoystick.circle().onTrue(Commands.runOnce(
 			() -> {
 				if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.BAYBLADE)
 					SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
@@ -58,21 +58,28 @@ public class RobotContainer {
 					SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE);
 			}));
 
-		_driverJoystick.povUp().toggleOnTrue(Commands.runOnce(
+		_driverJoystick.povUp().onTrue(Commands.runOnce(
 			() -> {
-				if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOOK_AT_TARGET)
+				if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOCKED_AXIS)
 					SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-				else
-					SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_TARGET);
+				else {
+					SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOCKED_AXIS);
+					SwerveIO.getInstance().updateDemand(Rotation2d.fromDegrees(-60), 6.25);
+				}
 			}));
 
 		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
 
 		_driverJoystick.square().onTrue(Commands.runOnce(() -> {
-			SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOCKED_AXIS);
-//			SwerveIO.getInstance().updateDemand(Rotation2d.fromDegrees(-60), 6.25);
-			SwerveIO.getInstance().updateDemand(Rotation2d.fromDegrees(0), 7.6);
+			if (RobotState.getRobotState() == RobotStates.PREPARE_SHOOT) {
+				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+				StateMachine.getInstance().changeRobotState(RobotStates.CLOSE);
+			} else {
+				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_TARGET);
+				SwerveIO.getInstance().updateDemand(Constants.VisionConstants.getTagPose(15));
+				StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT);
+			}
 		}));
 
 		_driverJoystick

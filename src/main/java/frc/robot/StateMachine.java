@@ -5,8 +5,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DataClasses.StateEndCondition;
 import frc.robot.RobotState.RobotStates;
-import frc.robot.Subsystems.Elevator;
-import frc.robot.Subsystems.Rotation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +32,7 @@ public class StateMachine extends SubsystemBase {
 	 * Set in this function the end condition for each state with _endConditionMap
 	 */
 	private void setEndConditionMap(){
-		_endConditionMap.put(RobotStates.PREPARE_AMP_OUTAKE,
-			new StateEndCondition(() -> Elevator.getInstance().atGoal() && Rotation.getInstance().atGoal(), RobotStates.AMP_OUTAKE_READY));
+
 	}
 
 	/**

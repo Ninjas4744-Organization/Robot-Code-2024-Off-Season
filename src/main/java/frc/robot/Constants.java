@@ -16,6 +16,7 @@ import frc.robot.DataClasses.MainControllerConstants;
 import frc.robot.DataClasses.PIDFConstants;
 import frc.robot.DataClasses.SimulatedControllerConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -283,7 +284,7 @@ public final class Constants {
 		public static final boolean canCoderInvert = false;
 
 		/* Swerve angle PID values */
-		public static final double kSwerveAngleP = 0.0035;
+		public static final double kSwerveAngleP = 0.0035 * 4;
 		public static final double kSwerveAngleI = 0;
 		public static final double kSwerveAngleD = 0;
 

@@ -9,13 +9,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
-import frc.robot.Vision.NoteDetection;
-import frc.robot.Swerve.SwerveDemand;
 import frc.robot.Swerve.SwerveDemand.SwerveState;
+import frc.robot.Vision.NoteDetection;
 
 public abstract class SwerveIO extends SubsystemBase {
 	private static SwerveIO _instance;
@@ -139,7 +137,7 @@ public abstract class SwerveIO extends SubsystemBase {
 		double roundedAngle = Math.round(angle / roundToAngle) * roundToAngle;
 		angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundedAngle : angle;
 
-		return _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle) * SwerveConstants.maxAngularVelocity;
+		return _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle);
 	}
 
 	/**
@@ -258,7 +256,8 @@ public abstract class SwerveIO extends SubsystemBase {
 
 			case LOOK_AT_TARGET:
 				Translation2d lookAtTranslation = _demand.targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
-				drive(new ChassisSpeeds(_demand.driverInput.vxMetersPerSecond, _demand.driverInput.vyMetersPerSecond, lookAt(new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY()), 45)));
+				lookAtTranslation = RobotState.isSimulated() ? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY()) : lookAtTranslation;
+				drive(new ChassisSpeeds(_demand.driverInput.vxMetersPerSecond, _demand.driverInput.vyMetersPerSecond, lookAt(lookAtTranslation, 45)));
 				break;
 
 			case POSITION:
