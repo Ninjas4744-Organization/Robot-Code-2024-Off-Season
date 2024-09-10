@@ -102,9 +102,11 @@ public class NinjasSparkMaxController extends NinjasController {
 	public void periodic() {
 		super.periodic();
 
+		if (atGoal())
+			return;
+
 		switch (_controlState) {
 			case PIDF_POSITION:
-				if (!atGoal())
 					_main.getPIDController()
 							.setReference(
 									_profile.calculate(
@@ -116,7 +118,6 @@ public class NinjasSparkMaxController extends NinjasController {
 				break;
 
 			case PIDF_VELOCITY:
-				if (!atGoal())
 					_main.getPIDController()
 							.setReference(
 									_profile.calculate(
@@ -125,6 +126,22 @@ public class NinjasSparkMaxController extends NinjasController {
 													new State(0, getGoal()))
 											.velocity,
 									ControlType.kVelocity);
+				break;
+
+			case PID_POSITION:
+				_main.getPIDController().setReference(getGoal(), ControlType.kPosition);
+				break;
+
+			case PID_VELOCITY:
+				_main.getPIDController().setReference(getGoal(), ControlType.kVelocity);
+				break;
+
+			case FF_POSITION:
+				_main.set(_profile.calculate(_trapozoidTimer.get(), new State(getPosition(), getVelocity()), new State(getGoal(), 0)).velocity / _constants.PIDFConstants.kMaxVelocity);
+				break;
+
+			case FF_VELOCITY:
+				_main.set(_profile.calculate(_trapozoidTimer.get(), new State(getVelocity(), 0), new State(getGoal(), 0)).velocity / _constants.PIDFConstants.kMaxVelocity);
 				break;
 
 			default:

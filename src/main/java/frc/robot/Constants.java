@@ -24,21 +24,57 @@ public final class Constants {
 	public static final int kOperatorJoystickPort = 1;
 	public static final int kNoteDetectorID = 0;
 
-	public static class ShooterConstants {
+	public static class ShooterAngleConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
 		public static final SimulatedControllerConstants kSimulatedControllerConstants =
 				new SimulatedControllerConstants();
 
 		static {
 			kControllerConstants.main.id = 22;
-			kControllerConstants.main.inverted = false;
+			kControllerConstants.currentLimit = 40;
+			kControllerConstants.subsystemName = "ShooterAngle";
+			kControllerConstants.PIDFConstants = new PIDFConstants(0.018, 0, 0, 0);
+			kControllerConstants.positionGoalTolerance = 1;
+			kControllerConstants.encoderConversionFactor = 7.2;
+
+			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.motorTorque = 1;
+		}
+
+		public static final double kShooterHeight = 0.55;
+		public static final double kShooterStartAngle = -30;
+		public static final double kTargetHeight = 2.25;
+	}
+
+	public static class ShooterConstants {
+		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+		public static final SimulatedControllerConstants kSimulatedControllerConstants =
+			new SimulatedControllerConstants();
+
+		static {
+			kControllerConstants.main.id = 23;
 			kControllerConstants.currentLimit = 40;
 			kControllerConstants.subsystemName = "Shooter";
-			kControllerConstants.PIDFConstants = new PIDFConstants(0.018, 0, 0, 60, 120);
-			//			kControllerConstants.positionGoalTolerance = 5;
-			kControllerConstants.encoderConversionFactor = 7.2;
-			kControllerConstants.encoderHomePosition = 0;
-			kControllerConstants.gearRatio = 27;
+			kControllerConstants.PIDFConstants = new PIDFConstants(1, 0, 0, 20, 40);
+			kControllerConstants.positionGoalTolerance = 3;
+			kControllerConstants.encoderConversionFactor = 1 / 2048;
+
+			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.motorTorque = 1;
+		}
+
+		public static final double kShootVelocity = 67;
+	}
+
+	public static class ShooterFeederConstants {
+		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+		public static final SimulatedControllerConstants kSimulatedControllerConstants =
+			new SimulatedControllerConstants();
+
+		static {
+			kControllerConstants.main.id = 23;
+			kControllerConstants.currentLimit = 40;
+			kControllerConstants.subsystemName = "ShooterFeeder";
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;

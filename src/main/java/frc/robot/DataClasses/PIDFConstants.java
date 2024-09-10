@@ -44,6 +44,11 @@ public class PIDFConstants {
 	 */
 	public double kAcceleration = 0;
 
+	/**
+	 * the maximum velocity of the controller trying to follow the feedforward, this is used when trying to feedforward a controller
+	 */
+	public double kMaxVelocity = 0;
+
 	public PIDFConstants() {}
 
 	public PIDFConstants(double kP, double kI, double kD) {
@@ -61,6 +66,12 @@ public class PIDFConstants {
 		this(kP, kI, kD);
 		this.kCruiseVelocity = kCruiseVelocity;
 		this.kAcceleration = kAcceleration;
+	}
+
+	public PIDFConstants(double kCruiseVelocity, double kAcceleration, float kMaxVelocity) {
+		this.kCruiseVelocity = kCruiseVelocity;
+		this.kAcceleration = kAcceleration;
+		this.kMaxVelocity = kMaxVelocity;
 	}
 
 	public PIDFConstants(
