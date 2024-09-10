@@ -6,9 +6,7 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import frc.robot.DataClasses.MainControllerConstants;
@@ -61,14 +59,36 @@ public class NinjasTalonFXController extends NinjasController {
 	public void setPosition(double position) {
 		super.setPosition(position);
 
-		_main.setControl(new MotionMagicVoltage(position / _constants.encoderConversionFactor));
+		switch (_controlState) {
+			case PIDF_POSITION:
+				_main.setControl(new MotionMagicVoltage(position / _constants.encoderConversionFactor));
+				break;
+
+			case PID_POSITION:
+				_main.setControl(new PositionVoltage(position / _constants.encoderConversionFactor));
+				break;
+
+			case FF_POSITION:
+				throw new UnsupportedOperationException("Feedforward control not supported on Talon FX");
+		}
 	}
 
 	@Override
 	public void setVelocity(double velocity) {
 		super.setVelocity(velocity);
 
-		_main.setControl(new MotionMagicVelocityVoltage(velocity / (_constants.encoderConversionFactor / 60)));
+		switch (_controlState) {
+			case PIDF_VELOCITY:
+				_main.setControl(new MotionMagicVelocityVoltage(velocity / (_constants.encoderConversionFactor / 60)));
+				break;
+
+			case PID_VELOCITY:
+				_main.setControl(new VelocityVoltage(velocity / (_constants.encoderConversionFactor / 60)));
+				break;
+
+			case FF_VELOCITY:
+				throw new UnsupportedOperationException("Feedforward control not supported on Talon FX");
+		}
 	}
 
 	@Override

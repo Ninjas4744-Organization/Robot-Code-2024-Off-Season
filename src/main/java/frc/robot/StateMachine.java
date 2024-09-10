@@ -90,8 +90,13 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.PREPARE_SHOOT) RobotState.setRobotState(wantedState);
 				break;
 
-			case INTAKE, SHOOT, OUTAKE:
+			case INTAKE, OUTAKE:
 				if (wantedState == RobotStates.RESET || wantedState == RobotStates.CLOSE)
+					RobotState.setRobotState(wantedState);
+				break;
+
+			case SHOOT:
+				if (wantedState == RobotStates.RESET || wantedState == RobotStates.IDLE)
 					RobotState.setRobotState(wantedState);
 				break;
 
