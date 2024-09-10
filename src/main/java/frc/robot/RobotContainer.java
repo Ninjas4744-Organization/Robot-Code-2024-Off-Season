@@ -12,12 +12,10 @@ import frc.robot.Vision.VisionIO;
 
 public class RobotContainer {
 	private CommandPS5Controller _driverJoystick;
-	//	private Joystick _driverJoystick2;
 	private CommandPS5Controller _operatorJoystick;
 
 	public RobotContainer() {
 		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
-		//		_driverJoystick2 = new Joystick(1);
 
 		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
@@ -32,22 +30,6 @@ public class RobotContainer {
 	}
 
 	private void configureBindings() {
-		//		new Trigger(RobotState::atSpeaker).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_SHOOT));
-		//		new
-		// Trigger(RobotState::atAmp).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
-		//		new Trigger(RobotState::atSource).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_INTAKE));
-		//
-		//		new Trigger(() -> Elevator.getInstance().isHomed()
-		//						&& Rotation.getInstance().isHomed()
-		//						&& Climber.getInstance().isHomed())
-		//				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.IDLE));
-
-		//		new Trigger(() -> {
-		//					Pose2d _currentPose = RobotState.getRobotPose();
-		//					return _currentPose.getX() < 3.5 && _currentPose.getY() > 6.5;
-		//				})
-		//				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_AMP_OUTAKE));
-
 		configureDriverBindings();
 		configureOperatorBindings();
 	}

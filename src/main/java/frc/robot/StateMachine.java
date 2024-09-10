@@ -3,7 +3,13 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.DataClasses.StateEndCondition;
 import frc.robot.RobotState.RobotStates;
+import frc.robot.Subsystems.Elevator;
+import frc.robot.Subsystems.Rotation;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class StateMachine extends SubsystemBase {
 	private static StateMachine _instance;
@@ -12,6 +18,24 @@ public class StateMachine extends SubsystemBase {
 		if (_instance == null) _instance = new StateMachine();
 
 		return _instance;
+	}
+
+	private Map<RobotStates, StateEndCondition> _endConditionMap;
+
+	private StateMachine() {
+		_endConditionMap = new HashMap<>();
+
+		for (RobotStates state : RobotStates.values()) _endConditionMap.put(state, new StateEndCondition(() -> false, RobotStates.IDLE));
+
+		setEndConditionMap();
+	}
+
+	/**
+	 * Set in this function the end condition for each state with _endConditionMap
+	 */
+	private void setEndConditionMap(){
+		_endConditionMap.put(RobotStates.PREPARE_AMP_OUTAKE,
+			new StateEndCondition(() -> Elevator.getInstance().atGoal() && Rotation.getInstance().atGoal(), RobotStates.AMP_OUTAKE_READY));
 	}
 
 	/**
@@ -130,15 +154,11 @@ public class StateMachine extends SubsystemBase {
 		return Commands.runOnce(
 				() -> {
 					switch (RobotState.getRobotState()) {
-						case AMP_OUTAKE_READY:
+						case AMP_OUTAKE_READY, TRAP_OUTAKE_READY:
 							changeRobotState(RobotStates.OUTAKE);
 							break;
 
-						case TRAP_OUTAKE_READY:
-							changeRobotState(RobotStates.OUTAKE);
-							break;
-
-						case CLIMB_READY:
+                        case CLIMB_READY:
 							changeRobotState(RobotStates.CLIMB);
 							break;
 
@@ -151,5 +171,13 @@ public class StateMachine extends SubsystemBase {
 					}
 				},
 				this);
+	}
+
+	@Override
+	public void periodic() {
+		for(RobotStates state : RobotStates.values()){
+			if(_endConditionMap.get(state).condition.getAsBoolean())
+				changeRobotState(_endConditionMap.get(state).nextState);
+		}
 	}
 }

@@ -32,24 +32,18 @@ public abstract class NinjasSubsystem extends SubsystemBase {
 	}
 
 	/**
-	 * Set the real and simulated controllers of the subsystems.
+	 * Set the real controller of the subsystem.
 	 *
-	 * <p>Set constants in the _controller for the real one,
-	 *
-	 * <p>and set constants in the _simulatedController for the simulated one.
-	 *
-	 * <p>The simulated controller is optional, only set it if for code simulation use.
+	 * <p>Implement controller in the _controller variable,
 	 */
 	protected abstract void setController();
 
 	/**
-	 * Set the real and simulated controllers of the subsystems.
+	 * Set the simulated controller of the subsystem.
 	 *
-	 * <p>Set constants in the _controller for the real one,
+	 * <p>Implement controller in the _simulatedController for the simulated one.
 	 *
-	 * <p>and set constants in the _simulatedController for the simulated one.
-	 *
-	 * <p>The simulated controller is optional, only set it if for code simulation use.
+	 * <p>The simulated controller is optional, only set it if code will be simulated.
 	 */
 	protected abstract void setSimulationController();
 
@@ -120,6 +114,13 @@ public abstract class NinjasSubsystem extends SubsystemBase {
 	 */
 	public boolean isHomed() {
 		return controller().isHomed();
+	}
+
+	/**
+	 * @return Whether the subsystem is at its PIDF goal
+	 */
+	public boolean atGoal() {
+		return controller().atGoal();
 	}
 
 	/**
