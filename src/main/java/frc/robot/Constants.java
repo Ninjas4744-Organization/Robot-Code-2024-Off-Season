@@ -33,7 +33,7 @@ public final class Constants {
 			kControllerConstants.main.id = 22;
 			kControllerConstants.currentLimit = 40;
 			kControllerConstants.subsystemName = "ShooterAngle";
-			kControllerConstants.PIDFConstants = new PIDFConstants(0.018, 0, 0);
+			kControllerConstants.PIDFConstants = new PIDFConstants(0.018, 0, 0, 0);
 			kControllerConstants.positionGoalTolerance = 1;
 			kControllerConstants.encoderConversionFactor = 7.2;
 

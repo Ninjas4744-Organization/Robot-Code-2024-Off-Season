@@ -110,7 +110,7 @@ public abstract class NinjasController {
 	 * @see #stop()
 	 */
 	public void setPosition(double position) {
-		if(_constants.PIDFConstants.kP != 0 && _constants.PIDFConstants.kI != 0 && _constants.PIDFConstants.kD != 0) {
+		if(_constants.PIDFConstants.kP != 0 || _constants.PIDFConstants.kI != 0 || _constants.PIDFConstants.kD != 0) {
 			if(_constants.PIDFConstants.kCruiseVelocity != 0 && _constants.PIDFConstants.kAcceleration != 0)
 				_controlState = ControlState.PIDF_POSITION;
 			else
