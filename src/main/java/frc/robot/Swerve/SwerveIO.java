@@ -186,7 +186,15 @@ public abstract class SwerveIO extends SubsystemBase {
 		// TODO: make this work
 	}
 
-	private void lockAxis(Rotation2d angle, double phase, ChassisSpeeds driverInput) {
+	/**
+	 * Makes the swerve be locked to an axis with a pid that ensures that. The driver input let the driver move along the axis.
+	 *
+	 * @param angle          angle of the axis
+	 * @param phase          how much the axis is moved from the origin of the field in meters
+	 * @param driverInput    the driver controller input
+	 * @param isXDriverInput whether to let the driver drive along the axis by the x of the joystick input or the y
+	 */
+	private void lockAxis(Rotation2d angle, double phase, ChassisSpeeds driverInput, boolean isXDriverInput) {
 		Translation2d axis = new Translation2d(1, angle);
 		Translation2d perpendicularAxis = axis.rotateBy(Rotation2d.fromDegrees(90));
 		Translation2d robotPose = RobotState.getRobotPose().getTranslation();
@@ -194,16 +202,20 @@ public abstract class SwerveIO extends SubsystemBase {
 		double a = -axis.getY();
 		double b = axis.getX();
 		double c = -phase * Math.sqrt(a * a + b * b);
-		double error = Math.abs(a * robotPose.getX() + b * robotPose.getY() + c) / Math.sqrt(a * a + b * b);
+		double error = -(a * robotPose.getX() + b * robotPose.getY() + c) / Math.sqrt(a * a + b * b);
 		Translation2d pid = perpendicularAxis.times(_axisPID.calculate(-error));
 
-		Translation2d driver = axis.times(-driverInput.vyMetersPerSecond);
+		Translation2d driver = axis.times(isXDriverInput ? -driverInput.vyMetersPerSecond : driverInput.vxMetersPerSecond);
 
 		ChassisSpeeds speeds = new ChassisSpeeds(
 				driver.getX() + pid.getX(), driver.getY() + pid.getY(), driverInput.omegaRadiansPerSecond);
 		drive(speeds);
 	}
 
+	/**
+	 * Set the current state of the swerve so it will work according
+	 * @param state the wanted state
+	 */
 	public void setState(SwerveState state) {
 		_previousState = _state;
 		_state = state;
@@ -211,32 +223,93 @@ public abstract class SwerveIO extends SubsystemBase {
 		SmartDashboard.putString("Swerve State", _state.toString());
 	}
 
+	/**
+	 * @return the current state of the swerve
+	 */
 	public SwerveState getState() {
 		return _state;
 	}
 
+	/**
+	 * @return the previous state of the swerve, the state it was before changing it
+	 */
 	public SwerveState getPreviousState() {
 		return _previousState;
 	}
 
+	/**
+	 * Update the swerve demand. The demand of the swerve is the values the swerve should work with when working according to states.
+	 * In this case it is the driver input to drive according to.
+	 * @param driverInput the controller input of the driver
+	 * @see #updateDemand(ChassisSpeeds)
+	 * @see #updateDemand(Pose2d)
+	 * @see #updateDemand(Rotation2d, double, boolean isXDriverInput)
+	 * @see #updateDemand(ChassisSpeeds, boolean)
+	 * @see #updateDemand(Translation2d)
+	 */
 	public void updateDemand(ChassisSpeeds driverInput) {
 		_demand.driverInput = driverInput;
 	}
 
+	/**
+	 * Update the swerve demand. The demand of the swerve is the values the swerve should work with when working according to states.
+	 * In this case it is the velocity to make the swerve drive according to.
+	 * @param velocity the wanted velocity
+	 * @param fieldRelative whether to drive field relatively
+	 * @see #updateDemand(ChassisSpeeds)
+	 * @see #updateDemand(Pose2d)
+	 * @see #updateDemand(Rotation2d, double, boolean isXDriverInput)
+	 * @see #updateDemand(ChassisSpeeds, boolean)
+	 * @see #updateDemand(Translation2d)
+	 */
 	public void updateDemand(ChassisSpeeds velocity, boolean fieldRelative) {
 		_demand.velocity = velocity;
 		_demand.fieldRelative = fieldRelative;
 	}
 
+	/**
+	 * Update the swerve demand. The demand of the swerve is the values the swerve should work with when working according to states.
+	 * In this case it is a target pose that could be used in many states.
+	 * @param targetPose the wanted pose
+	 * @see #updateDemand(ChassisSpeeds)
+	 * @see #updateDemand(Pose2d)
+	 * @see #updateDemand(Rotation2d, double, boolean isXDriverInput)
+	 * @see #updateDemand(ChassisSpeeds, boolean)
+	 * @see #updateDemand(Translation2d)
+	 */
 	public void updateDemand(Pose2d targetPose) {
 		_demand.targetPose = targetPose;
 	}
 
-	public void updateDemand(Rotation2d angle, double phase) {
+	/**
+	 * Update the swerve demand. The demand of the swerve is the values the swerve should work with when working according to states.
+	 * In this case it is the angle and phase to make an axis for the swerve to be locked to.
+	 *
+	 * @param angle          the angle of the axis
+	 * @param phase          the distance between the axis and the field origin in meters
+	 * @param isXDriverInput whether to let the driver drive along the axis by the x of the joystick input or the y
+	 * @see #updateDemand(ChassisSpeeds)
+	 * @see #updateDemand(Pose2d)
+	 * @see #updateDemand(Rotation2d, double, boolean isXDriverInput)
+	 * @see #updateDemand(ChassisSpeeds, boolean)
+	 * @see #updateDemand(Translation2d)
+	 */
+	public void updateDemand(Rotation2d angle, double phase, boolean isXDriverInput) {
 		_demand.angle = angle;
 		_demand.phase = phase;
+		_demand.isXDriverInput = isXDriverInput;
 	}
 
+	/**
+	 * Update the swerve demand. The demand of the swerve is the values the swerve should work with when working according to states.
+	 * In this case it is the translation to make the swerve look at.
+	 * @param lookAtTranslation the wanted looking direction
+	 * @see #updateDemand(ChassisSpeeds)
+	 * @see #updateDemand(Pose2d)
+	 * @see #updateDemand(Rotation2d, double, boolean isXDriverInput)
+	 * @see #updateDemand(ChassisSpeeds, boolean)
+	 * @see #updateDemand(Translation2d)
+	 */
 	public void updateDemand(Translation2d lookAtTranslation) {
 		_demand.lookAtTranslation = lookAtTranslation;
 	}
@@ -284,7 +357,7 @@ public abstract class SwerveIO extends SubsystemBase {
 				break;
 
 			case LOCKED_AXIS:
-				lockAxis(_demand.angle, _demand.phase, _demand.driverInput);
+				lockAxis(_demand.angle, _demand.phase, _demand.driverInput, _demand.isXDriverInput);
 
 			default:
 				break;

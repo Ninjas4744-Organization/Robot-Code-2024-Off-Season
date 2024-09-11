@@ -59,7 +59,7 @@ public class RobotContainer {
 				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
 			else {
 				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOCKED_AXIS);
-				SwerveIO.getInstance().updateDemand(Rotation2d.fromDegrees(-60), 6.25);
+				SwerveIO.getInstance().updateDemand(Rotation2d.fromDegrees(-60), 6.25, false);
 			}
 		}));
 
