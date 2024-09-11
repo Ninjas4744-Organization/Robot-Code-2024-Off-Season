@@ -1,6 +1,5 @@
 package frc.robot.Subsystems;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
 import frc.robot.AbstractClasses.NinjasSubsystem;
@@ -29,11 +28,8 @@ public class Shooter extends NinjasSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-			() -> controller().setVelocity(ShooterConstants.kShootVelocity),
-			RobotState.RobotStates.PREPARE_SHOOT);
+				() -> controller().setVelocity(ShooterConstants.kShootVelocity), RobotState.RobotStates.PREPARE_SHOOT);
 
-		addFunctionToOnChangeMap(
-			() -> controller().stop(),
-			RobotState.RobotStates.NOTE_SEARCH);
+		addFunctionToOnChangeMap(() -> controller().stop(), RobotState.RobotStates.NOTE_SEARCH);
 	}
 }

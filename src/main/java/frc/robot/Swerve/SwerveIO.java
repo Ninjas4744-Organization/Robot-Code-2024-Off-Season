@@ -83,7 +83,9 @@ public abstract class SwerveIO extends SubsystemBase {
 					break;
 
 				case HOLDING_NOTE:
-//					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(), 0.5);
+					//					Pose2d targetPose =
+					// VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(),
+					// 0.5);
 					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 0.25);
 					NetworkTableInstance.getDefault()
 							.getTable("Assist Target Offset")
@@ -247,17 +249,30 @@ public abstract class SwerveIO extends SubsystemBase {
 				break;
 
 			case BAYBLADE:
-				drive(new ChassisSpeeds(_demand.driverInput.vxMetersPerSecond, _demand.driverInput.vyMetersPerSecond, SwerveConstants.maxAngularVelocity));
+				drive(new ChassisSpeeds(
+						_demand.driverInput.vxMetersPerSecond,
+						_demand.driverInput.vyMetersPerSecond,
+						SwerveConstants.maxAngularVelocity));
 				break;
 
 			case LOOK_AT_ANGLE:
-				drive(new ChassisSpeeds(_demand.driverInput.vxMetersPerSecond, _demand.driverInput.vyMetersPerSecond, lookAt(_demand.lookAtTranslation, 45)));
+				drive(new ChassisSpeeds(
+						_demand.driverInput.vxMetersPerSecond,
+						_demand.driverInput.vyMetersPerSecond,
+						lookAt(_demand.lookAtTranslation, 45)));
 				break;
 
 			case LOOK_AT_TARGET:
-				Translation2d lookAtTranslation = _demand.targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
-				lookAtTranslation = RobotState.isSimulated() ? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY()) : lookAtTranslation;
-				drive(new ChassisSpeeds(_demand.driverInput.vxMetersPerSecond, _demand.driverInput.vyMetersPerSecond, lookAt(lookAtTranslation, 45)));
+				Translation2d lookAtTranslation = _demand.targetPose
+						.getTranslation()
+						.minus(RobotState.getRobotPose().getTranslation());
+				lookAtTranslation = RobotState.isSimulated()
+						? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY())
+						: lookAtTranslation;
+				drive(new ChassisSpeeds(
+						_demand.driverInput.vxMetersPerSecond,
+						_demand.driverInput.vyMetersPerSecond,
+						lookAt(lookAtTranslation, 45)));
 				break;
 
 			case POSITION:

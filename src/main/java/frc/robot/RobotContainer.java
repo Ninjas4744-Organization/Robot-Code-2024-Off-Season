@@ -40,33 +40,28 @@ public class RobotContainer {
 		SwerveIO.getInstance()
 				.setDefaultCommand(TeleopCommandBuilder.swerveDrive(
 						() -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
-					() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY())));
+						() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY())));
 
-		_driverJoystick.circle().onTrue(Commands.runOnce(
-			() -> {
-				if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.BAYBLADE)
-					SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-				else
-					SwerveIO.getInstance().setState(SwerveDemand.SwerveState.BAYBLADE);
-			}));
+		_driverJoystick.circle().onTrue(Commands.runOnce(() -> {
+			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.BAYBLADE)
+				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+			else SwerveIO.getInstance().setState(SwerveDemand.SwerveState.BAYBLADE);
+		}));
 
-		_driverJoystick.triangle().onTrue(Commands.runOnce(
-			() -> {
-				if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOOK_AT_ANGLE)
-					SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-				else
-					SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE);
-			}));
+		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> {
+			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOOK_AT_ANGLE)
+				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+			else SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE);
+		}));
 
-		_driverJoystick.povUp().onTrue(Commands.runOnce(
-			() -> {
-				if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOCKED_AXIS)
-					SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-				else {
-					SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOCKED_AXIS);
-					SwerveIO.getInstance().updateDemand(Rotation2d.fromDegrees(-60), 6.25);
-				}
-			}));
+		_driverJoystick.povUp().onTrue(Commands.runOnce(() -> {
+			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOCKED_AXIS)
+				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+			else {
+				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOCKED_AXIS);
+				SwerveIO.getInstance().updateDemand(Rotation2d.fromDegrees(-60), 6.25);
+			}
+		}));
 
 		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));

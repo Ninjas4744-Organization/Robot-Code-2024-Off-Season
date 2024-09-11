@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DataClasses.StateEndCondition;
 import frc.robot.RobotState.RobotStates;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +22,8 @@ public class StateMachine extends SubsystemBase {
 	private StateMachine() {
 		_endConditionMap = new HashMap<>();
 
-		for (RobotStates state : RobotStates.values()) _endConditionMap.put(state, new StateEndCondition(() -> false, RobotStates.IDLE));
+		for (RobotStates state : RobotStates.values())
+			_endConditionMap.put(state, new StateEndCondition(() -> false, RobotStates.IDLE));
 
 		setEndConditionMap();
 	}
@@ -31,9 +31,7 @@ public class StateMachine extends SubsystemBase {
 	/**
 	 * Set in this function the end condition for each state with _endConditionMap
 	 */
-	private void setEndConditionMap(){
-
-	}
+	private void setEndConditionMap() {}
 
 	/**
 	 * Sets the state of the robot to the given state only if possible. For example if the current
@@ -160,7 +158,7 @@ public class StateMachine extends SubsystemBase {
 							changeRobotState(RobotStates.OUTAKE);
 							break;
 
-                        case CLIMB_READY:
+						case CLIMB_READY:
 							changeRobotState(RobotStates.CLIMB);
 							break;
 
@@ -177,8 +175,8 @@ public class StateMachine extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		for(RobotStates state : RobotStates.values()){
-			if(_endConditionMap.get(state).condition.getAsBoolean())
+		for (RobotStates state : RobotStates.values()) {
+			if (_endConditionMap.get(state).condition.getAsBoolean())
 				changeRobotState(_endConditionMap.get(state).nextState);
 		}
 	}

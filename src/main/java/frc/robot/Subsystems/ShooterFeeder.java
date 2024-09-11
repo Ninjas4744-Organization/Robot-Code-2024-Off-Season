@@ -9,40 +9,42 @@ import frc.robot.RobotState;
 import frc.robot.StateMachine;
 
 public class ShooterFeeder extends NinjasSubsystem {
-    private static ShooterFeeder _instance;
+	private static ShooterFeeder _instance;
 
-    public static ShooterFeeder getInstance() {
-        if (_instance == null) _instance = new ShooterFeeder();
+	public static ShooterFeeder getInstance() {
+		if (_instance == null) _instance = new ShooterFeeder();
 
-        return _instance;
-    }
+		return _instance;
+	}
 
-    Timer shootTimer = new Timer();
+	Timer shootTimer = new Timer();
 
-    @Override
-    protected void setController() {
-        _controller = new NinjasSparkMaxController(ShooterFeederConstants.kControllerConstants);
-    }
+	@Override
+	protected void setController() {
+		_controller = new NinjasSparkMaxController(ShooterFeederConstants.kControllerConstants);
+	}
 
-    @Override
-    protected void setSimulationController() {
-        _simulatedController = new NinjasSimulatedController(ShooterFeederConstants.kSimulatedControllerConstants);
-    }
+	@Override
+	protected void setSimulationController() {
+		_simulatedController = new NinjasSimulatedController(ShooterFeederConstants.kSimulatedControllerConstants);
+	}
 
-    @Override
-    protected void setFunctionMaps() {
-        addFunctionToOnChangeMap(
-            () -> {
-                controller().setPercent(1);
-                shootTimer.restart();
-            },
-            RobotState.RobotStates.SHOOT);
+	@Override
+	protected void setFunctionMaps() {
+		addFunctionToOnChangeMap(
+				() -> {
+					controller().setPercent(1);
+					shootTimer.restart();
+				},
+				RobotState.RobotStates.SHOOT);
 
-        addFunctionToPeriodicMap(() -> {
-            if (shootTimer.get() > 0.5) {
-                StateMachine.getInstance().changeRobotState(RobotState.RobotStates.IDLE);
-                controller().stop();
-            }
-        }, RobotState.RobotStates.SHOOT);
-    }
+		addFunctionToPeriodicMap(
+				() -> {
+					if (shootTimer.get() > 0.5) {
+						StateMachine.getInstance().changeRobotState(RobotState.RobotStates.IDLE);
+						controller().stop();
+					}
+				},
+				RobotState.RobotStates.SHOOT);
+	}
 }

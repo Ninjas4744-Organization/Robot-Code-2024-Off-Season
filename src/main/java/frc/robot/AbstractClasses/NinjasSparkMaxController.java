@@ -102,30 +102,29 @@ public class NinjasSparkMaxController extends NinjasController {
 	public void periodic() {
 		super.periodic();
 
-		if (atGoal())
-			return;
+		if (atGoal()) return;
 
 		switch (_controlState) {
 			case PIDF_POSITION:
-					_main.getPIDController()
-							.setReference(
-									_profile.calculate(
-													_trapozoidTimer.get(),
-													new State(getPosition(), 0),
-													new State(getGoal(), 0))
-											.position,
-									ControlType.kPosition);
+				_main.getPIDController()
+						.setReference(
+								_profile.calculate(
+												_trapozoidTimer.get(),
+												new State(getPosition(), 0),
+												new State(getGoal(), 0))
+										.position,
+								ControlType.kPosition);
 				break;
 
 			case PIDF_VELOCITY:
-					_main.getPIDController()
-							.setReference(
-									_profile.calculate(
-													_trapozoidTimer.get(),
-													new State(0, getVelocity()),
-													new State(0, getGoal()))
-											.velocity,
-									ControlType.kVelocity);
+				_main.getPIDController()
+						.setReference(
+								_profile.calculate(
+												_trapozoidTimer.get(),
+												new State(0, getVelocity()),
+												new State(0, getGoal()))
+										.velocity,
+								ControlType.kVelocity);
 				break;
 
 			case PID_POSITION:
@@ -137,11 +136,19 @@ public class NinjasSparkMaxController extends NinjasController {
 				break;
 
 			case FF_POSITION:
-				_main.set(_profile.calculate(_trapozoidTimer.get(), new State(getPosition(), getVelocity()), new State(getGoal(), 0)).velocity / _constants.PIDFConstants.kMaxVelocity);
+				_main.set(_profile.calculate(
+										_trapozoidTimer.get(),
+										new State(getPosition(), getVelocity()),
+										new State(getGoal(), 0))
+								.velocity
+						/ _constants.PIDFConstants.kMaxVelocity);
 				break;
 
 			case FF_VELOCITY:
-				_main.set(_profile.calculate(_trapozoidTimer.get(), new State(getVelocity(), 0), new State(getGoal(), 0)).velocity / _constants.PIDFConstants.kMaxVelocity);
+				_main.set(
+						_profile.calculate(_trapozoidTimer.get(), new State(getVelocity(), 0), new State(getGoal(), 0))
+										.velocity
+								/ _constants.PIDFConstants.kMaxVelocity);
 				break;
 
 			default:

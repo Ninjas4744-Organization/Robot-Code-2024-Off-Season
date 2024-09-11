@@ -10,12 +10,10 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
-
 import java.util.function.Supplier;
 
 public class TeleopCommandBuilder {
-	public static Command swerveDrive(
-		Supplier<Translation2d> translation, Supplier<Translation2d> rotation) {
+	public static Command swerveDrive(Supplier<Translation2d> translation, Supplier<Translation2d> rotation) {
 		return Commands.runOnce(
 				() -> {
 					double lx = -MathUtil.applyDeadband(translation.get().getX(), SwerveConstants.kJoystickDeadband);

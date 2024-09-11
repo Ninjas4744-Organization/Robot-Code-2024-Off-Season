@@ -2,8 +2,6 @@ package frc.robot.AbstractClasses;
 
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import frc.robot.DataClasses.MainControllerConstants;
 
 public class NinjasTalonSRXController extends NinjasController {

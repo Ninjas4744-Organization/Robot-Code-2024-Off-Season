@@ -16,7 +16,6 @@ import frc.robot.DataClasses.MainControllerConstants;
 import frc.robot.DataClasses.PIDFConstants;
 import frc.robot.DataClasses.SimulatedControllerConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
-
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -50,7 +49,7 @@ public final class Constants {
 	public static class ShooterConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
 		public static final SimulatedControllerConstants kSimulatedControllerConstants =
-			new SimulatedControllerConstants();
+				new SimulatedControllerConstants();
 
 		static {
 			kControllerConstants.main.id = 23;
@@ -70,7 +69,7 @@ public final class Constants {
 	public static class ShooterFeederConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
 		public static final SimulatedControllerConstants kSimulatedControllerConstants =
-			new SimulatedControllerConstants();
+				new SimulatedControllerConstants();
 
 		static {
 			kControllerConstants.main.id = 23;
