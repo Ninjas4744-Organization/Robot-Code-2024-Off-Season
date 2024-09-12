@@ -18,21 +18,22 @@ import frc.robot.Swerve.SwerveIO;
 public class RobotState {
 	public enum RobotStates {
 		IDLE,
-		PREPARE_INTAKE,
-		INTAKE_READY,
 		INTAKE,
-		PREPARE_AMP_OUTAKE,
-		AMP_OUTAKE_READY,
-		PREPARE_TRAP_OUTAKE,
-		TRAP_OUTAKE_READY,
-		OUTAKE,
+		ELEVATOR_INTAKE,
+		ELEVATOR_AMP_PREPARE,
+		ELEVATOR_OUTAKE,
+		ELEVATOR_TRAP_PREPARE,
+		ELEVATOR_AMP_READY,
+		ELEVATOR_TRAP_READY,
 		CLOSE,
 		RESET,
-		PREPARE_SHOOT,
+		SHOOT_PREPARE,
 		SHOOT_READY,
 		SHOOT,
 		NOTE_SEARCH,
-		HOLDING_NOTE,
+		NOTE_INDEXER,
+		NOTE_ELEVATOR,
+		NOTE_SHOOTER,
 		PREPARE_CLIMB,
 		CLIMB_READY,
 		CLIMB,
@@ -153,12 +154,6 @@ public class RobotState {
 						new Pose2d());
 	}
 
-	/**
-	 * @return Whether there is a note in the robot
-	 */
-	public static boolean hasNote() {
-		return isSimulated() || noteDetector.get();
-	}
 
 	/**
 	 * @return Whether the robot is at simulation mode or deployed on a real robot

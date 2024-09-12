@@ -5,17 +5,16 @@ import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
 import frc.robot.AbstractClasses.NinjasSubsystem;
 import frc.robot.Constants.RollersConstants;
-import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.StateMachine;
 
-public class Rollers extends NinjasSubsystem {
-	private static Rollers _instance;
+public class Intake extends NinjasSubsystem {
+	private static Intake _instance;
 
 	private Timer _outakeTimer = new Timer();
 
-	public static Rollers getInstance() {
-		if (_instance == null) _instance = new Rollers();
+	public static Intake getInstance() {
+		if (_instance == null) _instance = new Intake();
 
 		return _instance;
 	}
@@ -35,8 +34,6 @@ public class Rollers extends NinjasSubsystem {
 		addFunctionToPeriodicMap(
 				() -> {
 					controller().setPercent(RollersConstants.States.kIntake);
-
-					if (RobotState.hasNote()) StateMachine.getInstance().changeRobotState(RobotStates.CLOSE);
 				},
 				RobotStates.INTAKE);
 
