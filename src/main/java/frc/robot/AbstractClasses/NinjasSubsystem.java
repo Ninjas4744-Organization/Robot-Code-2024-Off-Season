@@ -12,8 +12,8 @@ public abstract class NinjasSubsystem extends SubsystemBase {
 	protected NinjasController _controller;
 	protected NinjasSimulatedController _simulatedController;
 
-	private Map<RobotStates, Runnable> _periodicFunctionMap;
-	private Map<RobotStates, Runnable> _onChangeFunctionMap;
+	private final Map<RobotStates, Runnable> _periodicFunctionMap;
+	private final Map<RobotStates, Runnable> _onChangeFunctionMap;
 	private RobotStates previousRobotState;
 
 	public NinjasSubsystem() {
@@ -106,7 +106,7 @@ public abstract class NinjasSubsystem extends SubsystemBase {
 	 * @return the command that does that
 	 */
 	public Command resetSubsystem() {
-		return runMotor(-0.5).until(() -> controller().getPosition() <= 0);
+		return runMotor(-0.3).until(() -> controller().getPosition() <= 0);
 	}
 
 	/**

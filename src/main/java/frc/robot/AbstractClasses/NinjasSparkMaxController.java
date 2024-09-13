@@ -1,5 +1,6 @@
 package frc.robot.AbstractClasses;
 
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -8,11 +9,11 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.DataClasses.MainControllerConstants;
 
 public class NinjasSparkMaxController extends NinjasController {
-	private CANSparkMax _main;
-	private CANSparkMax[] _followers;
+	private final CANSparkMax _main;
+	private final CANSparkMax[] _followers;
 
-	private TrapezoidProfile _profile;
-	private Timer _trapozoidTimer = new Timer();
+	private final TrapezoidProfile _profile;
+	private final Timer _trapozoidTimer = new Timer();
 
 	public NinjasSparkMaxController(MainControllerConstants constants) {
 		super(constants);
@@ -31,7 +32,12 @@ public class NinjasSparkMaxController extends NinjasController {
 		_main.getPIDController().setFF(constants.PIDFConstants.kF);
 
 		_main.getEncoder().setPositionConversionFactor(constants.encoderConversionFactor);
-		_main.getEncoder().setVelocityConversionFactor(constants.encoderConversionFactor / 60);
+		_main.getEncoder().setVelocityConversionFactor(constants.encoderConversionFactor);
+
+		_main.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, constants.isMaxSoftLimit);
+		_main.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, constants.isMinSoftLimit);
+		_main.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, (float) constants.maxSoftLimit);
+		_main.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, (float) constants.minSoftLimit);
 
 		_main.burnFlash();
 
@@ -58,12 +64,18 @@ public class NinjasSparkMaxController extends NinjasController {
 	public void setPosition(double position) {
 		super.setPosition(position);
 
+		if (_controlState == ControlState.PID_POSITION)
+			_main.getPIDController().setReference(getGoal(), ControlType.kPosition);
+
 		_trapozoidTimer.restart();
 	}
 
 	@Override
 	public void setVelocity(double velocity) {
 		super.setVelocity(velocity);
+
+		if (_controlState == ControlState.PID_VELOCITY)
+			_main.getPIDController().setReference(getGoal(), ControlType.kVelocity);
 
 		_trapozoidTimer.restart();
 	}
@@ -80,22 +92,12 @@ public class NinjasSparkMaxController extends NinjasController {
 
 	@Override
 	public double getOutput() {
-		return _main.get();
+		return _main.getBusVoltage() * _main.getAppliedOutput() / 12;
 	}
 
 	@Override
 	public void setEncoder(double position) {
 		_main.getEncoder().setPosition(position);
-	}
-
-	@Override
-	public boolean atGoal() {
-		if (_controlState == ControlState.PIDF_POSITION)
-			return Math.abs(_goal - getPosition()) < _constants.positionGoalTolerance;
-		else if (_controlState == ControlState.PIDF_VELOCITY)
-			return Math.abs(_goal - getVelocity()) < _constants.velocityGoalTolerance;
-
-		return false;
 	}
 
 	@Override
@@ -125,14 +127,6 @@ public class NinjasSparkMaxController extends NinjasController {
 												new State(0, getGoal()))
 										.velocity,
 								ControlType.kVelocity);
-				break;
-
-			case PID_POSITION:
-				_main.getPIDController().setReference(getGoal(), ControlType.kPosition);
-				break;
-
-			case PID_VELOCITY:
-				_main.getPIDController().setReference(getGoal(), ControlType.kVelocity);
 				break;
 
 			case FF_POSITION:

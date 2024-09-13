@@ -95,9 +95,10 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
-			kControllerConstants.gearRatio = 1;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.motorType = SimulatedControllerConstants.MotorType.KRAKEN;
+			kSimulatedControllerConstants.gearRatio = 1;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
@@ -124,9 +125,9 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
-			kControllerConstants.gearRatio = 1;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.gearRatio = 1;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
@@ -152,9 +153,9 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
-			kControllerConstants.gearRatio = 1;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.gearRatio = 1;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
@@ -181,9 +182,9 @@ public final class Constants {
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
-			kControllerConstants.gearRatio = 1;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kSimulatedControllerConstants.gearRatio = 1;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
@@ -217,8 +218,8 @@ public final class Constants {
 		public static final double kOpenLoopRamp = 0.25;
 		public static final double kClosedLoopRamp = 0.0;
 
-		public static final double kDriveGearRatio = (6.12 / 1.0); // 5.14:1
-		public static final double kAngleGearRatio = (12.8 / 1.0); // 12.8:1
+		public static final double kDriveGearRatio = (6.12); // 5.14:1
+		public static final double kAngleGearRatio = (12.8); // 12.8:1
 
 		public static final SwerveDriveKinematics kSwerveKinematics = new SwerveDriveKinematics(
 				new Translation2d(kWheelBase / 2.0, kTrackWidth / 2.0),
