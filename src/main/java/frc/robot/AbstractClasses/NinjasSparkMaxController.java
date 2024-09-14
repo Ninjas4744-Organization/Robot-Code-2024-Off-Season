@@ -112,7 +112,7 @@ public class NinjasSparkMaxController extends NinjasController {
 						.setReference(
 								_profile.calculate(
 												_trapozoidTimer.get(),
-												new State(getPosition(), 0),
+									new State(getPosition(), getVelocity()),
 												new State(getGoal(), 0))
 										.position,
 								ControlType.kPosition);
@@ -123,9 +123,9 @@ public class NinjasSparkMaxController extends NinjasController {
 						.setReference(
 								_profile.calculate(
 												_trapozoidTimer.get(),
-												new State(0, getVelocity()),
-												new State(0, getGoal()))
-										.velocity,
+									new State(getVelocity(), 0),
+									new State(getGoal(), 0))
+									.position,
 								ControlType.kVelocity);
 				break;
 
