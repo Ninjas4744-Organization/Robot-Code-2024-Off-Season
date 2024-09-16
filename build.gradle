@@ -125,7 +125,7 @@ spotless {
 			exclude '**/build/**', '**/build-*/**'
 		}
 		toggleOffOn()
-		palantirJavaFormat()
+//		palantirJavaFormat()
 		indentWithTabs(4)
 		removeUnusedImports()
 		trimTrailingWhitespace()
