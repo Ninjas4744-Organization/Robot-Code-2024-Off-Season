@@ -19,7 +19,6 @@ public class RobotState {
 	public enum RobotStates {
 		IDLE,
 		INTAKE,
-		ELEVATOR_INTAKE,
 		ELEVATOR_AMP_PREPARE,
 		ELEVATOR_OUTAKE,
 		ELEVATOR_TRAP_PREPARE,
@@ -31,9 +30,7 @@ public class RobotState {
 		SHOOT_READY,
 		SHOOT,
 		NOTE_SEARCH,
-		NOTE_INDEXER,
-		NOTE_ELEVATOR,
-		NOTE_SHOOTER,
+		NOTE_IN_ELEVATOR,
 		PREPARE_CLIMB,
 		CLIMB_READY,
 		CLIMB,
@@ -43,7 +40,6 @@ public class RobotState {
 	private static RobotStates robotState = RobotStates.IDLE;
 	private static AHRS navX = new AHRS();
 	private static SwerveDrivePoseEstimator poseEstimator;
-	private static DigitalInput noteDetector = new DigitalInput(Constants.kNoteDetectorID);
 
 	private static StructPublisher<Pose2d> _robotPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic("Robot Pose", Pose2d.struct)

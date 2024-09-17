@@ -75,17 +75,17 @@ public class StateMachine extends SubsystemBase {
 				break;
 
 			case IDLE:
-				if (wantedState == RobotStates.HOLDING_NOTE
+				if (wantedState == RobotStates.NOTE_IN_ELEVATOR
 						|| wantedState == RobotStates.NOTE_SEARCH
 						|| wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.PREPARE_CLIMB
-						|| wantedState == RobotStates.PREPARE_INTAKE) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.PREPARE_SHOOT)) RobotState.setRobotState(wantedState);
 				break;
 
-			case HOLDING_NOTE:
+			case NOTE_IN_ELEVATOR:
 				if (wantedState == RobotStates.RESET
-						|| wantedState == RobotStates.PREPARE_AMP_OUTAKE
-						|| wantedState == RobotStates.PREPARE_TRAP_OUTAKE
+						|| wantedState == RobotStates.ELEVATOR_TRAP_PREPARE
+						|| wantedState == RobotStates.ELEVATOR_AMP_PREPARE
 						|| wantedState == RobotStates.PREPARE_CLIMB
 						|| wantedState == RobotStates.PREPARE_SHOOT) RobotState.setRobotState(wantedState);
 				break;
@@ -99,7 +99,7 @@ public class StateMachine extends SubsystemBase {
 				break;
 
 			case CLIMBED:
-				if (wantedState == RobotStates.ELEVATOR_INTAKE || wantedState == RobotStates.PREPARE_CLIMB)
+				if (wantedState == RobotStates.PREPARE_CLIMB)
 					RobotState.setRobotState(wantedState);
 				break;
 
@@ -121,27 +121,21 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.CLIMB_READY) RobotState.setRobotState(wantedState);
 				break;
 
-			case PREPARE_INTAKE:
+			case SHOOT_PREPARE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.INTAKE_READY) RobotState.setRobotState(wantedState);
-				break;
-
-			case PREPARE_SHOOT:
-				if (wantedState == RobotStates.RESET
-						|| wantedState == RobotStates.CLOSEi`
 						|| wantedState == RobotStates.SHOOT_READY) RobotState.setRobotState(wantedState);
 				break;
 
 			case NOTE_SEARCH:
-				if (wantedState == RobotStates.PREPARE_INTAKE || wantedState == RobotStates.PREPARE_CLIMB)
+				if (wantedState == RobotStates.INTAKE || wantedState == RobotStates.PREPARE_CLIMB)
+					RobotState.setRobotState(wantedState);
+				break;
+			case NOTE_IN_ELEVATOR:
+				if(wantedState == RobotStates.ELEVATOR_AMP_PREPARE || wantedState == RobotStates.ELEVATOR_TRAP_PREPARE ||wantedState == RobotStates.SHOOT_PREPARE)
 					RobotState.setRobotState(wantedState);
 				break;
 		}
-
-		if (wantedState == RobotStates.IDLE && RobotState.hasNote()) RobotState.setRobotState(RobotStates.HOLDING_NOTE);
-
-		if (wantedState == RobotStates.IDLE && !RobotState.hasNote()) RobotState.setRobotState(RobotStates.NOTE_SEARCH);
 	}
 
 	/**
@@ -154,10 +148,9 @@ public class StateMachine extends SubsystemBase {
 		return Commands.runOnce(
 				() -> {
 					switch (RobotState.getRobotState()) {
-						case AMP_OUTAKE_READY, TRAP_OUTAKE_READY:
-							changeRobotState(RobotStates.OUTAKE);
+						case ELEVATOR_AMP_READY,ELEVATOR_TRAP_READY:
+							changeRobotState(RobotStates.ELEVATOR_OUTAKE);
 							break;
-
                         case CLIMB_READY:
 							changeRobotState(RobotStates.CLIMB);
 							break;

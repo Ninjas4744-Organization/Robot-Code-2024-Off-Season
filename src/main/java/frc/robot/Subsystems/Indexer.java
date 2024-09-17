@@ -1,25 +1,21 @@
 package frc.robot.Subsystems;
 
-import edu.wpi.first.wpilibj.Timer;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
 import frc.robot.AbstractClasses.NinjasSubsystem;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 
-public class ElevatorIntake extends NinjasSubsystem {
-    private static ElevatorIntake _instance;
+public class Indexer extends NinjasSubsystem {
+    private static Intake _instance;
 
-    private Timer _outakeTimer = new Timer();
-
-    public static ElevatorIntake getInstance() {
-        if (_instance == null) _instance = new ElevatorIntake();
+    public static Intake getInstance() {
+        if (_instance == null) _instance = new Intake();
 
         return _instance;
     }
-
     @Override
     protected void setController() {
-        _controller = new NinjasSparkMaxController(Constants.RollersIntakeConstants.kControllerConstants);
+        _controller = new NinjasSparkMaxController(Constants.RollersConstants.kControllerConstants);
     }
 
     @Override
@@ -29,20 +25,24 @@ public class ElevatorIntake extends NinjasSubsystem {
 
     @Override
     protected void setFunctionMaps() {
-        addFunctionToOnChangeMap(
+        addFunctionToPeriodicMap(
                 () -> {
-                    controller().setPercent(Constants.RollersIntakeConstants.States.kIntake);
+                    controller().setPercent(Constants.IndexerConstants.States.kElevator);
                 },
                 RobotState.RobotStates.INDEXER_TO_ELEVATOR);
+        addFunctionToPeriodicMap(
+                () -> {
+                    controller().setPercent(Constants.IndexerConstants.States.kShoot);
+                },
+                RobotState.RobotStates.);
         addFunctionToOnChangeMap(
                 () -> {
                     controller().stop();
                 },
                 RobotState.RobotStates.ELEVATOR_AMP_PREPARE,
-                RobotState.RobotStates.ELEVATOR_TRAP_PREPARE ,
+                RobotState.RobotStates.ELEVATOR_TRAP_PREPARE,
                 RobotState.RobotStates.RESET,
                 RobotState.RobotStates.CLOSE);
+
     }
-
-
 }

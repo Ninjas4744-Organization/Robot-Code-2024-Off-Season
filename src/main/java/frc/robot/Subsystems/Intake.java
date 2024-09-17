@@ -4,7 +4,9 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
 import frc.robot.AbstractClasses.NinjasSubsystem;
+import frc.robot.Constants;
 import frc.robot.Constants.RollersConstants;
+import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.StateMachine;
 
@@ -36,19 +38,14 @@ public class Intake extends NinjasSubsystem {
 					controller().setPercent(RollersConstants.States.kIntake);
 				},
 				RobotStates.INTAKE);
-
-		addFunctionToPeriodicMap(
+		addFunctionToOnChangeMap(
 				() -> {
-					controller().setPercent(RollersConstants.States.kOutake);
-
-					if (_outakeTimer.get() > 1) {
-						StateMachine.getInstance().changeRobotState(RobotStates.CLOSE);
-					}
+					controller().stop();
 				},
-				RobotStates.OUTAKE);
+				RobotState.RobotStates.ELEVATOR_AMP_PREPARE,
+				RobotState.RobotStates.ELEVATOR_TRAP_PREPARE,
+				RobotState.RobotStates.RESET,
+				RobotState.RobotStates.CLOSE);
 
-		addFunctionToOnChangeMap(() -> _outakeTimer.restart(), RobotStates.OUTAKE);
-		addFunctionToOnChangeMap(() -> controller().stop(), RobotStates.CLOSE);
-		addFunctionToOnChangeMap(() -> controller().stop(), RobotStates.RESET);
 	}
 }

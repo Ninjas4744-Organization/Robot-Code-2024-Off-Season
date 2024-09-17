@@ -35,7 +35,7 @@ public final class Constants {
 			kControllerConstants.currentLimit = 40;
 			kControllerConstants.subsystemName = "Shooter";
 			kControllerConstants.PIDFConstants = new PIDFConstants(0.018, 0, 0, 60, 120);
-			//			kControllerConstants.positionGoalTolerance = 5;
+			kControllerConstants.positionGoalTolerance = 5;
 			kControllerConstants.encoderConversionFactor = 7.2;
 			kControllerConstants.encoderHomePosition = 0;
 			kControllerConstants.gearRatio = 27;
@@ -65,7 +65,10 @@ public final class Constants {
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
-		public static final int kLimitSwitchID = 7;
+		public static final int kLimitSwitchNoteInID = 7;
+		public static final int kLimitSwitchNOteReadyID = 7;
+		public static final int kLimitSwitchNoteOutID = 7;
+
 
 		public class States {
 			public static final double kAmp = 0.4;
@@ -102,7 +105,7 @@ public final class Constants {
 		}
 	}
 
-	public static class RotationConstants {
+	public static class IndexerConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
 		public static final SimulatedControllerConstants kSimulatedControllerConstants =
 				new SimulatedControllerConstants();
@@ -111,8 +114,7 @@ public final class Constants {
 			kControllerConstants.main.id = 24;
 			kControllerConstants.main.inverted = true;
 			kControllerConstants.currentLimit = 40;
-			kControllerConstants.subsystemName = "Rotation";
-			kControllerConstants.PIDFConstants = new PIDFConstants(5, 0, 0, 8, 8);
+			kControllerConstants.subsystemName = "Indexer";
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
@@ -125,8 +127,8 @@ public final class Constants {
 		public static final int kLimitSwitchID = 7;
 
 		public class States {
-			public static final double kAmp = 0.4;
-			public static final double kTrap = 0;
+			public static final double kElevator = 0.4;
+			public static final double kShoot = 0;
 			public static final double kClose = 0;
 		}
 	}

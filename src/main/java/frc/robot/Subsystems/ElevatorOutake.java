@@ -29,17 +29,18 @@ public class ElevatorOutake extends NinjasSubsystem {
     }
     protected void setFunctionMaps() {
 
-        addFunctionToPeriodicMap(
+        addFunctionToOnChangeMap(
                 () -> {
-                    controller().setPercent(Constants.RollersConstants.States.kOutake);
-
-                    if (_outakeTimer.get() > 1) {
-                        StateMachine.getInstance().changeRobotState(RobotState.RobotStates.CLOSE);
-                    }
+                    controller().setPercent(Constants.RollersIntakeConstants.States.kOutake);
                 },
-                RobotState.RobotStates.ELEVATOR_OUTAKE);
-
-        addFunctionToOnChangeMap(() -> _outakeTimer.restart(), RobotState.RobotStates.ELEVATOR_OUTAKE);
-        addFunctionToOnChangeMap(() -> controller().stop(), RobotState.RobotStates.CLOSE, RobotState.RobotStates.RESET);
+                RobotState.RobotStates.ELEVATOR_AMP_READY, RobotState.RobotStates.ELEVATOR_TRAP_READY);
+        addFunctionToOnChangeMap(
+                () -> {
+                    controller().stop();
+                },
+                RobotState.RobotStates.ELEVATOR_AMP_PREPARE,
+                RobotState.RobotStates.ELEVATOR_TRAP_PREPARE,
+                RobotState.RobotStates.RESET,
+                RobotState.RobotStates.CLOSE);
     }
 }
