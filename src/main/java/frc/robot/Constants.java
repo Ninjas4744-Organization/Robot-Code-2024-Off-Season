@@ -16,6 +16,7 @@ import frc.robot.DataClasses.MainControllerConstants;
 import frc.robot.DataClasses.PIDFConstants;
 import frc.robot.DataClasses.SimulatedControllerConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -303,7 +304,7 @@ public final class Constants {
 		 * Swerve drive assist threshold, if the drive assist angle difference from driver angle is
 		 * bigger than this value, the drive assist will be ignored. degrees
 		 */
-		public static final double kDriveAssistThreshold = 45;
+    public static final double kDriveAssistThreshold = 60;
 
 		/** Module Specific Constants */
 		/** Front Left Module - Module 0 */

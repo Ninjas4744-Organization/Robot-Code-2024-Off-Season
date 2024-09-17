@@ -86,7 +86,7 @@ public abstract class SwerveIO extends SubsystemBase {
 					//					Pose2d targetPose =
 					// VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(),
 					// 0.5);
-					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 0.25);
+          Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 0.5);
 					NetworkTableInstance.getDefault()
 							.getTable("Assist Target Offset")
 							.getEntry("pose")

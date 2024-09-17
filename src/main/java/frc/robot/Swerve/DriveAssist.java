@@ -9,30 +9,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotState;
+
 import java.util.Arrays;
 import java.util.List;
 
 public class DriveAssist {
 	private PIDController translationPID;
-
 	private Timer _profileTimer;
-
 	private boolean isCurrentlyDriveAssisting = false;
-
-	private PIDController rotationPID;
-	private PathPlannerTrajectory trajectory;
-	private static StructPublisher<Pose2d> _robotPosePublisher = NetworkTableInstance.getDefault()
-			.getStructTopic("Wanted Pose", Pose2d.struct)
-			.publish();
-
-	private Field2d currentTraj = new Field2d();
+  private PIDController _rotationPID;
+  private PathPlannerTrajectory _trajectory;
+  private Pose2d _targetPose;
 
 	public DriveAssist(PIDController anglePID) {
 
@@ -42,7 +33,7 @@ public class DriveAssist {
 				Constants.SwerveConstants.kDriveAssistP,
 				Constants.SwerveConstants.kDriveAssistI,
 				Constants.SwerveConstants.kDriveAssistD);
-		rotationPID = anglePID;
+    _rotationPID = anglePID;
 	}
 
 	/**
@@ -83,18 +74,15 @@ public class DriveAssist {
 
 	private ChassisSpeeds calculateDriveAssist() {
 		double currentTime = this._profileTimer.get();
-		// Determine desired state based on where the robot should be at the current time in the path
-		PathPlannerTrajectory.State desiredState = trajectory.sample(currentTime);
+    PathPlannerTrajectory.State desiredState = _trajectory.sample(currentTime);
 		var currentPose = RobotState.getRobotPose();
 
 		Rotation2d heading = desiredState.heading;
-		// Calculate our target velocity based on current pose and desired state
 		var vx = desiredState.velocityMps * Math.cos(heading.getRadians());
 		var vy = desiredState.velocityMps * Math.sin(heading.getRadians());
-		_robotPosePublisher.accept(desiredState.getTargetHolonomicPose());
 
-		double desiredThetaSpeeds = rotationPID.calculate(
-				currentPose.getRotation().getDegrees(), desiredState.targetHolonomicRotation.getDegrees());
+    double desiredThetaSpeeds = _rotationPID.calculate(
+      currentPose.getRotation().getDegrees(), _trajectory.getEndState().getTargetHolonomicPose().getRotation().getDegrees());
 		double xFeedback = translationPID.calculate(
 				currentPose.getX(), desiredState.getTargetHolonomicPose().getX());
 		double yFeedback = translationPID.calculate(
@@ -108,7 +96,9 @@ public class DriveAssist {
 	}
 
 	private void startingDriveAssist(Pose2d targetPose, Rotation2d toTargetAngle, boolean isForTags) {
-		List<Translation2d> _points = Arrays.asList(
+    _targetPose = targetPose;
+
+    List<Translation2d> points = Arrays.asList(
 				RobotState.getRobotPose().getTranslation(),
 				RobotState.getRobotPose().getTranslation(),
 				targetPose.getTranslation(),
@@ -118,14 +108,11 @@ public class DriveAssist {
 		Pathfinding.setGoalPosition(Constants.VisionConstants.getAmpPose().getTranslation());
 
 		PathPlannerPath _path = new PathPlannerPath(
-				_points,
+      points,
 				Constants.AutoConstants.constraints,
 				new GoalEndState(1, isForTags ? targetPose.getRotation().unaryMinus() : toTargetAngle));
 
-		currentTraj.getObject("Trajectory").setPoses(_path.getPathPoses());
-		SmartDashboard.putData("traj", currentTraj);
-
-		trajectory = new PathPlannerTrajectory(
+    _trajectory = new PathPlannerTrajectory(
 				_path,
 				SwerveIO.getInstance().getChassisSpeeds(),
 				RobotState.getRobotPose().getRotation());
