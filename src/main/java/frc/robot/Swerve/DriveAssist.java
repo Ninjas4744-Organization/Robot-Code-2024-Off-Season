@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 
@@ -22,6 +24,7 @@ public class DriveAssist {
 	private Timer _profileTimer;
 	private boolean isCurrentlyDriveAssisting = false;
   private PathPlannerTrajectory _trajectory;
+	private Field2d _currentTraj = new Field2d();
 
 	public DriveAssist() {
 		_profileTimer = new Timer();
@@ -91,8 +94,9 @@ public class DriveAssist {
 		double yFeedback = yPID.calculate(
 			currentPose.getY(), _trajectory.getEndState().positionMeters.getY());
 
-		double feedRatio = 0.5;
-
+		double dist = RobotState.getRobotPose().getTranslation().getDistance(_trajectory.getEndState().positionMeters);
+		double feedRatio = 0.1770 * dist - 0.008850;
+		SmartDashboard.putNumber("feedRatio", feedRatio);
 		return new ChassisSpeeds(xFeedforward * feedRatio + xFeedback * (1 - feedRatio), yFeedforward * feedRatio + yFeedback * (1 - feedRatio), thetaFeedback);
 	}
 
@@ -115,7 +119,8 @@ public class DriveAssist {
 				_path,
 				SwerveIO.getInstance().getChassisSpeeds(),
 				RobotState.getRobotPose().getRotation());
-
+		_currentTraj.getObject("Trajectory").setPoses(_path.getPathPoses());
+		SmartDashboard.putData("currentTraj", _currentTraj);
 		_profileTimer.restart();
 	}
 

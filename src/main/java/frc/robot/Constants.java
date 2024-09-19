@@ -289,9 +289,10 @@ public final class Constants {
 		public static final boolean canCoderInvert = false;
 
 		/* Swerve drive assist PID values */
-		public static final double kDriveAssistP = 1;
+		public static final double kDriveAssistP = 5.5;
+
 		public static final double kDriveAssistI = 0;
-		public static final double kDriveAssistD = 0;
+		public static final double kDriveAssistD = 1.0;
 
 		/* Swerve axis lock PID values */
 		public static final double kSwerveAxisLockP = 0.2;
@@ -359,7 +360,7 @@ public final class Constants {
 
 	public static final class AutoConstants {
 		public static final double kP = 1;
-		public static final double kPTheta = 0.014;
+		public static final double kPTheta = 0.022;
 
 		public static final double kMaxSpeed = 3;
 		public static final double kAcceleration = 6;
@@ -383,15 +384,15 @@ public final class Constants {
 	}
 
 	public static class VisionConstants {
-		public static final double kMaxAmbiguity = 0.4;
+		public static final double kMaxAmbiguity = 0.2;
 
 		public static HashMap<String, Transform3d> getCamerasPoses() {
 			HashMap<String, Transform3d> cameras = new HashMap<>();
 
 			double deg2rad = 0.0174533;
 			cameras.put("Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)));
-			cameras.put("BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, 120 * deg2rad)));
-			cameras.put("BackRight", new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, -120 * deg2rad)));
+			cameras.put("BackLeft", new Transform3d(-0.325 + 0.2, 0.175 - 0.34641016151, 0.2075, new Rotation3d(0, 0, 120 * deg2rad)));
+			cameras.put("BackRight", new Transform3d(-0.325 + 0.25, -0.175 + 0.43301270189, 0.1875, new Rotation3d(0, 0, -120 * deg2rad)));
 
 			return cameras;
 		}
