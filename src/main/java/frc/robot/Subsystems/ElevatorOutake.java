@@ -40,7 +40,7 @@ public class ElevatorOutake extends NinjasSubsystem {
                 },
                 RobotState.RobotStates.ELEVATOR_AMP_PREPARE,
                 RobotState.RobotStates.ELEVATOR_TRAP_PREPARE,
-                RobotState.RobotStates.RESET,
                 RobotState.RobotStates.CLOSE);
+        addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotState.RobotStates.RESET);
     }
 }

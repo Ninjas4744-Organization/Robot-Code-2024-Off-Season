@@ -33,7 +33,7 @@ public class Intake extends NinjasSubsystem {
 
 	@Override
 	protected void setFunctionMaps() {
-		addFunctionToPeriodicMap(
+		addFunctionToOnChangeMap(
 				() -> {
 					controller().setPercent(RollersConstants.States.kIntake);
 				},
@@ -44,8 +44,8 @@ public class Intake extends NinjasSubsystem {
 				},
 				RobotState.RobotStates.ELEVATOR_AMP_PREPARE,
 				RobotState.RobotStates.ELEVATOR_TRAP_PREPARE,
-				RobotState.RobotStates.RESET,
 				RobotState.RobotStates.CLOSE);
+		addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotStates.RESET);
 
 	}
 }

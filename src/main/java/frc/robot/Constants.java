@@ -65,10 +65,10 @@ public final class Constants {
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
-		public static final int kLimitSwitchNoteInID = 7;
-		public static final int kLimitSwitchNOteReadyID = 7;
-		public static final int kLimitSwitchNoteOutID = 7;
-
+		public static final int kbimBreakerNoteInID = 7;
+		public static final int kbimBreakerNOteReadyID = 7;
+		public static final int kbimBreakerNoteOutID = 7;
+		public static final int kLimitSwitch=7;
 
 		public class States {
 			public static final double kAmp = 0.4;

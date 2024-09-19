@@ -34,6 +34,7 @@ public class Elevator extends NinjasSubsystem {
 		addFunctionToOnChangeMap(() -> {
 			controller().setPosition(ElevatorConstants.States.kClose);
 		}, RobotState.RobotStates.CLOSE);
+		addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotState.RobotStates.RESET);
 	}
 
 

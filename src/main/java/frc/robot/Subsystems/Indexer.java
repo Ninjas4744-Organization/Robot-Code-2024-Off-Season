@@ -25,24 +25,29 @@ public class Indexer extends NinjasSubsystem {
 
     @Override
     protected void setFunctionMaps() {
-        addFunctionToPeriodicMap(
+        addFunctionToOnChangeMap(
                 () -> {
                     controller().setPercent(Constants.IndexerConstants.States.kElevator);
                 },
-                RobotState.RobotStates.INDEXER_TO_ELEVATOR);
-        addFunctionToPeriodicMap(
+                RobotState.RobotStates.NOTE_TO_ELEVATOR);
+        addFunctionToOnChangeMap(
                 () -> {
                     controller().setPercent(Constants.IndexerConstants.States.kShoot);
                 },
-                RobotState.RobotStates.);
+                RobotState.RobotStates.SHOOT);
+        addFunctionToOnChangeMap(
+                () -> {
+                    controller().setPercent(Constants.IndexerConstants.States.kElevator);
+                },
+                RobotState.RobotStates.NOTE_TO_ELEVATOR);
         addFunctionToOnChangeMap(
                 () -> {
                     controller().stop();
                 },
                 RobotState.RobotStates.ELEVATOR_AMP_PREPARE,
                 RobotState.RobotStates.ELEVATOR_TRAP_PREPARE,
-                RobotState.RobotStates.RESET,
                 RobotState.RobotStates.CLOSE);
+        addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotState.RobotStates.RESET);
 
     }
 }

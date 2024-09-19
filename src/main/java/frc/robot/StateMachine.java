@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,6 +14,14 @@ import java.util.Map;
 
 public class StateMachine extends SubsystemBase {
 	private static StateMachine _instance;
+	private DigitalInput _bimBreakerENoteIn;
+	private DigitalInput _bimBreakerENoteOut;
+	private DigitalInput _bimBreakerENOteIndexer;
+	private DigitalInput _bimBreakerSH;
+	private DigitalInput _LimitSwitchE;
+	private DigitalInput _LimitSwitchC;
+
+
 
 	public static StateMachine getInstance() {
 		if (_instance == null) _instance = new StateMachine();
@@ -28,14 +37,26 @@ public class StateMachine extends SubsystemBase {
 		for (RobotStates state : RobotStates.values()) _endConditionMap.put(state, new StateEndCondition(() -> false, RobotStates.IDLE));
 
 		setEndConditionMap();
+		_bimBreakerENoteIn=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteInID);
+		_bimBreakerENoteOut=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteOutID);
+		_bimBreakerENOteIndexer=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteOutID);
+		_LimitSwitchE=new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
+		_LimitSwitchC=new DigitalInput(Constants.ClimberConstants.kLimitSwitchID);
+		_bimBreakerSH=new DigitalInput(Constants.);
 	}
 
 	/**
 	 * Set in this function the end condition for each state with _endConditionMap
 	 */
 	private void setEndConditionMap(){
-		_endConditionMap.put(RobotStates.PREPARE_AMP_OUTAKE,
-			new StateEndCondition(() -> Elevator.getInstance().atGoal() && Rotation.getInstance().atGoal(), RobotStates.AMP_OUTAKE_READY));
+		_endConditionMap.put(RobotStates.ELEVATOR_AMP_PREPARE,
+			new StateEndCondition(() -> Elevator.getInstance().atGoal(), RobotStates.ELEVATOR_AMP_READY));
+		_endConditionMap.put(RobotStates.ELEVATOR_TRAP_PREPARE,
+				new StateEndCondition(() -> Elevator.getInstance().atGoal(), RobotStates.ELEVATOR_TRAP_READY));
+		_endConditionMap.put(RobotStates.CLOSE,
+				new StateEndCondition(() -> Elevator.getInstance().atGoal(), RobotStates.IDLE));
+		_endConditionMap.put(RobotStates.NOTE_TO_ELEVATOR,
+				new StateEndCondition(() ->_LimitSwitchE.get() , RobotStates.ELEVATOR_TRAP_READY));
 	}
 
 	/**
@@ -75,14 +96,14 @@ public class StateMachine extends SubsystemBase {
 				break;
 
 			case IDLE:
-				if (wantedState == RobotStates.NOTE_IN_ELEVATOR
+				if (wantedState == RobotStates.NOTE_IN_INDEXER
 						|| wantedState == RobotStates.NOTE_SEARCH
 						|| wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.PREPARE_CLIMB
 						|| wantedState == RobotStates.PREPARE_SHOOT)) RobotState.setRobotState(wantedState);
 				break;
 
-			case NOTE_IN_ELEVATOR:
+			case NOTE_TO_ELEVATOR:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.ELEVATOR_TRAP_PREPARE
 						|| wantedState == RobotStates.ELEVATOR_AMP_PREPARE
@@ -131,10 +152,15 @@ public class StateMachine extends SubsystemBase {
 				if (wantedState == RobotStates.INTAKE || wantedState == RobotStates.PREPARE_CLIMB)
 					RobotState.setRobotState(wantedState);
 				break;
-			case NOTE_IN_ELEVATOR:
-				if(wantedState == RobotStates.ELEVATOR_AMP_PREPARE || wantedState == RobotStates.ELEVATOR_TRAP_PREPARE ||wantedState == RobotStates.SHOOT_PREPARE)
+			case NOTE_IN_INDEXER:
+				if(wantedState == RobotStates.NOTE_TO_ELEVATOR ||wantedState == RobotStates.SHOOT_PREPARE)
 					RobotState.setRobotState(wantedState);
 				break;
+			case NOTE_TO_ELEVATOR:
+				if(wantedState == RobotStates.ELEVATOR_AMP_PREPARE || wantedState == RobotStates.ELEVATOR_TRAP_PREPARE){
+					RobotState.setRobotState(wantedState);
+					break;
+				}
 		}
 	}
 

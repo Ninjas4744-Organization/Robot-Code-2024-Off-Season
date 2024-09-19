@@ -33,15 +33,15 @@ public class ElevatorIntake extends NinjasSubsystem {
                 () -> {
                     controller().setPercent(Constants.RollersIntakeConstants.States.kIntake);
                 },
-                RobotState.RobotStates.INDEXER_TO_ELEVATOR);
+                RobotState.RobotStates.NOTE_TO_ELEVATOR);
         addFunctionToOnChangeMap(
                 () -> {
                     controller().stop();
                 },
                 RobotState.RobotStates.ELEVATOR_AMP_PREPARE,
                 RobotState.RobotStates.ELEVATOR_TRAP_PREPARE ,
-                RobotState.RobotStates.RESET,
                 RobotState.RobotStates.CLOSE);
+        addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotState.RobotStates.RESET);
     }
 
 
