@@ -9,7 +9,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.DataClasses.MainControllerConstants;
@@ -263,10 +262,16 @@ public final class Constants {
 
 		public static final double angleConversionFactor = 360.0 / 12.8;
 
-		/** Swerve Profiling Values */
+		/**
+		 * Max speed the swerve could possibly drive
+		 */
 		public static final double maxSpeed = 6; // meters per second
-
+		/** Max speed the swerve could possibly rotate */
 		public static final double maxAngularVelocity = 12;
+		/**
+		 * Max speed a swerve module could possibly drive on ground
+		 */
+		public static final double maxModuleSpeed = 6;
 
 		/** Neutral Modes */
 		public static final com.revrobotics.CANSparkBase.IdleMode angleNeutralMode =
@@ -283,15 +288,8 @@ public final class Constants {
 		/** Angle Encoder Invert */
 		public static final boolean canCoderInvert = false;
 
-		/* Swerve angle PID values */
-		public static final double kSwerveAngleP = 0.0035 * 4;
-		public static final double kSwerveAngleI = 0;
-		public static final double kSwerveAngleD = 0;
-
 		/* Swerve drive assist PID values */
-		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints =
-				new TrapezoidProfile.Constraints(maxSpeed / 3, maxSpeed);
-		public static final double kDriveAssistP = 0.1525 * 1.5;
+		public static final double kDriveAssistP = 1;
 		public static final double kDriveAssistI = 0;
 		public static final double kDriveAssistD = 0;
 
@@ -360,41 +358,32 @@ public final class Constants {
 	}
 
 	public static final class AutoConstants {
-		public static final double maxVelocity = 1;
-		public static final double maxAcceleration = 1;
+		public static final double kP = 1;
+		public static final double kPTheta = 0.014;
 
-		public static final double kPXController = 1;
-		public static final double kPYController = 1;
-		public static final double kPThetaController = 1;
+		public static final double kMaxSpeed = 3;
+		public static final double kAcceleration = 6;
+		public static final double kMaxAngularSpeed = 8;
+		public static final double kAngularAcceleration = 16;
 
-		public static final double kMaxSpeedMetersPerSecond = 3.6;
-		public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-		public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-		public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-		public static final PathConstraints constraints = new PathConstraints(
-				kMaxSpeedMetersPerSecond,
-				kMaxAccelerationMetersPerSecondSquared,
-				kMaxAngularSpeedRadiansPerSecond,
-				kMaxAngularSpeedRadiansPerSecondSquared);
-		public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
-				kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+		public static final PathConstraints kConstraints = new PathConstraints(
+			kMaxSpeed,
+			kAcceleration,
+			kMaxAngularSpeed,
+			kAngularAcceleration);
 
-		public static final HolonomicPathFollowerConfig pathFollowerConfig =
-				new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
-						// your Constants class
-						new PIDConstants(Constants.AutoConstants.kPXController, 0.0, 0.0), // Translation PID constants
-						new PIDConstants(Constants.AutoConstants.kPYController, 0.0, 0.0), // Rotation PID constants
-						Constants.AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
-						SwerveConstants
-								.kTrackWidth, // Drive base radius in meters. Distance from robot center to furthest
-						// module.
-						new ReplanningConfig() // Default path replanning config. See the API for the options
-						// here
+		public static final HolonomicPathFollowerConfig kAutonomyConfig =
+			new HolonomicPathFollowerConfig(
+				new PIDConstants(kP, 0, 0),
+				new PIDConstants(kPTheta, 0, 0),
+				SwerveConstants.maxModuleSpeed,
+				SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
+				new ReplanningConfig() // Default path replanning config.
 						);
 	}
 
 	public static class VisionConstants {
-		public static final double kMaxAmbiguity = 0.7;
+		public static final double kMaxAmbiguity = 0.4;
 
 		public static HashMap<String, Transform3d> getCamerasPoses() {
 			HashMap<String, Transform3d> cameras = new HashMap<>();

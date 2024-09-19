@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
@@ -44,7 +45,7 @@ public abstract class SwerveIO extends SubsystemBase {
 		_demand = new SwerveDemand();
 
 		_anglePID = new PIDController(
-				SwerveConstants.kSwerveAngleP, SwerveConstants.kSwerveAngleI, SwerveConstants.kSwerveAngleD);
+			Constants.AutoConstants.kPTheta, 0, 0);
 
 		_anglePID.enableContinuousInput(
 				Rotation2d.fromDegrees(-180).getDegrees(),
@@ -53,7 +54,7 @@ public abstract class SwerveIO extends SubsystemBase {
 		_axisPID = new PIDController(
 				SwerveConstants.kSwerveAxisLockP, SwerveConstants.kSwerveAxisLockI, SwerveConstants.kSwerveAxisLockD);
 
-		_driveAssist = new DriveAssist(_anglePID);
+		_driveAssist = new DriveAssist();
 	}
 
 	/**
@@ -86,7 +87,7 @@ public abstract class SwerveIO extends SubsystemBase {
 					//					Pose2d targetPose =
 					// VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(),
 					// 0.5);
-          Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 0.5);
+					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 0.75);
 					NetworkTableInstance.getDefault()
 							.getTable("Assist Target Offset")
 							.getEntry("pose")

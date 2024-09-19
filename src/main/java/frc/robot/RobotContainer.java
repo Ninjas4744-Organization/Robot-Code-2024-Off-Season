@@ -98,7 +98,7 @@ public class RobotContainer {
 
 	public void resetSubsystems() {
 		RobotState.setRobotPose(new Pose2d());
-		StateMachine.getInstance().changeRobotState(RobotStates.NOTE_SEARCH);
+		StateMachine.getInstance().changeRobotState(RobotStates.HOLDING_NOTE);
 		TeleopCommandBuilder.resetGyro(false).schedule();
 	}
 }
