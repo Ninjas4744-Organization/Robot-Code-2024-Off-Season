@@ -289,10 +289,9 @@ public final class Constants {
 		public static final boolean canCoderInvert = false;
 
 		/* Swerve drive assist PID values */
-		public static final double kDriveAssistP = 5.5;
-
+		public static final double kDriveAssistP = 2.3;
 		public static final double kDriveAssistI = 0;
-		public static final double kDriveAssistD = 1.0;
+		public static final double kDriveAssistD = 1;
 
 		/* Swerve axis lock PID values */
 		public static final double kSwerveAxisLockP = 0.2;
@@ -303,7 +302,7 @@ public final class Constants {
 		 * Swerve drive assist threshold, if the drive assist angle difference from driver angle is
 		 * bigger than this value, the drive assist will be ignored. degrees
 		 */
-    public static final double kDriveAssistThreshold = 60;
+		public static final double kDriveAssistThreshold = 120;
 
 		/** Module Specific Constants */
 		/** Front Left Module - Module 0 */
@@ -360,10 +359,10 @@ public final class Constants {
 
 	public static final class AutoConstants {
 		public static final double kP = 1;
-		public static final double kPTheta = 0.022;
+		public static final double kPTheta = 0.025;
 
-		public static final double kMaxSpeed = 3;
-		public static final double kAcceleration = 6;
+		public static final double kMaxSpeed = 4;
+		public static final double kAcceleration = 4;
 		public static final double kMaxAngularSpeed = 8;
 		public static final double kAngularAcceleration = 16;
 
@@ -461,21 +460,25 @@ public final class Constants {
 		 * Get the april tag that the translation between it and the robot is closest to the given direction,
 		 * for example if robot is moving to amp, the amp tag will be returned
 		 * @param dir The direction to find the closest camera to, field relative
+		 * @param distLimit Limit distance so far away tags will be disqualified
 		 * @return The apriltag that is closest by direction
 		 */
-		public static AprilTag getTagByDirection(Translation2d dir) {
+		public static AprilTag getTagByDirection(Translation2d dir, double distLimit =Double.MAX_VALUE) {
 			Rotation2d dirAngle = dir.getAngle();
 			AprilTag closestTag = null;
 			Rotation2d closestAngleDiff = Rotation2d.fromDegrees(Double.MAX_VALUE);
 
 			for (AprilTag tag : getFieldLayout().getTags()) {
+				if (tag.pose.toPose2d().getTranslation().getDistance(RobotState.getRobotPose().getTranslation()) > distLimit)
+					continue;
+
 				Rotation2d robotToTagAngle = tag.pose
 						.toPose2d()
 						.getTranslation()
 						.minus(RobotState.getRobotPose().getTranslation())
 						.getAngle();
 
-				if (dirAngle.minus(robotToTagAngle).getDegrees() < closestAngleDiff.getDegrees()) {
+				if (Math.abs(dirAngle.minus(robotToTagAngle).getDegrees()) < Math.abs(closestAngleDiff.getDegrees())) {
 					closestAngleDiff = dirAngle.minus(robotToTagAngle);
 					closestTag = tag;
 				}

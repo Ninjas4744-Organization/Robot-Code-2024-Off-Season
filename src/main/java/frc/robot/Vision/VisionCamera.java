@@ -1,16 +1,20 @@
 package frc.robot.Vision;
 
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.DataClasses.VisionOutput;
-import java.util.List;
-import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+
+import java.util.List;
+import java.util.Optional;
 
 public class VisionCamera {
 	private final PhotonCamera _camera;
@@ -46,7 +50,7 @@ public class VisionCamera {
 		Optional<EstimatedRobotPose> currentPose = _estimator.update(result);
 
 		_output.hasTargets = result.hasTargets();
-
+		SmartDashboard.putBoolean("Vision Has Targets", _output.hasTargets);
 		if (currentPose.isEmpty()) return _output;
 
 		_targets = currentPose.get().targetsUsed;

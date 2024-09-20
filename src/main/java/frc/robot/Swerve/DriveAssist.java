@@ -62,12 +62,18 @@ public class DriveAssist {
 		Rotation2d movingAngle = movingDirection.getAngle();
 		Rotation2d toTargetAngle = toTargetDirection.getAngle();
 		Rotation2d angleDiff = toTargetAngle.minus(movingAngle);
+		double dist = RobotState.getRobotPose().getTranslation().getDistance(targetPose.getTranslation());
 
-		if (Math.abs(angleDiff.getDegrees()) < Constants.SwerveConstants.kDriveAssistThreshold) {
+		if (Math.abs(angleDiff.getDegrees()) < Constants.SwerveConstants.kDriveAssistThreshold && dist < 2) {
 			if (!isCurrentlyDriveAssisting) startingDriveAssist(targetPose, toTargetAngle, isForTags);
 			isCurrentlyDriveAssisting = true;
 
-			return calculateDriveAssist();
+			if (_profileTimer.get() < _trajectory.getTotalTimeSeconds())
+				return calculateDriveAssist();
+			else {
+//				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOCKED_AXIS);
+//				SwerveIO.getInstance().updateDemand();
+			}
 		} else isCurrentlyDriveAssisting = false;
 
 		return new ChassisSpeeds(
@@ -89,15 +95,16 @@ public class DriveAssist {
 			_trajectory.getEndState().targetHolonomicRotation.getDegrees(), 1);
 
 		double xFeedback = xPID.calculate(
-			currentPose.getX(), _trajectory.getEndState().positionMeters.getX());
+			currentPose.getX(), desiredState.positionMeters.getX());
 
 		double yFeedback = yPID.calculate(
-			currentPose.getY(), _trajectory.getEndState().positionMeters.getY());
+			currentPose.getY(), desiredState.positionMeters.getY());
 
 		double dist = RobotState.getRobotPose().getTranslation().getDistance(_trajectory.getEndState().positionMeters);
 		double feedRatio = 0.1770 * dist - 0.008850;
 		SmartDashboard.putNumber("feedRatio", feedRatio);
-		return new ChassisSpeeds(xFeedforward * feedRatio + xFeedback * (1 - feedRatio), yFeedforward * feedRatio + yFeedback * (1 - feedRatio), thetaFeedback);
+//		return new ChassisSpeeds(xFeedforward * feedRatio + xFeedback * (1 - feedRatio), yFeedforward * feedRatio + yFeedback * (1 - feedRatio), thetaFeedback);
+		return new ChassisSpeeds(xFeedforward + xFeedback, yFeedforward + yFeedback, thetaFeedback);
 	}
 
 	private void startingDriveAssist(Pose2d targetPose, Rotation2d toTargetAngle, boolean isForTags) {
@@ -113,7 +120,7 @@ public class DriveAssist {
 		PathPlannerPath _path = new PathPlannerPath(
       points,
 			Constants.AutoConstants.kConstraints,
-				new GoalEndState(1, isForTags ? targetPose.getRotation().unaryMinus() : toTargetAngle));
+			new GoalEndState(0, isForTags ? targetPose.getRotation().unaryMinus() : toTargetAngle));
 
     _trajectory = new PathPlannerTrajectory(
 				_path,
