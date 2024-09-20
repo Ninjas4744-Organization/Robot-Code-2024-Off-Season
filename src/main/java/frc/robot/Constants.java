@@ -217,8 +217,8 @@ public final class Constants {
 		public static final double kOpenLoopRamp = 0.25;
 		public static final double kClosedLoopRamp = 0.0;
 
-		public static final double kDriveGearRatio = (6.12 / 1.0); // 5.14:1
-		public static final double kAngleGearRatio = (12.8 / 1.0); // 12.8:1
+		public static final double kDriveGearRatio = (6.12); // 5.14:1
+		public static final double kAngleGearRatio = (12.8); // 12.8:1
 
 		public static final SwerveDriveKinematics kSwerveKinematics = new SwerveDriveKinematics(
 				new Translation2d(kWheelBase / 2.0, kTrackWidth / 2.0),
@@ -288,23 +288,18 @@ public final class Constants {
 		/** Angle Encoder Invert */
 		public static final boolean canCoderInvert = false;
 
-		/* Swerve drive assist PID values */
-		public static final double kDriveAssistP = 2.3;
-		public static final double kDriveAssistI = 0;
-		public static final double kDriveAssistD = 1;
-
-		/* Swerve axis lock PID values */
-		public static final double kSwerveAxisLockP = 0.2;
-		public static final double kSwerveAxisLockI = 0.0;
-		public static final double kSwerveAxisLockD = 0.0;
-
 		/**
-		 * Swerve drive assist threshold, if the drive assist angle difference from driver angle is
+		 * Swerve drive assist angle threshold, if the drive assist angle difference from driver angle is
 		 * bigger than this value, the drive assist will be ignored. degrees
 		 */
-		public static final double kDriveAssistThreshold = 120;
+		public static final double kDriveAssistAngleThreshold = 120;
+		/**
+		 * Swerve drive assist distance threshold, if the robot distance from target is
+		 * bigger than this value, the drive assist will be ignored. meters
+		 */
+		public static final double kDriveAssistDistThreshold = 2;
 
-		/** Module Specific Constants */
+		/* Module Specific Constants */
 		/** Front Left Module - Module 0 */
 		public static final class Mod0 {
 			public static final int driveMotorID = 10;
@@ -355,31 +350,35 @@ public final class Constants {
 			public static final double kSimToRealSpeedConversion = 0.02; // meters per 0.02s -> meters per 1s
 			public static final double kAcceleration = 10;
 		}
-	}
 
-	public static final class AutoConstants {
-		public static final double kP = 1;
-		public static final double kPTheta = 0.025;
+		public static final class AutoConstants {
+			public static final double kP = 2.3;
+			public static final double kI = 0;
+			public static final double kD = 1;
+			public static final double kPTheta = 0.025;
+			public static final double kITheta = 0;
+			public static final double kDTheta = 0;
 
-		public static final double kMaxSpeed = 4;
-		public static final double kAcceleration = 4;
-		public static final double kMaxAngularSpeed = 8;
-		public static final double kAngularAcceleration = 16;
+			public static final double kMaxSpeed = 4;
+			public static final double kAcceleration = 4;
+			public static final double kMaxAngularSpeed = 8;
+			public static final double kAngularAcceleration = 16;
 
-		public static final PathConstraints kConstraints = new PathConstraints(
-			kMaxSpeed,
-			kAcceleration,
-			kMaxAngularSpeed,
-			kAngularAcceleration);
+			public static final PathConstraints kConstraints = new PathConstraints(
+				kMaxSpeed,
+				kAcceleration,
+				kMaxAngularSpeed,
+				kAngularAcceleration);
 
-		public static final HolonomicPathFollowerConfig kAutonomyConfig =
-			new HolonomicPathFollowerConfig(
-				new PIDConstants(kP, 0, 0),
-				new PIDConstants(kPTheta, 0, 0),
-				SwerveConstants.maxModuleSpeed,
-				SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
-				new ReplanningConfig() // Default path replanning config.
-						);
+			public static final HolonomicPathFollowerConfig kAutonomyConfig =
+				new HolonomicPathFollowerConfig(
+					new PIDConstants(kP, 0, 0),
+					new PIDConstants(kPTheta, 0, 0),
+					SwerveConstants.maxModuleSpeed,
+					SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
+					new ReplanningConfig() // Default path replanning config.
+				);
+		}
 	}
 
 	public static class VisionConstants {
@@ -463,7 +462,7 @@ public final class Constants {
 		 * @param distLimit Limit distance so far away tags will be disqualified
 		 * @return The apriltag that is closest by direction
 		 */
-		public static AprilTag getTagByDirection(Translation2d dir, double distLimit =Double.MAX_VALUE) {
+		public static AprilTag getTagByDirection(Translation2d dir, double distLimit) {
 			Rotation2d dirAngle = dir.getAngle();
 			AprilTag closestTag = null;
 			Rotation2d closestAngleDiff = Rotation2d.fromDegrees(Double.MAX_VALUE);
@@ -485,6 +484,17 @@ public final class Constants {
 			}
 
 			return closestTag;
+		}
+
+		/**
+		 * Get the april tag that the translation between it and the robot is closest to the given direction,
+		 * for example if robot is moving to amp, the amp tag will be returned
+		 *
+		 * @param dir The direction to find the closest camera to, field relative
+		 * @return The apriltag that is closest by direction
+		 */
+		public static AprilTag getTagByDirection(Translation2d dir) {
+			return getTagByDirection(dir, Double.MAX_VALUE);
 		}
 
 		/**

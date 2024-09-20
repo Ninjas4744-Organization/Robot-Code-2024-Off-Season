@@ -13,8 +13,8 @@ import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
 
 public class RobotContainer {
-	private CommandPS5Controller _driverJoystick;
-	private CommandPS5Controller _operatorJoystick;
+	private final CommandPS5Controller _driverJoystick;
+	private final CommandPS5Controller _operatorJoystick;
 
 	public RobotContainer() {
 		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
@@ -75,6 +75,15 @@ public class RobotContainer {
 				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_TARGET);
 				SwerveIO.getInstance().updateDemand(Constants.VisionConstants.getTagPose(15));
 				StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT);
+			}
+		}));
+
+		_driverJoystick.povLeft().onTrue(Commands.runOnce(() -> {
+			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.POSITION)
+				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+			else {
+				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.POSITION);
+				SwerveIO.getInstance().updateDemand(Constants.VisionConstants.getTagPose(6));
 			}
 		}));
 

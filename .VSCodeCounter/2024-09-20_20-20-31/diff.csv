@@ -1,0 +1,78 @@
+"filename", "language", "JSON", "Gradle", "Markdown", "Python", "Batch", "XML", "Java Properties", "Java", "YAML", "comment", "blank", "total"
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.github\workflows\main.yml", "YAML", 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 8, 26
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.idea\vcs.xml", "XML", 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 1, 7
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Build & Deploy Robot for Debugging.run.xml", "XML", 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 1, 27
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Build & Deploy Robot.run.xml", "XML", 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 1, 27
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Build Robot.run.xml", "XML", 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 1, 26
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Clean Build & Deploy Robot for Debugging.run.xml", "XML", 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 1, 28
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Clean Build & Deploy Robot.run.xml", "XML", 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 1, 28
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Clean Build Robot.run.xml", "XML", 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 1, 27
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Clean.run.xml", "XML", 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 1, 26
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Debug Robot via IP.run.xml", "XML", 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 1, 14
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Debug Robot via USB.run.xml", "XML", 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 1, 14
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Simulate Robot Code.run.xml", "XML", 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 24
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.wpilib\wpilib_preferences.json", "JSON", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\README.md", "Markdown", 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 20, 47
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\WPILib-License.md", "Markdown", 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 3, 25
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\build.gradle", "Gradle", 0, 99, 0, 0, 0, 0, 0, 0, 0, 20, 27, 146
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\gradle\wrapper\gradle-wrapper.properties", "Java Properties", 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 1, 8
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\gradlew.bat", "Batch", 0, 0, 0, 0, 41, 0, 0, 0, 0, 30, 22, 93
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\networktables.json", "JSON", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\settings.gradle", "Gradle", 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 3, 31
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\simgui.json", "JSON", 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 48
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\deploy\pathplanner\navgrid.json", "JSON", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\AbstractClasses\NinjasController.java", "Java", 0, 0, 0, 0, 0, 0, 0, 125, 0, 71, 30, 226
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\AbstractClasses\NinjasSimulatedController.java", "Java", 0, 0, 0, 0, 0, 0, 0, 126, 0, 0, 25, 151
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\AbstractClasses\NinjasSparkMaxController.java", "Java", 0, 0, 0, 0, 0, 0, 0, 125, 0, 0, 34, 159
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\AbstractClasses\NinjasSubsystem.java", "Java", 0, 0, 0, 0, 0, 0, 0, 59, 0, 67, 22, 148
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\AbstractClasses\NinjasTalonFXController.java", "Java", 0, 0, 0, 0, 0, 0, 0, 102, 0, 0, 22, 124
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\AbstractClasses\NinjasTalonSRXController.java", "Java", 0, 0, 0, 0, 0, 0, 0, 84, 0, 0, 25, 109
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\AbstractClasses\NinjasVictorSPXController.java", "Java", 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 17, 71
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\AutoCommandBuilder.java", "Java", 0, 0, 0, 0, 0, 0, 0, 29, 0, 16, 7, 52
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Constants.java", "Java", 0, 0, 0, 0, 0, 0, 0, 371, 0, 52, 96, 519
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\DataClasses\ControllerConstants.java", "Java", 0, 0, 0, 0, 0, 0, 0, 5, 0, 9, 3, 17
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\DataClasses\MainControllerConstants.java", "Java", 0, 0, 0, 0, 0, 0, 0, 17, 0, 24, 15, 56
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\DataClasses\PIDFConstants.java", "Java", 0, 0, 0, 0, 0, 0, 0, 51, 0, 30, 17, 98
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\DataClasses\SimulatedControllerConstants.java", "Java", 0, 0, 0, 0, 0, 0, 0, 13, 0, 2, 4, 19
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\DataClasses\StateEndCondition.java", "Java", 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 4, 15
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\DataClasses\SwerveModuleConstants.java", "Java", 0, 0, 0, 0, 0, 0, 0, 14, 0, 8, 4, 26
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\DataClasses\VisionEstimation.java", "Java", 0, 0, 0, 0, 0, 0, 0, 12, 0, 10, 6, 28
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\DataClasses\VisionOutput.java", "Java", 0, 0, 0, 0, 0, 0, 0, 15, 0, 9, 11, 35
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Main.java", "Java", 0, 0, 0, 0, 0, 0, 0, 8, 0, 3, 5, 16
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Robot.java", "Java", 0, 0, 0, 0, 0, 0, 0, 52, 0, 0, 19, 71
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\RobotContainer.java", "Java", 0, 0, 0, 0, 0, 0, 0, 81, 0, 3, 22, 106
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\RobotState.java", "Java", 0, 0, 0, 0, 0, 0, 0, 126, 0, 53, 21, 200
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\StateMachine.java", "Java", 0, 0, 0, 0, 0, 0, 0, 135, 0, 15, 34, 184
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Subsystems\Elevator.java", "Java", 0, 0, 0, 0, 0, 0, 0, 43, 0, 0, 10, 53
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Subsystems\Leds.java", "Java", 0, 0, 0, 0, 0, 0, 0, 47, 0, 6, 7, 60
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Subsystems\Shooter.java", "Java", 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 9, 36
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Subsystems\ShooterAngle.java", "Java", 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 10, 48
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Subsystems\ShooterFeeder.java", "Java", 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 10, 51
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Swerve\CANCoderUtil.java", "Java", 0, 0, 0, 0, 0, 0, 0, 12, 0, 24, 4, 40
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Swerve\CANSparkMaxUtil.java", "Java", 0, 0, 0, 0, 0, 0, 0, 38, 0, 30, 6, 74
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Swerve\DriveAssist.java", "Java", 0, 0, 0, 0, 0, 0, 0, 97, 0, 22, 25, 144
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Swerve\LocalADStarAK.java", "Java", 0, 0, 0, 0, 0, 0, 0, 57, 0, 32, 14, 103
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Swerve\OnboardModuleState.java", "Java", 0, 0, 0, 0, 0, 0, 0, 39, 0, 14, 5, 58
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Swerve\Swerve.java", "Java", 0, 0, 0, 0, 0, 0, 0, 82, 0, 25, 17, 124
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Swerve\SwerveDemand.java", "Java", 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 4, 28
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Swerve\SwerveIO.java", "Java", 0, 0, 0, 0, 0, 0, 0, 224, 0, 116, 57, 397
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Swerve\SwerveModule.java", "Java", 0, 0, 0, 0, 0, 0, 0, 145, 0, 25, 34, 204
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Swerve\SwerveSimulated.java", "Java", 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 6, 38
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\TeleopCommandBuilder.java", "Java", 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 6, 46
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Vision\LimelightHelpers.java", "Java", 0, 0, 0, 0, 0, 0, 0, 918, 0, 102, 234, 1254
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Vision\NoteDetection.java", "Java", 0, 0, 0, 0, 0, 0, 0, 40, 0, 7, 12, 59
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Vision\Vision.java", "Java", 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 4
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Vision\VisionCamera.java", "Java", 0, 0, 0, 0, 0, 0, 0, 80, 0, 15, 20, 115
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Vision\VisionIO.java", "Java", 0, 0, 0, 0, 0, 0, 0, 91, 0, 41, 23, 155
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\main\java\frc\robot\Vision\VisionSimulated.java", "Java", 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 10, 48
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\test\java\frc\robot\IntakeTest.java", "Java", 0, 0, 0, 0, 0, 0, 0, 3, 0, 11, 2, 16
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\src\test\java\frc\robot\Swerve\SwerveTest.java", "Java", 0, 0, 0, 0, 0, 0, 0, 10, 0, 17, 5, 32
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\update_ninjas_subsystem.py", "Python", 0, 0, 0, 19, 0, 0, 0, 0, 0, 10, 11, 40
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\NavX.json", "JSON", 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\PathplannerLib.json", "JSON", 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\Phoenix5.json", "JSON", 151, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 151
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\Phoenix6.json", "JSON", 339, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 339
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\REVLib.json", "JSON", 74, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\WPILibNewCommands.json", "JSON", 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 39
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\photonlib.json", "JSON", 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 57
+"Total", "-", 792, 127, 49, 19, 41, 238, 7, 3783, 18, 919, 1083, 7076
