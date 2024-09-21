@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,14 +23,18 @@ import frc.robot.RobotState;
 import frc.robot.Swerve.SwerveDemand.SwerveState;
 import frc.robot.Vision.NoteDetection;
 
+import java.nio.file.Path;
+
 public abstract class SwerveIO extends SubsystemBase {
 	private static SwerveIO _instance;
 
 	private final PIDController _anglePID;
-	private PIDController _xPID;
-	private PIDController _yPID;
+	private final PIDController _xPID;
+	private final PIDController _yPID;
 	private final PIDController _axisPID;
 	private final DriveAssist _driveAssist;
+	private final Field2d pathfindingTrajectoryLog = new Field2d();
+	private final Timer pathfindingTimer = new Timer();
 
 	private boolean isDriveAssist = false;
 	private final boolean isBayblade = false;
@@ -61,6 +66,9 @@ public abstract class SwerveIO extends SubsystemBase {
 
 		_axisPID = new PIDController(
 			SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+
+		_xPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+		_yPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
 
 		_driveAssist = new DriveAssist();
 	}
@@ -197,15 +205,38 @@ public abstract class SwerveIO extends SubsystemBase {
 	private void goToPose(Pose2d pose, ChassisSpeeds driverInput) {
 		Pathfinding.setGoalPosition(pose.getTranslation());
 		Pathfinding.setStartPosition(RobotState.getRobotPose().getTranslation());
+
 		PathPlannerPath path = Pathfinding.getCurrentPath(SwerveConstants.AutoConstants.kConstraints, new GoalEndState(0, pose.getRotation()));
+		if (path == null) {
+			System.out.println("No path available");
+			pathfindingTimer.restart();
+			return;
+		}
+		if (Pathfinding.isNewPathAvailable()) {
+			System.out.println("New path available");
+			pathfindingTimer.restart();
+		}
+
 		PathPlannerTrajectory trajectory = new PathPlannerTrajectory(path, getChassisSpeeds(), RobotState.getRobotPose().getRotation());
 
-		Translation2d pid = pidTo(trajectory.getState(2).positionMeters);
-		drive(new ChassisSpeeds(pid.getX() + driverInput.vxMetersPerSecond, pid.getY() + driverInput.vyMetersPerSecond, +driverInput.omegaRadiansPerSecond), true);
+		double feedforwardX = trajectory.sample(pathfindingTimer.get()).velocityMps * trajectory.sample(pathfindingTimer.get()).heading.getCos();
+		double feedforwardY = trajectory.sample(pathfindingTimer.get()).velocityMps * trajectory.sample(pathfindingTimer.get()).heading.getSin();
 
-		Field2d trajectoryLog = new Field2d();
-		trajectoryLog.getObject("Trajectory").setPoses(path.getPathPoses());
-		SmartDashboard.putData("Pathfinding Trajectory", trajectoryLog);
+		Translation2d pid = pidTo(trajectory.sample(pathfindingTimer.get()).positionMeters);
+
+		driverInput = new ChassisSpeeds(driverInput.vxMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+			driverInput.vyMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+			driverInput.omegaRadiansPerSecond * SwerveConstants.kRotationSpeedFactor * SwerveConstants.maxAngularVelocity);
+
+		drive(new ChassisSpeeds(1 * feedforwardX + 0 * pid.getX() + driverInput.vxMetersPerSecond,
+				1 * feedforwardY + 0 * pid.getY() + driverInput.vyMetersPerSecond,
+				driverInput.omegaRadiansPerSecond),
+			true);
+
+		pathfindingTrajectoryLog.getObject("Trajectory").setPoses(path.getPathPoses());
+		SmartDashboard.putData("Pathfinding Trajectory", pathfindingTrajectoryLog);
+		SmartDashboard.putNumber("Pathfinding Timer", pathfindingTimer.get());
+		SmartDashboard.putNumber("Pathfinding Time", trajectory.getTotalTimeSeconds());
 	}
 
 	/**
