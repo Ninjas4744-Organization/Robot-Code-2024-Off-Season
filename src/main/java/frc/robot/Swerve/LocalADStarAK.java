@@ -8,6 +8,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.pathfinding.Pathfinder;
 import com.pathplanner.lib.pathfinding.LocalADStar;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +25,6 @@ public class LocalADStarAK implements Pathfinder {
     @Override
     public boolean isNewPathAvailable() {
         io.updateIsNewPathAvailable();
-
         return io.isNewPathAvailable;
     }
 

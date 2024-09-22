@@ -35,6 +35,7 @@ public abstract class SwerveIO extends SubsystemBase {
 	private final DriveAssist _driveAssist;
 	private final Field2d pathfindingTrajectoryLog = new Field2d();
 	private final Timer pathfindingTimer = new Timer();
+	private PathPlannerTrajectory pathfindingCurrentTraj = null;
 
 	private boolean isDriveAssist = false;
 	private final boolean isBayblade = false;
@@ -209,15 +210,14 @@ public abstract class SwerveIO extends SubsystemBase {
 		PathPlannerPath path = Pathfinding.getCurrentPath(SwerveConstants.AutoConstants.kConstraints, new GoalEndState(0, pose.getRotation()));
 		if (path == null) {
 			System.out.println("No path available");
-			pathfindingTimer.restart();
 			return;
 		}
-		if (Pathfinding.isNewPathAvailable()) {
+		PathPlannerTrajectory trajectory = new PathPlannerTrajectory(path, getChassisSpeeds(), RobotState.getRobotPose().getRotation());
+		if (pathfindingCurrentTraj == null || pathfindingCurrentTraj.getTotalTimeSeconds() != trajectory.getTotalTimeSeconds()) {
 			System.out.println("New path available");
+			pathfindingCurrentTraj = trajectory;
 			pathfindingTimer.restart();
 		}
-
-		PathPlannerTrajectory trajectory = new PathPlannerTrajectory(path, getChassisSpeeds(), RobotState.getRobotPose().getRotation());
 
 		double feedforwardX = trajectory.sample(pathfindingTimer.get()).velocityMps * trajectory.sample(pathfindingTimer.get()).heading.getCos();
 		double feedforwardY = trajectory.sample(pathfindingTimer.get()).velocityMps * trajectory.sample(pathfindingTimer.get()).heading.getSin();
@@ -237,6 +237,7 @@ public abstract class SwerveIO extends SubsystemBase {
 		SmartDashboard.putData("Pathfinding Trajectory", pathfindingTrajectoryLog);
 		SmartDashboard.putNumber("Pathfinding Timer", pathfindingTimer.get());
 		SmartDashboard.putNumber("Pathfinding Time", trajectory.getTotalTimeSeconds());
+		SmartDashboard.putNumber("Pathfinding Speed", trajectory.sample(pathfindingTimer.get()).velocityMps);
 	}
 
 	/**

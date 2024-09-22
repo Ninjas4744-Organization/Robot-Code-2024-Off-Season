@@ -359,8 +359,8 @@ public final class Constants {
 			public static final double kITheta = 0;
 			public static final double kDTheta = 0;
 
-			public static final double kMaxSpeed = 4;
-			public static final double kAcceleration = 4;
+			public static final double kMaxSpeed = 2;
+			public static final double kAcceleration = 1;
 			public static final double kMaxAngularSpeed = 8;
 			public static final double kAngularAcceleration = 16;
 
