@@ -1,10 +1,12 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DataClasses.StateEndCondition;
 import frc.robot.RobotState.RobotStates;
+import frc.robot.Swerve.SwerveIO;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +33,17 @@ public class StateMachine extends SubsystemBase {
 	/**
 	 * Set in this function the end condition for each state with _endConditionMap
 	 */
-	private void setEndConditionMap() {}
+	private void setEndConditionMap() {
+		_endConditionMap.put(
+				RobotStates.PREPARE_AMP_OUTAKE,
+				new StateEndCondition(
+						() -> {
+							SmartDashboard.putBoolean(
+									"IS finished time", SwerveIO.getInstance().isFinishedDriveAssist());
+							return SwerveIO.getInstance().isFinishedDriveAssist();
+						},
+						RobotStates.AMP_OUTAKE_READY));
+	}
 
 	/**
 	 * Sets the state of the robot to the given state only if possible. For example if the current
@@ -106,7 +118,10 @@ public class StateMachine extends SubsystemBase {
 			case PREPARE_AMP_OUTAKE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.AMP_OUTAKE_READY) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.AMP_OUTAKE_READY) {
+					RobotState.setRobotState(wantedState);
+				}
+
 				break;
 
 			case PREPARE_TRAP_OUTAKE:

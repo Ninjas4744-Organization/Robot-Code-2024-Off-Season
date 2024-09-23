@@ -24,12 +24,11 @@ public class NoteDetection {
 
 		Translation2d translation = convertMeasurement(tx, ty);
 
-    SmartDashboard.putNumber("Note Dist X", translation.getX());
-    SmartDashboard.putNumber("Note Dist Y", translation.getY());
+		SmartDashboard.putNumber("Note Dist X", translation.getX());
+		SmartDashboard.putNumber("Note Dist Y", translation.getY());
 
-		Transform2d noteTransform = new Transform2d(
-      new Translation2d(translation.getY(), -translation.getX()),
-				new Rotation2d());
+		Transform2d noteTransform =
+				new Transform2d(new Translation2d(translation.getY(), -translation.getX()), new Rotation2d());
 
 		Pose2d notePose = RobotState.getRobotPose().plus(noteTransform);
 		publisher.set(notePose);
@@ -39,11 +38,12 @@ public class NoteDetection {
 	/** Converts limelight's degrees measurement to meters */
 	private static Translation2d convertMeasurement(double tx, double ty) {
 		double distY = (NoteDetectionConstants.limelightHeight - NoteDetectionConstants.noteHeight)
-      * Math.tan(Rotation2d.fromDegrees(NoteDetectionConstants.limelightMountAngleX + ty)
+				* Math.tan(Rotation2d.fromDegrees(NoteDetectionConstants.limelightMountAngleX + ty)
 						.getRadians());
 
-    double distX = distY * Math.tan(Rotation2d.fromDegrees(NoteDetectionConstants.limelightMountAngleY + tx)
-      .getRadians());
+		double distX = distY
+				* Math.tan(Rotation2d.fromDegrees(NoteDetectionConstants.limelightMountAngleY + tx)
+						.getRadians());
 
 		return new Translation2d(distX, distY);
 	}

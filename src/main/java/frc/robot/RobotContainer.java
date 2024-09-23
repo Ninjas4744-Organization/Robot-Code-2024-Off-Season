@@ -49,11 +49,8 @@ public class RobotContainer {
 		}));
 
 		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> {
-			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOOK_AT_ANGLE)
-				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-			else SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE);
+			RobotState.setRobotState(RobotStates.IDLE);
 		}));
-
 
 		_driverJoystick.povUp().onTrue(Commands.runOnce(() -> {
 			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOCKED_AXIS)
@@ -78,11 +75,7 @@ public class RobotContainer {
 			}
 		}));
 
-		_driverJoystick
-				.R1()
-				.toggleOnTrue(Commands.startEnd(
-						() -> SwerveIO.getInstance().setDriveAssist(true),
-						() -> SwerveIO.getInstance().setDriveAssist(false)));
+		_driverJoystick.R1().onTrue(Commands.runOnce(() -> RobotState.setRobotState(RobotStates.PREPARE_AMP_OUTAKE)));
 	}
 
 	private void configureOperatorBindings() {

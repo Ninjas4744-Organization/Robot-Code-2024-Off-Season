@@ -15,9 +15,10 @@ import frc.robot.DataClasses.MainControllerConstants;
 import frc.robot.DataClasses.PIDFConstants;
 import frc.robot.DataClasses.SimulatedControllerConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public final class Constants {
 	public static final int kDriverJoystickPort = 0;
@@ -366,20 +367,16 @@ public final class Constants {
 		public static final double kMaxAngularSpeed = 8;
 		public static final double kAngularAcceleration = 16;
 
-		public static final PathConstraints kConstraints = new PathConstraints(
-			kMaxSpeed,
-			kAcceleration,
-			kMaxAngularSpeed,
-			kAngularAcceleration);
+		public static final PathConstraints kConstraints =
+				new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);
 
-		public static final HolonomicPathFollowerConfig kAutonomyConfig =
-			new HolonomicPathFollowerConfig(
+		public static final HolonomicPathFollowerConfig kAutonomyConfig = new HolonomicPathFollowerConfig(
 				new PIDConstants(kP, 0, 0),
 				new PIDConstants(kPTheta, 0, 0),
 				SwerveConstants.maxModuleSpeed,
 				SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
 				new ReplanningConfig() // Default path replanning config.
-						);
+				);
 	}
 
 	public static class VisionConstants {
@@ -390,8 +387,13 @@ public final class Constants {
 
 			double deg2rad = 0.0174533;
 			cameras.put("Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)));
-			cameras.put("BackLeft", new Transform3d(-0.325 + 0.2, 0.175 - 0.34641016151, 0.2075, new Rotation3d(0, 0, 120 * deg2rad)));
-			cameras.put("BackRight", new Transform3d(-0.325 + 0.25, -0.175 + 0.43301270189, 0.1875, new Rotation3d(0, 0, -120 * deg2rad)));
+			cameras.put(
+					"BackLeft",
+					new Transform3d(-0.325 + 0.2, 0.175 - 0.34641016151, 0.2075, new Rotation3d(0, 0, 120 * deg2rad)));
+			cameras.put(
+					"BackRight",
+					new Transform3d(
+							-0.325 + 0.25, -0.175 + 0.43301270189, 0.1875, new Rotation3d(0, 0, -120 * deg2rad)));
 
 			return cameras;
 		}
@@ -399,6 +401,9 @@ public final class Constants {
 		public static final double kFieldLength = Units.feetToMeters(54.0);
 		public static AprilTagFieldLayout kBlueFieldLayout;
 		public static AprilTagFieldLayout kRedFieldLayout;
+		private static double kWorkShopLength = 8; // to check
+		private static double kWorkShopWidth = 6.5; // to check
+		private static double kTagWorkshopHeight;
 
 		static {
 			try {
@@ -414,6 +419,33 @@ public final class Constants {
 		}
 
 		public static AprilTagFieldLayout getFieldLayout() {
+			if (true) {
+				List<AprilTag> tags = new ArrayList<AprilTag>();
+				tags.add(new AprilTag(
+						1,
+						new Pose3d(
+								new Translation3d(0, kWorkShopWidth / 2, kTagWorkshopHeight),
+								new Rotation3d(0, 0, Math.PI * 2))));
+				tags.add(new AprilTag(
+						2,
+						new Pose3d(
+								new Translation3d(kWorkShopLength / 2, kWorkShopWidth, kTagWorkshopHeight),
+								new Rotation3d(0, 0, Math.PI * 1.5))));
+				tags.add(new AprilTag(
+						3,
+						new Pose3d(
+								new Translation3d(kWorkShopLength, kWorkShopWidth / 2, kTagWorkshopHeight),
+								new Rotation3d(0, 0, Math.PI))));
+				tags.add(new AprilTag(
+						4,
+						new Pose3d(
+								new Translation3d(kWorkShopLength / 2, 0, kTagWorkshopHeight),
+								new Rotation3d(0, 0, Math.PI / 2))));
+
+				AprilTagFieldLayout _workshop = new AprilTagFieldLayout(tags, kWorkShopLength, kWorkShopWidth);
+
+				return _workshop;
+			}
 			if (Robot.isReal()) {
 				if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) return kBlueFieldLayout;
 				else return kRedFieldLayout;
@@ -463,14 +495,17 @@ public final class Constants {
 		 * @param distLimit Limit distance so far away tags will be disqualified
 		 * @return The apriltag that is closest by direction
 		 */
-		public static AprilTag getTagByDirection(Translation2d dir, double distLimit =Double.MAX_VALUE) {
+		public static AprilTag getTagByDirection(Translation2d dir, double distLimit) {
 			Rotation2d dirAngle = dir.getAngle();
 			AprilTag closestTag = null;
 			Rotation2d closestAngleDiff = Rotation2d.fromDegrees(Double.MAX_VALUE);
 
 			for (AprilTag tag : getFieldLayout().getTags()) {
-				if (tag.pose.toPose2d().getTranslation().getDistance(RobotState.getRobotPose().getTranslation()) > distLimit)
-					continue;
+				if (tag.pose
+								.toPose2d()
+								.getTranslation()
+								.getDistance(RobotState.getRobotPose().getTranslation())
+						> distLimit) continue;
 
 				Rotation2d robotToTagAngle = tag.pose
 						.toPose2d()
