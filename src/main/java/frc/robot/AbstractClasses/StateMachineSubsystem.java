@@ -6,13 +6,12 @@ import frc.robot.RobotState.RobotStates;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class StateManager extends SubsystemBase {
-
+public abstract class StateMachineSubsystem extends SubsystemBase {
 	private Map<RobotStates, Runnable> _periodicFunctionMap;
 	private Map<RobotStates, Runnable> _onChangeFunctionMap;
 	private RobotStates previousRobotState;
 
-	public StateManager() {
+	public StateMachineSubsystem() {
 		_periodicFunctionMap = new HashMap<>();
 		_onChangeFunctionMap = new HashMap<>();
 

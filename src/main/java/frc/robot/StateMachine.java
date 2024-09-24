@@ -34,15 +34,7 @@ public class StateMachine extends SubsystemBase {
 	 * Set in this function the end condition for each state with _endConditionMap
 	 */
 	private void setEndConditionMap() {
-		_endConditionMap.put(
-				RobotStates.PREPARE_AMP_OUTAKE,
-				new StateEndCondition(
-						() -> {
-							SmartDashboard.putBoolean(
-									"IS finished time", SwerveIO.getInstance().isFinishedDriveAssist());
-							return SwerveIO.getInstance().isFinishedDriveAssist();
-						},
-						RobotStates.AMP_OUTAKE_READY));
+
 	}
 
 	/**
@@ -94,7 +86,8 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.PREPARE_AMP_OUTAKE
 						|| wantedState == RobotStates.PREPARE_TRAP_OUTAKE
 						|| wantedState == RobotStates.PREPARE_CLIMB
-						|| wantedState == RobotStates.PREPARE_SHOOT) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.PREPARE_SHOOT
+						|| wantedState == RobotStates.DRIVE_TO_AMP) RobotState.setRobotState(wantedState);
 				break;
 
 			case INTAKE, OUTAKE:
@@ -152,6 +145,10 @@ public class StateMachine extends SubsystemBase {
 				if (wantedState == RobotStates.PREPARE_INTAKE || wantedState == RobotStates.PREPARE_CLIMB)
 					RobotState.setRobotState(wantedState);
 				break;
+
+			case DRIVE_TO_AMP:
+				if(wantedState == RobotStates.PREPARE_AMP_OUTAKE)
+					RobotState.setRobotState(wantedState);
 		}
 
 		if (wantedState == RobotStates.IDLE && RobotState.hasNote()) RobotState.setRobotState(RobotStates.HOLDING_NOTE);

@@ -1,25 +1,21 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.AbstractClasses;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotState;
 
-/** Add your docs here. */
-public abstract class NinjasSubsystem extends StateManager {
+public abstract class StateMachineMotoredSubsystem extends StateMachineSubsystem {
 	protected NinjasController _controller;
 	protected NinjasSimulatedController _simulatedController;
 
-	public NinjasSubsystem() {
+	public StateMachineMotoredSubsystem() {
+		super();
+
 		if (RobotState.isSimulated()) setSimulationController();
 		else setController();
 	}
 
 	protected NinjasController controller() {
-
 		if (RobotState.isSimulated()) return _simulatedController;
 		else return _controller;
 	}
@@ -70,14 +66,12 @@ public abstract class NinjasSubsystem extends StateManager {
 	 * @return a command that runs that on start and stops to motor on end
 	 */
 	public Command runMotor(double percent) {
-		return Commands.startEnd(
-				() -> controller().setPercent(percent), () -> controller().stop(), this);
+		return Commands.startEnd(() -> controller().setPercent(percent), () -> controller().stop(), this);
 	}
 
 	@Override
 	public void periodic() {
-		controller().periodic();
-
 		super.periodic();
+		controller().periodic();
 	}
 }
