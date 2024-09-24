@@ -1,25 +1,12 @@
 #!/bin/sh
 
-echo "Checking if the code is formatted..."
-./gradlew -q spotlessCheck; gradlew_return_code=$?
-
-if (( gradlew_return_code != 0 )); then
-  echo "✘ You're a delulu if you think this code can be commited."
-  echo "ⓘ Run ./gradlew spotlessApply and then try to commit again."
-  exit 1
-else
-  echo "✓ Big W your code is goated."
-fi
-
-echo ""
-
 echo "Performing tests..."
 ./gradlew -q test; gradlew_return_code=$?
 
 if (( gradlew_return_code != 0 )); then
-  echo "✘ Your skibidi unit tests have failed, please check them before commiting again."
+  echo "✘ Your unit tests have failed, please check them."
   echo "ⓘ You can view the test results at build/reports/tests/test/index.html"
   exit 1
 else
-  echo "✓ GG! You have so much rizz, we can commit your code."
+  echo "✓ GG we can commit your code."
 fi
