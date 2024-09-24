@@ -3,12 +3,12 @@ package frc.robot.Subsystems;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
-import frc.robot.AbstractClasses.NinjasSubsystem;
+import frc.robot.AbstractClasses.StateMachineMotoredSubsystem;
 import frc.robot.Constants.ShooterFeederConstants;
 import frc.robot.RobotState;
 import frc.robot.StateMachine;
 
-public class ShooterFeeder extends NinjasSubsystem {
+public class ShooterFeeder extends StateMachineMotoredSubsystem {
 	private static ShooterFeeder _instance;
 
 	public static ShooterFeeder getInstance() {

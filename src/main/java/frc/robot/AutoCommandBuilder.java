@@ -1,15 +1,18 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Swerve.LocalADStarAK;
 import frc.robot.Swerve.SwerveIO;
-import java.util.Optional;
 
 public class AutoCommandBuilder {
 	public static void configureAutoBuilder() {
+		Pathfinding.setPathfinder(new LocalADStarAK());
+
 		AutoBuilder.configureHolonomic(
 				RobotState::getRobotPose, // Robot pose supplier
 				RobotState::setRobotPose, // Method to reset odometry (will be called if your auto has a starting
@@ -17,12 +20,9 @@ public class AutoCommandBuilder {
 				SwerveIO.getInstance()::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
 				(drive) -> SwerveIO.getInstance()
 						.drive(drive, false), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-				Constants.AutoConstants.pathFollowerConfig,
+				Constants.SwerveConstants.AutoConstants.kAutonomyConfig,
 				// Boolean supplier that mirrors path if red alliance
-				() -> {
-					Optional<Alliance> alliance = DriverStation.getAlliance();
-					return alliance.filter(value -> value == Alliance.Red).isPresent();
-				},
+				() -> DriverStation.getAlliance().get() == Alliance.Red,
 				SwerveIO.getInstance() // Reference to swerve subsystem to set requirements
 				);
 	}

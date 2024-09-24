@@ -1,31 +1,40 @@
 package frc.robot.Swerve;
 
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.AbstractClasses.StateMachineSubsystem;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
+import frc.robot.RobotState.RobotStates;
+import frc.robot.StateMachine;
 import frc.robot.Swerve.SwerveDemand.SwerveState;
 import frc.robot.Vision.NoteDetection;
 
-public abstract class SwerveIO extends SubsystemBase {
+public abstract class SwerveIO extends StateMachineSubsystem {
 	private static SwerveIO _instance;
 
-	private PIDController _anglePID;
-	private PIDController _axisPID;
-	private DriveAssist _driveAssist;
+	private final PIDController _anglePID;
+	private final PIDController _xPID;
+	private final PIDController _yPID;
+	private final PIDController _axisPID;
+	private final Field2d pathfindingTrajectoryLog = new Field2d();
+	private final Timer pathfindingTimer = new Timer();
+	private PathPlannerTrajectory pathfindingCurrentTraj = null;
+	private PathFollower _pathFollower;
 
-	private boolean isDriveAssist = false;
-	private boolean isBayblade = false;
-
-	private SwerveDemand _demand;
+	private final SwerveDemand _demand;
 	private SwerveState _state;
 	private SwerveState _previousState;
 
@@ -43,67 +52,17 @@ public abstract class SwerveIO extends SubsystemBase {
 		_previousState = SwerveState.DEFAULT;
 		_demand = new SwerveDemand();
 
-		_anglePID = new PIDController(
-				SwerveConstants.kSwerveAngleP, SwerveConstants.kSwerveAngleI, SwerveConstants.kSwerveAngleD);
+		_anglePID = new PIDController(SwerveConstants.AutoConstants.kPTheta, SwerveConstants.AutoConstants.kITheta, SwerveConstants.AutoConstants.kDTheta);
 
-		_anglePID.enableContinuousInput(
-				Rotation2d.fromDegrees(-180).getDegrees(),
-				Rotation2d.fromDegrees(180).getDegrees());
+		_anglePID.enableContinuousInput(-180, 180);
 
 		_axisPID = new PIDController(
-				SwerveConstants.kSwerveAxisLockP, SwerveConstants.kSwerveAxisLockI, SwerveConstants.kSwerveAxisLockD);
+			SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
 
-		_driveAssist = new DriveAssist(_anglePID);
-	}
+		_xPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+		_yPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
 
-	/**
-	 * Drives the robot with the other cool stuff like drive assist and bayblade
-	 *
-	 * @param driverInput - speed percentage to move in x and y, and rotate the robot, positive is forward, left, counterclockwise
-	 */
-	private void drive(ChassisSpeeds driverInput) {
-		ChassisSpeeds drive = new ChassisSpeeds(
-				driverInput.vxMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
-				driverInput.vyMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
-				driverInput.omegaRadiansPerSecond
-						* SwerveConstants.kRotationSpeedFactor
-						* SwerveConstants.maxAngularVelocity);
-
-		if (isDriveAssist) {
-			switch (RobotState.getRobotState()) {
-				case NOTE_SEARCH:
-					if (NoteDetection.hasTarget()) {
-						Pose2d targetPose = NoteDetection.getNotePose();
-						drive = _driveAssist.driveAssist(
-								new Translation2d(driverInput.vxMetersPerSecond, driverInput.vyMetersPerSecond),
-								drive.omegaRadiansPerSecond,
-								targetPose,
-								false);
-					}
-					break;
-
-				case HOLDING_NOTE:
-					//					Pose2d targetPose =
-					// VisionConstants.getOffsetTagPose(VisionConstants.getTagByDirection(translation).pose.toPose2d(),
-					// 0.5);
-					Pose2d targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 0.25);
-					NetworkTableInstance.getDefault()
-							.getTable("Assist Target Offset")
-							.getEntry("pose")
-							.setDoubleArray(new double[] {targetPose.getX(), targetPose.getY()});
-
-					drive = _driveAssist.driveAssist(
-							new Translation2d(driverInput.vxMetersPerSecond, driverInput.vyMetersPerSecond),
-							drive.omegaRadiansPerSecond,
-							targetPose,
-							true);
-					break;
-			}
-		}
-
-		if (isBayblade) drive.omegaRadiansPerSecond = SwerveConstants.maxAngularVelocity;
-
-		drive(drive, SwerveConstants.kFieldRelative);
+		_pathFollower = new PathFollower();
 	}
 
 	/**
@@ -138,7 +97,6 @@ public abstract class SwerveIO extends SubsystemBase {
 	public double lookAt(double angle, double roundToAngle) {
 		double roundedAngle = Math.round(angle / roundToAngle) * roundToAngle;
 		angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundedAngle : angle;
-
 		return _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle);
 	}
 
@@ -159,22 +117,24 @@ public abstract class SwerveIO extends SubsystemBase {
 		return 0;
 	}
 
-	/**
-	 * Enable/Disable drive assist
-	 */
-	public void setDriveAssist(boolean isDriveAssist) {
-		this.isDriveAssist = isDriveAssist;
+	public double lookAtTarget(Pose2d target){
+		Translation2d lookAtTranslation = target.getTranslation().minus(RobotState.getRobotPose().getTranslation());
+		lookAtTranslation = RobotState.isSimulated() ? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY()) : lookAtTranslation;
 
-		if (!isDriveAssist) _driveAssist.turnOffDriveAssist();
-
-		SmartDashboard.putBoolean("Swerve Drive Assist", isDriveAssist);
+		return lookAt(lookAtTranslation, 1);
 	}
 
-	/**
-	 * @return Whether drive assist is enabled
-	 */
-	public boolean isDriveAssist() {
-		return isDriveAssist;
+	public ChassisSpeeds fromPercent(ChassisSpeeds percent) {
+		return new ChassisSpeeds(
+			_demand.driverInput.vxMetersPerSecond * SwerveConstants.maxSpeed * SwerveConstants.kSpeedFactor,
+			_demand.driverInput.vyMetersPerSecond * SwerveConstants.maxSpeed * SwerveConstants.kSpeedFactor,
+			_demand.driverInput.omegaRadiansPerSecond * SwerveConstants.maxAngularVelocity * SwerveConstants.kRotationSpeedFactor
+		);
+	}
+
+	public Translation2d pidTo(Translation2d target) {
+		return new Translation2d(_xPID.calculate(RobotState.getRobotPose().getX(), target.getX()),
+			_yPID.calculate(RobotState.getRobotPose().getY(), target.getY()));
 	}
 
 	/** Logs info about the modules and swerve */
@@ -182,8 +142,41 @@ public abstract class SwerveIO extends SubsystemBase {
 		// TODO: make this work
 	}
 
-	private void goToPose(Pose2d pose) {
-		// TODO: make this work
+	private void pathfindTo(Pose2d pose, ChassisSpeeds driverInput) {
+		Pathfinding.setGoalPosition(pose.getTranslation());
+		Pathfinding.setStartPosition(RobotState.getRobotPose().getTranslation());
+
+		PathPlannerPath path = Pathfinding.getCurrentPath(SwerveConstants.AutoConstants.kConstraints, new GoalEndState(0, pose.getRotation()));
+		if (path == null) {
+			System.out.println("No path available");
+			return;
+		}
+		PathPlannerTrajectory trajectory = new PathPlannerTrajectory(path, getChassisSpeeds(), RobotState.getRobotPose().getRotation());
+		if (pathfindingCurrentTraj == null || pathfindingCurrentTraj.getTotalTimeSeconds() != trajectory.getTotalTimeSeconds()) {
+			System.out.println("New path available");
+			pathfindingCurrentTraj = trajectory;
+			pathfindingTimer.restart();
+		}
+
+		double feedforwardX = trajectory.sample(pathfindingTimer.get()).velocityMps * trajectory.sample(pathfindingTimer.get()).heading.getCos();
+		double feedforwardY = trajectory.sample(pathfindingTimer.get()).velocityMps * trajectory.sample(pathfindingTimer.get()).heading.getSin();
+
+		Translation2d pid = pidTo(trajectory.sample(pathfindingTimer.get()).positionMeters);
+
+		driverInput = new ChassisSpeeds(driverInput.vxMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+			driverInput.vyMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+			driverInput.omegaRadiansPerSecond * SwerveConstants.kRotationSpeedFactor * SwerveConstants.maxAngularVelocity);
+
+		drive(new ChassisSpeeds(1 * feedforwardX + 0 * pid.getX() + driverInput.vxMetersPerSecond,
+				1 * feedforwardY + 0 * pid.getY() + driverInput.vyMetersPerSecond,
+				driverInput.omegaRadiansPerSecond),
+			true);
+
+		pathfindingTrajectoryLog.getObject("Trajectory").setPoses(path.getPathPoses());
+		SmartDashboard.putData("Pathfinding Trajectory", pathfindingTrajectoryLog);
+		SmartDashboard.putNumber("Pathfinding Timer", pathfindingTimer.get());
+		SmartDashboard.putNumber("Pathfinding Time", trajectory.getTotalTimeSeconds());
+		SmartDashboard.putNumber("Pathfinding Speed", trajectory.sample(pathfindingTimer.get()).velocityMps);
 	}
 
 	/**
@@ -195,7 +188,7 @@ public abstract class SwerveIO extends SubsystemBase {
 	 * @param isXDriverInput whether to let the driver drive along the axis by the x of the joystick input or the y
 	 */
 	private void lockAxis(Rotation2d angle, double phase, ChassisSpeeds driverInput, boolean isXDriverInput) {
-		Translation2d axis = new Translation2d(1, angle);
+		Translation2d axis = new Translation2d(-1, angle);
 		Translation2d perpendicularAxis = axis.rotateBy(Rotation2d.fromDegrees(90));
 		Translation2d robotPose = RobotState.getRobotPose().getTranslation();
 
@@ -205,11 +198,13 @@ public abstract class SwerveIO extends SubsystemBase {
 		double error = -(a * robotPose.getX() + b * robotPose.getY() + c) / Math.sqrt(a * a + b * b);
 		Translation2d pid = perpendicularAxis.times(_axisPID.calculate(-error));
 
-		Translation2d driver = axis.times(isXDriverInput ? -driverInput.vyMetersPerSecond : driverInput.vxMetersPerSecond);
+		Translation2d driver =
+				axis.times(isXDriverInput ? -driverInput.vyMetersPerSecond : -driverInput.vxMetersPerSecond);
 
 		ChassisSpeeds speeds = new ChassisSpeeds(
 				driver.getX() + pid.getX(), driver.getY() + pid.getY(), driverInput.omegaRadiansPerSecond);
-		drive(speeds);
+
+		drive(speeds, true);
 	}
 
 	/**
@@ -219,6 +214,9 @@ public abstract class SwerveIO extends SubsystemBase {
 	public void setState(SwerveState state) {
 		_previousState = _state;
 		_state = state;
+
+		if(_state != SwerveState.FOLLOW_PATH)
+			_pathFollower.stop();
 
 		SmartDashboard.putString("Swerve State", _state.toString());
 	}
@@ -318,38 +316,42 @@ public abstract class SwerveIO extends SubsystemBase {
 	public void periodic() {
 		switch (_state) {
 			case DEFAULT:
-				drive(_demand.driverInput);
+				drive(fromPercent(_demand.driverInput), SwerveConstants.kFieldRelative);
+				break;
+
+			case FOLLOW_PATH:
+				drive(_pathFollower.followPath(_demand.targetPose), true);
 				break;
 
 			case BAYBLADE:
+				_demand.driverInput = fromPercent(_demand.driverInput);
+
 				drive(new ChassisSpeeds(
 						_demand.driverInput.vxMetersPerSecond,
 						_demand.driverInput.vyMetersPerSecond,
-						SwerveConstants.maxAngularVelocity));
+						SwerveConstants.maxAngularVelocity), SwerveConstants.kFieldRelative);
 				break;
 
 			case LOOK_AT_ANGLE:
+				_demand.driverInput = fromPercent(_demand.driverInput);
+
 				drive(new ChassisSpeeds(
 						_demand.driverInput.vxMetersPerSecond,
 						_demand.driverInput.vyMetersPerSecond,
-						lookAt(_demand.lookAtTranslation, 45)));
+						lookAt(_demand.lookAtTranslation, 45)), SwerveConstants.kFieldRelative);
 				break;
 
 			case LOOK_AT_TARGET:
-				Translation2d lookAtTranslation = _demand.targetPose
-						.getTranslation()
-						.minus(RobotState.getRobotPose().getTranslation());
-				lookAtTranslation = RobotState.isSimulated()
-						? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY())
-						: lookAtTranslation;
+				_demand.driverInput = fromPercent(_demand.driverInput);
+
 				drive(new ChassisSpeeds(
 						_demand.driverInput.vxMetersPerSecond,
 						_demand.driverInput.vyMetersPerSecond,
-						lookAt(lookAtTranslation, 45)));
+						lookAtTarget(_demand.targetPose)), SwerveConstants.kFieldRelative);
 				break;
 
-			case POSITION:
-				goToPose(_demand.targetPose);
+			case PATHFINDING:
+				pathfindTo(_demand.targetPose, _demand.driverInput);
 				break;
 
 			case VELOCITY:
@@ -357,11 +359,48 @@ public abstract class SwerveIO extends SubsystemBase {
 				break;
 
 			case LOCKED_AXIS:
-				lockAxis(_demand.angle, _demand.phase, _demand.driverInput, _demand.isXDriverInput);
+				lockAxis(_demand.angle, _demand.phase, fromPercent(_demand.driverInput), _demand.isXDriverInput);
+				break;
+
+			case DRIVE_ASSIST:
+				if(NoteDetection.hasTarget()){
+					Translation2d pid = pidTo(NoteDetection.getNotePose().getTranslation());
+					double rotation = lookAtTarget(NoteDetection.getNotePose());
+
+					drive(new ChassisSpeeds(pid.getX(), pid.getY(), rotation), true);
+				}
+				else
+					drive(fromPercent(_demand.driverInput), SwerveConstants.kFieldRelative);
+				break;
 
 			default:
 				break;
 		}
+
+		super.periodic();
 		log();
+	}
+
+	@Override
+	protected void setFunctionMaps() {
+		addFunctionToOnChangeMap(() -> setState(SwerveState.DEFAULT), RobotStates.IDLE, RobotStates.CLOSE, RobotStates.RESET);
+
+		addFunctionToPeriodicMap(
+				() -> {
+					_demand.targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getAmpPose(), 1.25);
+
+					double dist = RobotState.getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());
+					if (dist < 2)
+						setState(SwerveState.FOLLOW_PATH);
+
+					if(_pathFollower.isFinished())
+						StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_AMP_OUTAKE);
+				},
+				RobotStates.DRIVE_TO_AMP);
+
+		addFunctionToOnChangeMap(() -> {
+			setState(SwerveState.LOCKED_AXIS);
+			updateDemand(Rotation2d.fromDegrees(90), 2, false);
+		}, RobotStates.PREPARE_AMP_OUTAKE);
 	}
 }

@@ -11,7 +11,9 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Pathfinding Trajectory": "Field2d",
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d",
+      "/SmartDashboard/currentTraj": "Field2d",
       "/SmartDashboard/traj": "Field2d"
     },
     "windows": {

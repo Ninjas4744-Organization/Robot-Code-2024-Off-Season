@@ -2,12 +2,12 @@ package frc.robot.Subsystems;
 
 import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
-import frc.robot.AbstractClasses.NinjasSubsystem;
+import frc.robot.AbstractClasses.StateMachineMotoredSubsystem;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.StateMachine;
 
-public class Elevator extends NinjasSubsystem {
+public class Elevator extends StateMachineMotoredSubsystem {
 	private static Elevator _instance;
 
 	public static Elevator getInstance() {
