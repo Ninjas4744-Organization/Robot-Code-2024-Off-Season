@@ -1,0 +1,31 @@
+"filename", "language", "JSON", "Gradle", "Markdown", "Python", "Batch", "XML", "Java Properties", "YAML", "comment", "blank", "total"
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.github\workflows\main.yml", "YAML", 0, 0, 0, 0, 0, 0, 0, -18, 0, -8, -26
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.idea\vcs.xml", "XML", 0, 0, 0, 0, 0, -6, 0, 0, 0, -1, -7
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Build & Deploy Robot for Debugging.run.xml", "XML", 0, 0, 0, 0, 0, -26, 0, 0, 0, -1, -27
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Build & Deploy Robot.run.xml", "XML", 0, 0, 0, 0, 0, -26, 0, 0, 0, -1, -27
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Build Robot.run.xml", "XML", 0, 0, 0, 0, 0, -25, 0, 0, 0, -1, -26
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Clean Build & Deploy Robot for Debugging.run.xml", "XML", 0, 0, 0, 0, 0, -27, 0, 0, 0, -1, -28
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Clean Build & Deploy Robot.run.xml", "XML", 0, 0, 0, 0, 0, -27, 0, 0, 0, -1, -28
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Clean Build Robot.run.xml", "XML", 0, 0, 0, 0, 0, -26, 0, 0, 0, -1, -27
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Clean.run.xml", "XML", 0, 0, 0, 0, 0, -25, 0, 0, 0, -1, -26
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Debug Robot via IP.run.xml", "XML", 0, 0, 0, 0, 0, -13, 0, 0, 0, -1, -14
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Debug Robot via USB.run.xml", "XML", 0, 0, 0, 0, 0, -13, 0, 0, 0, -1, -14
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.run\Simulate Robot Code.run.xml", "XML", 0, 0, 0, 0, 0, -24, 0, 0, 0, 0, -24
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\.wpilib\wpilib_preferences.json", "JSON", -6, 0, 0, 0, 0, 0, 0, 0, 0, 0, -6
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\README.md", "Markdown", 0, 0, -27, 0, 0, 0, 0, 0, 0, -20, -47
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\WPILib-License.md", "Markdown", 0, 0, -22, 0, 0, 0, 0, 0, 0, -3, -25
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\build.gradle", "Gradle", 0, -99, 0, 0, 0, 0, 0, 0, -20, -27, -146
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\gradle\wrapper\gradle-wrapper.properties", "Java Properties", 0, 0, 0, 0, 0, 0, -7, 0, 0, -1, -8
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\gradlew.bat", "Batch", 0, 0, 0, 0, -41, 0, 0, 0, -30, -22, -93
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\networktables.json", "JSON", -1, 0, 0, 0, 0, 0, 0, 0, 0, -1, -2
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\settings.gradle", "Gradle", 0, -28, 0, 0, 0, 0, 0, 0, 0, -3, -31
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\simgui.json", "JSON", -47, 0, 0, 0, 0, 0, 0, 0, 0, -1, -48
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\update_ninjas_subsystem.py", "Python", 0, 0, 0, -19, 0, 0, 0, 0, -10, -11, -40
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\NavX.json", "JSON", -40, 0, 0, 0, 0, 0, 0, 0, 0, 0, -40
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\PathplannerLib.json", "JSON", -38, 0, 0, 0, 0, 0, 0, 0, 0, 0, -38
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\Phoenix5.json", "JSON", -151, 0, 0, 0, 0, 0, 0, 0, 0, 0, -151
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\Phoenix6.json", "JSON", -339, 0, 0, 0, 0, 0, 0, 0, 0, 0, -339
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\REVLib.json", "JSON", -74, 0, 0, 0, 0, 0, 0, 0, 0, 0, -74
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\WPILibNewCommands.json", "JSON", -38, 0, 0, 0, 0, 0, 0, 0, 0, -1, -39
+"c:\Users\eitan\Documents\Projects\Robotics\Robot-Code-2024-Off-Season\vendordeps\photonlib.json", "JSON", -57, 0, 0, 0, 0, 0, 0, 0, 0, 0, -57
+"Total", "-", -791, -127, -49, -19, -41, -238, -7, -18, -60, -108, -1458

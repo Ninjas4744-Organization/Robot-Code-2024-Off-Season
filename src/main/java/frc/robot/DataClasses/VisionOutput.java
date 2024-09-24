@@ -27,7 +27,7 @@ public class VisionOutput {
 	public double farthestTagDist;
 
 	/** The distance from the camera of the tag which was detected the closest */
-	public double closestTagDist;
+	public double closestTagDist = -1;
 
 	/** Whether the camera detected any tags */
 	public boolean hasTargets = false;

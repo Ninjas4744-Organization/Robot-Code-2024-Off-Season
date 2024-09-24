@@ -1,10 +1,12 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DataClasses.StateEndCondition;
 import frc.robot.RobotState.RobotStates;
+import frc.robot.Swerve.SwerveIO;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +33,9 @@ public class StateMachine extends SubsystemBase {
 	/**
 	 * Set in this function the end condition for each state with _endConditionMap
 	 */
-	private void setEndConditionMap() {}
+	private void setEndConditionMap() {
+
+	}
 
 	/**
 	 * Sets the state of the robot to the given state only if possible. For example if the current
@@ -82,7 +86,8 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.PREPARE_AMP_OUTAKE
 						|| wantedState == RobotStates.PREPARE_TRAP_OUTAKE
 						|| wantedState == RobotStates.PREPARE_CLIMB
-						|| wantedState == RobotStates.PREPARE_SHOOT) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.PREPARE_SHOOT
+						|| wantedState == RobotStates.DRIVE_TO_AMP) RobotState.setRobotState(wantedState);
 				break;
 
 			case INTAKE, OUTAKE:
@@ -106,7 +111,10 @@ public class StateMachine extends SubsystemBase {
 			case PREPARE_AMP_OUTAKE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.AMP_OUTAKE_READY) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.AMP_OUTAKE_READY) {
+					RobotState.setRobotState(wantedState);
+				}
+
 				break;
 
 			case PREPARE_TRAP_OUTAKE:
@@ -137,6 +145,10 @@ public class StateMachine extends SubsystemBase {
 				if (wantedState == RobotStates.PREPARE_INTAKE || wantedState == RobotStates.PREPARE_CLIMB)
 					RobotState.setRobotState(wantedState);
 				break;
+
+			case DRIVE_TO_AMP:
+				if(wantedState == RobotStates.PREPARE_AMP_OUTAKE)
+					RobotState.setRobotState(wantedState);
 		}
 
 		if (wantedState == RobotStates.IDLE && RobotState.hasNote()) RobotState.setRobotState(RobotStates.HOLDING_NOTE);

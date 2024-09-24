@@ -3,12 +3,12 @@ package frc.robot.Subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
-import frc.robot.AbstractClasses.NinjasSubsystem;
+import frc.robot.AbstractClasses.StateMachineMotoredSubsystem;
 import frc.robot.Constants.ShooterAngleConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
 
-public class ShooterAngle extends NinjasSubsystem {
+public class ShooterAngle extends StateMachineMotoredSubsystem {
 	private static ShooterAngle _instance;
 
 	public static ShooterAngle getInstance() {
