@@ -273,7 +273,7 @@ public abstract class SwerveIO extends StateManager {
 				break;
 			case FOLLOW_PATH:
 				_driveAssist.driveAssist(_demand.targetPose, new Rotation2d());
-				drive(_driveAssist.getCurrentDemand());
+				drive(_driveAssist.getCurrentDemand(), true);
 				break;
 			case BAYBLADE:
 				drive(new ChassisSpeeds(
@@ -316,9 +316,9 @@ public abstract class SwerveIO extends StateManager {
 			default:
 				break;
 		}
+
 		log();
 		super.periodic();
-
 		_previousState = _state;
 	}
 
@@ -344,7 +344,7 @@ public abstract class SwerveIO extends StateManager {
 		addFunctionToOnChangeMap(() -> _driveAssist.resetPath(), RobotStates.PREPARE_AMP_OUTAKE);
 		addFunctionToPeriodicMap(
 				() -> {
-					_demand.targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(1), 1.25);
+					_demand.targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getTagPose(6), 1.25);
 					double dist =
 							RobotState.getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());
 					if (dist < 2) {
@@ -354,6 +354,6 @@ public abstract class SwerveIO extends StateManager {
 				},
 				RobotStates.PREPARE_AMP_OUTAKE);
 		addFunctionToPeriodicMap(
-				() -> updateDemand(Rotation2d.fromDegrees(90), -2, true), RobotStates.AMP_OUTAKE_READY);
+			() -> updateDemand(Rotation2d.fromDegrees(90), -1.7, true), RobotStates.AMP_OUTAKE_READY);
 	}
 }

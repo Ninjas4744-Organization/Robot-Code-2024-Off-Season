@@ -15,10 +15,11 @@ import frc.robot.DataClasses.MainControllerConstants;
 import frc.robot.DataClasses.PIDFConstants;
 import frc.robot.DataClasses.SimulatedControllerConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class Constants {
 	public static final int kDriverJoystickPort = 0;
@@ -290,12 +291,12 @@ public final class Constants {
 		public static final boolean canCoderInvert = false;
 
 		/* Swerve drive assist PID values */
-		public static final double kDriveAssistP = 2.3;
+		public static final double kDriveAssistP = 0.8;
 		public static final double kDriveAssistI = 0;
-		public static final double kDriveAssistD = 1;
+		public static final double kDriveAssistD = 0;
 
 		/* Swerve axis lock PID values */
-		public static final double kSwerveAxisLockP = 0.2;
+		public static final double kSwerveAxisLockP = 0.25;
 		public static final double kSwerveAxisLockI = 0.0;
 		public static final double kSwerveAxisLockD = 0.0;
 
@@ -360,7 +361,8 @@ public final class Constants {
 
 	public static final class AutoConstants {
 		public static final double kP = 1;
-		public static final double kPTheta = 0.025;
+		public static final double kPTheta = 0.1;
+//		public static final double kPTheta = 0.025;
 
 		public static final double kMaxSpeed = 4;
 		public static final double kAcceleration = 4;
@@ -380,76 +382,68 @@ public final class Constants {
 	}
 
 	public static class VisionConstants {
+		public static final Map<String, Transform3d> kCameras = Map.of(
+			"Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)),
+			"BackLeft", new Transform3d(-0.325 + 0.2, 0.175 - 0.34641016151, 0.2075, new Rotation3d(0, 0, Units.degreesToRadians(120))),
+			"BackRight", new Transform3d(-0.325 + 0.25, -0.175 + 0.43301270189, 0.1875, new Rotation3d(0, 0, Units.degreesToRadians(-120)))
+		);
 		public static final double kMaxAmbiguity = 0.2;
 
-		public static HashMap<String, Transform3d> getCamerasPoses() {
-			HashMap<String, Transform3d> cameras = new HashMap<>();
-
-			double deg2rad = 0.0174533;
-			cameras.put("Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)));
-			cameras.put(
-					"BackLeft",
-					new Transform3d(-0.325 + 0.2, 0.175 - 0.34641016151, 0.2075, new Rotation3d(0, 0, 120 * deg2rad)));
-			cameras.put(
-					"BackRight",
-					new Transform3d(
-							-0.325 + 0.25, -0.175 + 0.43301270189, 0.1875, new Rotation3d(0, 0, -120 * deg2rad)));
-
-			return cameras;
-		}
-
+		public static final boolean kUseOurField = false;
 		public static final double kFieldLength = Units.feetToMeters(54.0);
 		public static AprilTagFieldLayout kBlueFieldLayout;
 		public static AprilTagFieldLayout kRedFieldLayout;
-		private static double kWorkShopLength = 8; // to check
-		private static double kWorkShopWidth = 6.5; // to check
-		private static double kTagWorkshopHeight;
+		public static AprilTagFieldLayout kOurFieldLayout;
 
 		static {
 			try {
 				kBlueFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-
 				kBlueFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
 
 				kRedFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
 				kRedFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
+
+				double ourFieldLength = 7.3;
+				double ourFieldWidth = 6.4;
+				double ourTagHeight = 1.6;
+				List<AprilTag> tags = new ArrayList<>();
+				tags.add(new AprilTag(
+					1,
+					new Pose3d(
+						new Translation3d(0, ourFieldWidth / 2, ourTagHeight),
+						new Rotation3d(0, 0, 0))));
+				tags.add(new AprilTag(
+					2,
+					new Pose3d(
+						new Translation3d(ourFieldLength / 2, ourFieldWidth, ourTagHeight),
+						new Rotation3d(0, 0, -0.5 * Math.PI))));
+				tags.add(new AprilTag(
+					3,
+					new Pose3d(
+						new Translation3d(ourFieldLength, ourFieldWidth / 2, ourTagHeight),
+						new Rotation3d(0, 0, Math.PI))));
+				tags.add(new AprilTag(
+					4,
+					new Pose3d(
+						new Translation3d(ourFieldLength / 2, 0, 2.2),
+						new Rotation3d(0, 0, Math.PI / 2))));
+
+				kOurFieldLayout = new AprilTagFieldLayout(tags, ourFieldLength, ourFieldWidth);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
 
 		public static AprilTagFieldLayout getFieldLayout() {
-			if (true) {
-				List<AprilTag> tags = new ArrayList<AprilTag>();
-				tags.add(new AprilTag(
-						1,
-						new Pose3d(
-								new Translation3d(0, kWorkShopWidth / 2, kTagWorkshopHeight),
-								new Rotation3d(0, 0, Math.PI * 2))));
-				tags.add(new AprilTag(
-						2,
-						new Pose3d(
-								new Translation3d(kWorkShopLength / 2, kWorkShopWidth, kTagWorkshopHeight),
-								new Rotation3d(0, 0, Math.PI * 1.5))));
-				tags.add(new AprilTag(
-						3,
-						new Pose3d(
-								new Translation3d(kWorkShopLength, kWorkShopWidth / 2, kTagWorkshopHeight),
-								new Rotation3d(0, 0, Math.PI))));
-				tags.add(new AprilTag(
-						4,
-						new Pose3d(
-								new Translation3d(kWorkShopLength / 2, 0, kTagWorkshopHeight),
-								new Rotation3d(0, 0, Math.PI / 2))));
+			if (kUseOurField)
+				return kOurFieldLayout;
 
-				AprilTagFieldLayout _workshop = new AprilTagFieldLayout(tags, kWorkShopLength, kWorkShopWidth);
-
-				return _workshop;
+			if (!RobotState.isSimulated()) {
+				if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+					return kBlueFieldLayout;
+				return kRedFieldLayout;
 			}
-			if (Robot.isReal()) {
-				if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) return kBlueFieldLayout;
-				else return kRedFieldLayout;
-			} else return kBlueFieldLayout;
+			return kBlueFieldLayout;
 		}
 
 		public class Simulation {

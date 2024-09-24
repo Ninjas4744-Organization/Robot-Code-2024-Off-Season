@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -79,14 +80,16 @@ public class DriveAssist {
 		var xFeedforward = desiredState.velocityMps * heading.getCos();
 		var yFeedforward = desiredState.velocityMps * heading.getSin();
 
+
 		double thetaFeedback = SwerveIO.getInstance()
-				.lookAt(_trajectory.getEndState().targetHolonomicRotation.getDegrees(), 1);
+			.lookAt(desiredState.targetHolonomicRotation.getDegrees(), 1);
 
 		double xFeedback = xPID.calculate(currentPose.getX(), desiredState.positionMeters.getX());
-
 		double yFeedback = yPID.calculate(currentPose.getY(), desiredState.positionMeters.getY());
 
-		return new ChassisSpeeds(xFeedforward + xFeedback, yFeedforward + yFeedback, thetaFeedback);
+		return new ChassisSpeeds(xFeedforward + xFeedback,
+			yFeedforward + yFeedback,
+			thetaFeedback);
 	}
 
 	private void startingDriveAssist(Pose2d targetPose, Rotation2d toTargetAngle) {
