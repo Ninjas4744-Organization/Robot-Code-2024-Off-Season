@@ -8,7 +8,6 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.DataClasses.VisionOutput;
 import frc.robot.RobotState;
-
 import java.util.HashMap;
 
 public abstract class VisionIO extends SubsystemBase {
@@ -139,7 +138,7 @@ public abstract class VisionIO extends SubsystemBase {
 
 		for (String camera : camerasNames) {
 			Rotation2d cameraAngle = Rotation2d.fromRadians(
-				VisionConstants.kCameras.get(camera).getRotation().getZ());
+					VisionConstants.kCameras.get(camera).getRotation().getZ());
 
 			if (dirAngle.minus(cameraAngle).getDegrees() < closestAngleDiff.getDegrees()) {
 				closestAngleDiff = dirAngle.minus(cameraAngle);

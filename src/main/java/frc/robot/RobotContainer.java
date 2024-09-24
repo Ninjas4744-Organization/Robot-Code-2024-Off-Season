@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -48,22 +47,25 @@ public class RobotContainer {
 			else SwerveIO.getInstance().setState(SwerveDemand.SwerveState.BAYBLADE);
 		}));
 
-		_driverJoystick.triangle().onTrue(Commands.runOnce(() ->
-			SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE), SwerveIO.getInstance()));
+		_driverJoystick
+				.triangle()
+				.onTrue(Commands.runOnce(
+						() -> SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE),
+						SwerveIO.getInstance()));
 
 		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
 
-//		_driverJoystick.square().onTrue(Commands.runOnce(() -> {
-//			if (RobotState.getRobotState() == RobotStates.PREPARE_SHOOT) {
-//				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-//				StateMachine.getInstance().changeRobotState(RobotStates.CLOSE);
-//			} else {
-//				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_TARGET);
-//				SwerveIO.getInstance().updateDemand(Constants.VisionConstants.getTagPose(15));
-//				StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT);
-//			}
-//		}));
+		//		_driverJoystick.square().onTrue(Commands.runOnce(() -> {
+		//			if (RobotState.getRobotState() == RobotStates.PREPARE_SHOOT) {
+		//				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+		//				StateMachine.getInstance().changeRobotState(RobotStates.CLOSE);
+		//			} else {
+		//				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_TARGET);
+		//				SwerveIO.getInstance().updateDemand(Constants.VisionConstants.getTagPose(15));
+		//				StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT);
+		//			}
+		//		}));
 
 		_driverJoystick.povLeft().onTrue(Commands.runOnce(() -> {
 			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.POSITION)

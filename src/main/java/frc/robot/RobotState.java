@@ -36,7 +36,10 @@ public class RobotState {
 		PREPARE_CLIMB,
 		CLIMB_READY,
 		CLIMB,
-		DRIVE_TO_AMP, DRIVE_TO_SPEAKER, DRIVE_TO_SOURCE, CLIMBED
+		DRIVE_TO_AMP,
+		DRIVE_TO_SPEAKER,
+		DRIVE_TO_SOURCE,
+		CLIMBED
 	}
 
 	private static RobotStates robotState = RobotStates.IDLE;

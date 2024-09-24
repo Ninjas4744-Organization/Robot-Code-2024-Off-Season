@@ -66,7 +66,8 @@ public abstract class StateMachineMotoredSubsystem extends StateMachineSubsystem
 	 * @return a command that runs that on start and stops to motor on end
 	 */
 	public Command runMotor(double percent) {
-		return Commands.startEnd(() -> controller().setPercent(percent), () -> controller().stop(), this);
+		return Commands.startEnd(
+				() -> controller().setPercent(percent), () -> controller().stop(), this);
 	}
 
 	@Override

@@ -3,8 +3,6 @@ package frc.robot.Swerve;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.pathfinding.Pathfinding;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -50,7 +48,8 @@ public class PathFollower {
 		double yFeedforward = desiredState.velocityMps * heading.getSin();
 
 		double thetaFeedback = SwerveIO.getInstance().lookAt(desiredState.targetHolonomicRotation.getDegrees(), 1);
-		Translation2d feedback = SwerveIO.getInstance().pidTo(new Translation2d(desiredState.positionMeters.getX(), desiredState.positionMeters.getY()));
+		Translation2d feedback = SwerveIO.getInstance()
+				.pidTo(new Translation2d(desiredState.positionMeters.getX(), desiredState.positionMeters.getY()));
 
 		return new ChassisSpeeds(xFeedforward + feedback.getX(), yFeedforward + feedback.getY(), thetaFeedback);
 	}

@@ -15,7 +15,6 @@ import frc.robot.DataClasses.MainControllerConstants;
 import frc.robot.DataClasses.PIDFConstants;
 import frc.robot.DataClasses.SimulatedControllerConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -358,7 +357,7 @@ public final class Constants {
 			public static final double kI = 0;
 			public static final double kD = 1;
 			public static final double kPTheta = 0.1;
-//		public static final double kPTheta = 0.025;
+			//		public static final double kPTheta = 0.025;
 			public static final double kITheta = 0;
 			public static final double kDTheta = 0;
 
@@ -367,24 +366,34 @@ public final class Constants {
 			public static final double kMaxAngularSpeed = 8;
 			public static final double kAngularAcceleration = 16;
 
-		public static final PathConstraints kConstraints =
-				new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);
+			public static final PathConstraints kConstraints =
+					new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);
 
-		public static final HolonomicPathFollowerConfig kAutonomyConfig = new HolonomicPathFollowerConfig(
-				new PIDConstants(kP, 0, 0),
-				new PIDConstants(kPTheta, 0, 0),
-				SwerveConstants.maxModuleSpeed,
-				SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
-				new ReplanningConfig() // Default path replanning config.
-				);}
+			public static final HolonomicPathFollowerConfig kAutonomyConfig = new HolonomicPathFollowerConfig(
+					new PIDConstants(kP, 0, 0),
+					new PIDConstants(kPTheta, 0, 0),
+					SwerveConstants.maxModuleSpeed,
+					SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
+					new ReplanningConfig() // Default path replanning config.
+					);
+		}
 	}
 
 	public static class VisionConstants {
 		public static final Map<String, Transform3d> kCameras = Map.of(
-			"Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)),
-			"BackLeft", new Transform3d(-0.325 + 0.2, 0.175 - 0.34641016151, 0.2075, new Rotation3d(0, 0, Units.degreesToRadians(120))),
-			"BackRight", new Transform3d(-0.325 + 0.25, -0.175 + 0.43301270189, 0.1875, new Rotation3d(0, 0, Units.degreesToRadians(-120)))
-		);
+				"Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)),
+				"BackLeft",
+						new Transform3d(
+								-0.325 + 0.2,
+								0.175 - 0.34641016151,
+								0.2075,
+								new Rotation3d(0, 0, Units.degreesToRadians(120))),
+				"BackRight",
+						new Transform3d(
+								-0.325 + 0.25,
+								-0.175 + 0.43301270189,
+								0.1875,
+								new Rotation3d(0, 0, Units.degreesToRadians(-120))));
 
 		public static final double kMaxAmbiguity = 0.2;
 
@@ -407,25 +416,20 @@ public final class Constants {
 				double ourTagHeight = 1.6;
 				List<AprilTag> tags = new ArrayList<>();
 				tags.add(new AprilTag(
-					1,
-					new Pose3d(
-						new Translation3d(0, ourFieldWidth / 2, ourTagHeight),
-						new Rotation3d(0, 0, 0))));
+						1, new Pose3d(new Translation3d(0, ourFieldWidth / 2, ourTagHeight), new Rotation3d(0, 0, 0))));
 				tags.add(new AprilTag(
-					2,
-					new Pose3d(
-						new Translation3d(ourFieldLength / 2, ourFieldWidth, ourTagHeight),
-						new Rotation3d(0, 0, -0.5 * Math.PI))));
+						2,
+						new Pose3d(
+								new Translation3d(ourFieldLength / 2, ourFieldWidth, ourTagHeight),
+								new Rotation3d(0, 0, -0.5 * Math.PI))));
 				tags.add(new AprilTag(
-					3,
-					new Pose3d(
-						new Translation3d(ourFieldLength, ourFieldWidth / 2, ourTagHeight),
-						new Rotation3d(0, 0, Math.PI))));
+						3,
+						new Pose3d(
+								new Translation3d(ourFieldLength, ourFieldWidth / 2, ourTagHeight),
+								new Rotation3d(0, 0, Math.PI))));
 				tags.add(new AprilTag(
-					4,
-					new Pose3d(
-						new Translation3d(ourFieldLength / 2, 0, 2.2),
-						new Rotation3d(0, 0, Math.PI / 2))));
+						4,
+						new Pose3d(new Translation3d(ourFieldLength / 2, 0, 2.2), new Rotation3d(0, 0, Math.PI / 2))));
 
 				kOurFieldLayout = new AprilTagFieldLayout(tags, ourFieldLength, ourFieldWidth);
 			} catch (IOException e) {
@@ -434,12 +438,10 @@ public final class Constants {
 		}
 
 		public static AprilTagFieldLayout getFieldLayout() {
-			if (kUseOurField)
-				return kOurFieldLayout;
+			if (kUseOurField) return kOurFieldLayout;
 
 			if (!RobotState.isSimulated()) {
-				if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-					return kBlueFieldLayout;
+				if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) return kBlueFieldLayout;
 				return kRedFieldLayout;
 			}
 			return kBlueFieldLayout;
