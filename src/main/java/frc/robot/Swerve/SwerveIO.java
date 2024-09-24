@@ -1,6 +1,5 @@
 package frc.robot.Swerve;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
@@ -11,20 +10,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.AbstractClasses.StateMachineSubsystem;
-import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.StateMachine;
 import frc.robot.Swerve.SwerveDemand.SwerveState;
-
-import java.nio.file.Path;
+import frc.robot.Vision.NoteDetection;
 
 public abstract class SwerveIO extends StateMachineSubsystem {
 	private static SwerveIO _instance;
@@ -119,6 +115,13 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 			return lookAt(direction.getAngle().getDegrees(), roundToAngle);
 
 		return 0;
+	}
+
+	public double lookAtTarget(Pose2d target){
+		Translation2d lookAtTranslation = target.getTranslation().minus(RobotState.getRobotPose().getTranslation());
+		lookAtTranslation = RobotState.isSimulated() ? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY()) : lookAtTranslation;
+
+		return lookAt(lookAtTranslation, 1);
 	}
 
 	public ChassisSpeeds fromPercent(ChassisSpeeds percent) {
@@ -341,15 +344,10 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 			case LOOK_AT_TARGET:
 				_demand.driverInput = fromPercent(_demand.driverInput);
 
-				Translation2d lookAtTranslation = _demand.targetPose.getTranslation().minus(RobotState.getRobotPose().getTranslation());
-				lookAtTranslation = RobotState.isSimulated()
-						? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY())
-						: lookAtTranslation;
-
 				drive(new ChassisSpeeds(
 						_demand.driverInput.vxMetersPerSecond,
 						_demand.driverInput.vyMetersPerSecond,
-						lookAt(lookAtTranslation, 1)), SwerveConstants.kFieldRelative);
+						lookAtTarget(_demand.targetPose)), SwerveConstants.kFieldRelative);
 				break;
 
 			case PATHFINDING:
@@ -362,6 +360,18 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 
 			case LOCKED_AXIS:
 				lockAxis(_demand.angle, _demand.phase, fromPercent(_demand.driverInput), _demand.isXDriverInput);
+				break;
+
+			case DRIVE_ASSIST:
+				if(NoteDetection.hasTarget()){
+					Translation2d pid = pidTo(NoteDetection.getNotePose().getTranslation());
+					double rotation = lookAtTarget(NoteDetection.getNotePose());
+
+					drive(new ChassisSpeeds(pid.getX(), pid.getY(), rotation), true);
+				}
+				else
+					drive(fromPercent(_demand.driverInput), SwerveConstants.kFieldRelative);
+				break;
 
 			default:
 				break;

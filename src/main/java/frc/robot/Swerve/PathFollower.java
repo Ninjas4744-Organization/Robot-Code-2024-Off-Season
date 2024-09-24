@@ -17,8 +17,6 @@ import frc.robot.RobotState;
 import java.util.List;
 
 public class PathFollower {
-	private PIDController xPID;
-	private PIDController yPID;
 	private Timer _profileTimer;
 
 	private boolean started = false;
@@ -28,16 +26,6 @@ public class PathFollower {
 
 	public PathFollower() {
 		_profileTimer = new Timer();
-
-		xPID = new PIDController(
-				Constants.SwerveConstants.kDriveAssistP,
-				Constants.SwerveConstants.kDriveAssistI,
-				Constants.SwerveConstants.kDriveAssistD);
-
-		yPID = new PIDController(
-				Constants.SwerveConstants.kDriveAssistP,
-				Constants.SwerveConstants.kDriveAssistI,
-				Constants.SwerveConstants.kDriveAssistD);
 	}
 
 	/**
@@ -62,11 +50,9 @@ public class PathFollower {
 		double yFeedforward = desiredState.velocityMps * heading.getSin();
 
 		double thetaFeedback = SwerveIO.getInstance().lookAt(desiredState.targetHolonomicRotation.getDegrees(), 1);
+		Translation2d feedback = SwerveIO.getInstance().pidTo(new Translation2d(desiredState.positionMeters.getX(), desiredState.positionMeters.getY()));
 
-		double xFeedback = xPID.calculate(RobotState.getRobotPose().getX(), desiredState.positionMeters.getX());
-		double yFeedback = yPID.calculate(RobotState.getRobotPose().getY(), desiredState.positionMeters.getY());
-
-		return new ChassisSpeeds(xFeedforward + xFeedback, yFeedforward + yFeedback, thetaFeedback);
+		return new ChassisSpeeds(xFeedforward + feedback.getX(), yFeedforward + feedback.getY(), thetaFeedback);
 	}
 
 	private void starting(Pose2d targetPose) {
@@ -78,7 +64,7 @@ public class PathFollower {
 
 		PathPlannerPath _path = new PathPlannerPath(
 				points,
-				Constants.AutoConstants.kConstraints,
+				Constants.SwerveConstants.AutoConstants.kConstraints,
 				new GoalEndState(0, targetPose.getRotation()));
 
 		_trajectory = new PathPlannerTrajectory(
