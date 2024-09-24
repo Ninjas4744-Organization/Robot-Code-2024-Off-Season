@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.DataClasses.MainControllerConstants;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class NinjasController {
 	public enum ControlState {
@@ -29,8 +30,6 @@ public abstract class NinjasController {
 	 */
 	public NinjasController(MainControllerConstants constants) {
 		_constants = constants;
-		int shuffleboardColumnPosition = 0; // Starting column position
-		int shuffleboardRowPosition = 0; // Starting row position
 
 		_shuffleboardEnteries.put(
 				"position",
@@ -38,11 +37,9 @@ public abstract class NinjasController {
 						.add("Position", 0)
 						.withWidget("Graph")
 						.withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
-						.withPosition(shuffleboardColumnPosition, shuffleboardRowPosition)
+					.withPosition(shuffleboardEnteriesSize, 0)
+					.withProperties(Map.of("Automatic bounds", false, "Upper bound", 100, "Lower bound", -100))
 						.getEntry());
-
-		// Move to the next column for the next widget (no space)
-		shuffleboardColumnPosition += shuffleboardEnteriesSize;
 
 		_shuffleboardEnteries.put(
 				"velocity",
@@ -50,10 +47,9 @@ public abstract class NinjasController {
 						.add("Velocity", 0)
 						.withWidget("Graph")
 						.withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
-						.withPosition(shuffleboardColumnPosition, shuffleboardRowPosition)
+					.withPosition(shuffleboardEnteriesSize * 2, 0)
+					.withProperties(Map.of("Automatic bounds", false, "Upper bound", 100, "Lower bound", -100))
 						.getEntry());
-
-		shuffleboardColumnPosition += shuffleboardEnteriesSize;
 
 		_shuffleboardEnteries.put(
 				"output",
@@ -61,12 +57,9 @@ public abstract class NinjasController {
 						.add("Output", 0)
 						.withWidget("Graph")
 						.withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize)
-						.withPosition(shuffleboardColumnPosition, shuffleboardRowPosition)
+					.withPosition(0, 0)
+					.withProperties(Map.of("Automatic bounds", false, "Upper bound", 1, "Lower bound", -1))
 						.getEntry());
-
-		// Move to the next row for smaller widgets
-		shuffleboardRowPosition += shuffleboardEnteriesSize;
-		shuffleboardColumnPosition = 0;
 
 		_shuffleboardEnteries.put(
 				"goal",
@@ -74,23 +67,22 @@ public abstract class NinjasController {
 						.add("Goal", 0)
 						.withWidget("Number Bar")
 						.withSize(shuffleboardEnteriesSize / 2, shuffleboardEnteriesSize)
-						.withPosition(shuffleboardColumnPosition, shuffleboardRowPosition)
+					.withPosition(shuffleboardEnteriesSize * 3 + 1, 0)
+					.withProperties(Map.of("Min", -100, "Max", 100, "Orientation", "VERTICAL"))
 						.getEntry());
-
-		shuffleboardColumnPosition += shuffleboardEnteriesSize / 2;
 
 		_shuffleboardEnteries.put(
 				"controlState",
 				Shuffleboard.getTab(constants.subsystemName)
-						.add("Control State", 0)
+					.add("Control State", "")
 						.withWidget("Text View")
 						.withSize(shuffleboardEnteriesSize, shuffleboardEnteriesSize / 2)
-						.withPosition(shuffleboardColumnPosition, shuffleboardRowPosition)
+					.withPosition(shuffleboardEnteriesSize, shuffleboardEnteriesSize + 1)
 						.getEntry());
 	}
 
 	/**
-	 * Sets percetage output to the controller
+	 * Sets percentage output to the controller
 	 *
 	 * @param percent - how much to power the motor between -1 and 1
 	 * @see #setPosition(double)
@@ -204,13 +196,20 @@ public abstract class NinjasController {
 	}
 
 	/**
-	 * @return wether or not the controller is at the goal, the target of PIDF / PID / Motion Magic...
+	 * @return whether or not the controller is at the goal, the target of PIDF / PID / Motion Magic...
 	 *     Will return false if not in position or velocity control
 	 */
-	public abstract boolean atGoal();
+	public boolean atGoal() {
+		if (_controlState == ControlState.PIDF_POSITION || _controlState == ControlState.PID_POSITION || _controlState == ControlState.FF_POSITION)
+			return Math.abs(getGoal() - getPosition()) < _constants.positionGoalTolerance;
+		else if (_controlState == ControlState.PIDF_VELOCITY || _controlState == ControlState.PID_VELOCITY || _controlState == ControlState.FF_VELOCITY)
+			return Math.abs(getGoal() - getVelocity()) < _constants.velocityGoalTolerance;
+
+		return false;
+	}
 
 	/** Updates the shuffleboard values */
-	protected void updateShuffleboard() {
+	private void updateShuffleboard() {
 		_shuffleboardEnteries.get("position").setDouble(getPosition());
 		_shuffleboardEnteries.get("velocity").setDouble(getVelocity());
 		_shuffleboardEnteries.get("output").setDouble(getOutput());
