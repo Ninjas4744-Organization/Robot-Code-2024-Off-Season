@@ -1,11 +1,19 @@
 package frc.robot.Swerve;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.AbstractClasses.StateMachineSubsystem;
 import frc.robot.Constants;
@@ -16,14 +24,21 @@ import frc.robot.RobotState.RobotStates;
 import frc.robot.StateMachine;
 import frc.robot.Swerve.SwerveDemand.SwerveState;
 
+import java.nio.file.Path;
+
 public abstract class SwerveIO extends StateMachineSubsystem {
 	private static SwerveIO _instance;
 
-	private PIDController _anglePID;
-	private PIDController _axisPID;
+	private final PIDController _anglePID;
+	private final PIDController _xPID;
+	private final PIDController _yPID;
+	private final PIDController _axisPID;
+	private final Field2d pathfindingTrajectoryLog = new Field2d();
+	private final Timer pathfindingTimer = new Timer();
+	private PathPlannerTrajectory pathfindingCurrentTraj = null;
 	private PathFollower _pathFollower;
 
-	private SwerveDemand _demand;
+	private final SwerveDemand _demand;
 	private SwerveState _state;
 	private SwerveState _previousState;
 
@@ -41,12 +56,15 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		_previousState = SwerveState.DEFAULT;
 		_demand = new SwerveDemand();
 
-		_anglePID = new PIDController(Constants.AutoConstants.kPTheta, 0, 0);
+		_anglePID = new PIDController(SwerveConstants.AutoConstants.kPTheta, SwerveConstants.AutoConstants.kITheta, SwerveConstants.AutoConstants.kDTheta);
 
 		_anglePID.enableContinuousInput(-180, 180);
 
 		_axisPID = new PIDController(
-				SwerveConstants.kSwerveAxisLockP, SwerveConstants.kSwerveAxisLockI, SwerveConstants.kSwerveAxisLockD);
+			SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+
+		_xPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+		_yPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
 
 		_pathFollower = new PathFollower();
 	}
@@ -111,9 +129,51 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		);
 	}
 
+	public Translation2d pidTo(Translation2d target) {
+		return new Translation2d(_xPID.calculate(RobotState.getRobotPose().getX(), target.getX()),
+			_yPID.calculate(RobotState.getRobotPose().getY(), target.getY()));
+	}
+
 	/** Logs info about the modules and swerve */
 	private void log() {
 		// TODO: make this work
+	}
+
+	private void pathfindTo(Pose2d pose, ChassisSpeeds driverInput) {
+		Pathfinding.setGoalPosition(pose.getTranslation());
+		Pathfinding.setStartPosition(RobotState.getRobotPose().getTranslation());
+
+		PathPlannerPath path = Pathfinding.getCurrentPath(SwerveConstants.AutoConstants.kConstraints, new GoalEndState(0, pose.getRotation()));
+		if (path == null) {
+			System.out.println("No path available");
+			return;
+		}
+		PathPlannerTrajectory trajectory = new PathPlannerTrajectory(path, getChassisSpeeds(), RobotState.getRobotPose().getRotation());
+		if (pathfindingCurrentTraj == null || pathfindingCurrentTraj.getTotalTimeSeconds() != trajectory.getTotalTimeSeconds()) {
+			System.out.println("New path available");
+			pathfindingCurrentTraj = trajectory;
+			pathfindingTimer.restart();
+		}
+
+		double feedforwardX = trajectory.sample(pathfindingTimer.get()).velocityMps * trajectory.sample(pathfindingTimer.get()).heading.getCos();
+		double feedforwardY = trajectory.sample(pathfindingTimer.get()).velocityMps * trajectory.sample(pathfindingTimer.get()).heading.getSin();
+
+		Translation2d pid = pidTo(trajectory.sample(pathfindingTimer.get()).positionMeters);
+
+		driverInput = new ChassisSpeeds(driverInput.vxMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+			driverInput.vyMetersPerSecond * SwerveConstants.kSpeedFactor * SwerveConstants.maxSpeed,
+			driverInput.omegaRadiansPerSecond * SwerveConstants.kRotationSpeedFactor * SwerveConstants.maxAngularVelocity);
+
+		drive(new ChassisSpeeds(1 * feedforwardX + 0 * pid.getX() + driverInput.vxMetersPerSecond,
+				1 * feedforwardY + 0 * pid.getY() + driverInput.vyMetersPerSecond,
+				driverInput.omegaRadiansPerSecond),
+			true);
+
+		pathfindingTrajectoryLog.getObject("Trajectory").setPoses(path.getPathPoses());
+		SmartDashboard.putData("Pathfinding Trajectory", pathfindingTrajectoryLog);
+		SmartDashboard.putNumber("Pathfinding Timer", pathfindingTimer.get());
+		SmartDashboard.putNumber("Pathfinding Time", trajectory.getTotalTimeSeconds());
+		SmartDashboard.putNumber("Pathfinding Speed", trajectory.sample(pathfindingTimer.get()).velocityMps);
 	}
 
 	/**
@@ -142,10 +202,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 				driver.getX() + pid.getX(), driver.getY() + pid.getY(), driverInput.omegaRadiansPerSecond);
 
 		drive(speeds, true);
-	}
-
-	private void pathfindTo(Pose2d targetPose, ChassisSpeeds driverInput) {
-		throw new UnsupportedOperationException("Pathfinding not supported yet");
 	}
 
 	/**
