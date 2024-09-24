@@ -9,15 +9,17 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.DataClasses.MainControllerConstants;
 import frc.robot.DataClasses.PIDFConstants;
 import frc.robot.DataClasses.SimulatedControllerConstants;
 import frc.robot.DataClasses.SwerveModuleConstants;
+
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public final class Constants {
 	public static final int kDriverJoystickPort = 0;
@@ -217,8 +219,8 @@ public final class Constants {
 		public static final double kOpenLoopRamp = 0.25;
 		public static final double kClosedLoopRamp = 0.0;
 
-		public static final double kDriveGearRatio = (6.12 / 1.0); // 5.14:1
-		public static final double kAngleGearRatio = (12.8 / 1.0); // 12.8:1
+		public static final double kDriveGearRatio = (6.12); // 5.14:1
+		public static final double kAngleGearRatio = (12.8); // 12.8:1
 
 		public static final SwerveDriveKinematics kSwerveKinematics = new SwerveDriveKinematics(
 				new Translation2d(kWheelBase / 2.0, kTrackWidth / 2.0),
@@ -262,10 +264,16 @@ public final class Constants {
 
 		public static final double angleConversionFactor = 360.0 / 12.8;
 
-		/** Swerve Profiling Values */
+		/**
+		 * Max speed the swerve could possibly drive
+		 */
 		public static final double maxSpeed = 6; // meters per second
-
+		/** Max speed the swerve could possibly rotate */
 		public static final double maxAngularVelocity = 12;
+		/**
+		 * Max speed a swerve module could possibly drive on ground
+		 */
+		public static final double maxModuleSpeed = 6;
 
 		/** Neutral Modes */
 		public static final com.revrobotics.CANSparkBase.IdleMode angleNeutralMode =
@@ -282,30 +290,18 @@ public final class Constants {
 		/** Angle Encoder Invert */
 		public static final boolean canCoderInvert = false;
 
-		/* Swerve angle PID values */
-		public static final double kSwerveAngleP = 0.0035 * 4;
-		public static final double kSwerveAngleI = 0;
-		public static final double kSwerveAngleD = 0;
-
-		/* Swerve drive assist PID values */
-		public static final TrapezoidProfile.Constraints kDriveAssistProfileConstraints =
-				new TrapezoidProfile.Constraints(maxSpeed / 3, maxSpeed);
-		public static final double kDriveAssistP = 0.1525 * 1.5;
-		public static final double kDriveAssistI = 0;
-		public static final double kDriveAssistD = 0;
-
-		/* Swerve axis lock PID values */
-		public static final double kSwerveAxisLockP = 0.2;
-		public static final double kSwerveAxisLockI = 0.0;
-		public static final double kSwerveAxisLockD = 0.0;
-
 		/**
-		 * Swerve drive assist threshold, if the drive assist angle difference from driver angle is
+		 * Swerve drive assist angle threshold, if the drive assist angle difference from driver angle is
 		 * bigger than this value, the drive assist will be ignored. degrees
 		 */
-		public static final double kDriveAssistThreshold = 45;
+		public static final double kDriveAssistAngleThreshold = 120;
+		/**
+		 * Swerve drive assist distance threshold, if the robot distance from target is
+		 * bigger than this value, the drive assist will be ignored. meters
+		 */
+		public static final double kDriveAssistDistThreshold = 2;
 
-		/** Module Specific Constants */
+		/* Module Specific Constants */
 		/** Front Left Module - Module 0 */
 		public static final class Mod0 {
 			public static final int driveMotorID = 10;
@@ -356,78 +352,97 @@ public final class Constants {
 			public static final double kSimToRealSpeedConversion = 0.02; // meters per 0.02s -> meters per 1s
 			public static final double kAcceleration = 10;
 		}
-	}
 
-	public static final class AutoConstants {
-		public static final double maxVelocity = 1;
-		public static final double maxAcceleration = 1;
+		public static final class AutoConstants {
+			public static final double kP = 2.3;
+			public static final double kI = 0;
+			public static final double kD = 1;
+			public static final double kPTheta = 0.1;
+//		public static final double kPTheta = 0.025;
+			public static final double kITheta = 0;
+			public static final double kDTheta = 0;
 
-		public static final double kPXController = 1;
-		public static final double kPYController = 1;
-		public static final double kPThetaController = 1;
+			public static final double kMaxSpeed = 2;
+			public static final double kAcceleration = 1;
+			public static final double kMaxAngularSpeed = 8;
+			public static final double kAngularAcceleration = 16;
 
-		public static final double kMaxSpeedMetersPerSecond = 3.6;
-		public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-		public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-		public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-		public static final PathConstraints constraints = new PathConstraints(
-				kMaxSpeedMetersPerSecond,
-				kMaxAccelerationMetersPerSecondSquared,
-				kMaxAngularSpeedRadiansPerSecond,
-				kMaxAngularSpeedRadiansPerSecondSquared);
-		public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
-				kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+		public static final PathConstraints kConstraints =
+				new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);
 
-		public static final HolonomicPathFollowerConfig pathFollowerConfig =
-				new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
-						// your Constants class
-						new PIDConstants(Constants.AutoConstants.kPXController, 0.0, 0.0), // Translation PID constants
-						new PIDConstants(Constants.AutoConstants.kPYController, 0.0, 0.0), // Rotation PID constants
-						Constants.AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
-						SwerveConstants
-								.kTrackWidth, // Drive base radius in meters. Distance from robot center to furthest
-						// module.
-						new ReplanningConfig() // Default path replanning config. See the API for the options
-						// here
-						);
+		public static final HolonomicPathFollowerConfig kAutonomyConfig = new HolonomicPathFollowerConfig(
+				new PIDConstants(kP, 0, 0),
+				new PIDConstants(kPTheta, 0, 0),
+				SwerveConstants.maxModuleSpeed,
+				SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
+				new ReplanningConfig() // Default path replanning config.
+				);}
 	}
 
 	public static class VisionConstants {
-		public static final double kMaxAmbiguity = 0.7;
+		public static final Map<String, Transform3d> kCameras = Map.of(
+			"Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)),
+			"BackLeft", new Transform3d(-0.325 + 0.2, 0.175 - 0.34641016151, 0.2075, new Rotation3d(0, 0, Units.degreesToRadians(120))),
+			"BackRight", new Transform3d(-0.325 + 0.25, -0.175 + 0.43301270189, 0.1875, new Rotation3d(0, 0, Units.degreesToRadians(-120)))
+		);
 
-		public static HashMap<String, Transform3d> getCamerasPoses() {
-			HashMap<String, Transform3d> cameras = new HashMap<>();
+		public static final double kMaxAmbiguity = 0.2;
 
-			double deg2rad = 0.0174533;
-			cameras.put("Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)));
-			cameras.put("BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, 120 * deg2rad)));
-			cameras.put("BackRight", new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, -120 * deg2rad)));
-
-			return cameras;
-		}
-
+		public static final boolean kUseOurField = false;
 		public static final double kFieldLength = Units.feetToMeters(54.0);
 		public static AprilTagFieldLayout kBlueFieldLayout;
 		public static AprilTagFieldLayout kRedFieldLayout;
+		public static AprilTagFieldLayout kOurFieldLayout;
 
 		static {
 			try {
 				kBlueFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-
 				kBlueFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
 
 				kRedFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
 				kRedFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
+
+				double ourFieldLength = 7.3;
+				double ourFieldWidth = 6.4;
+				double ourTagHeight = 1.6;
+				List<AprilTag> tags = new ArrayList<>();
+				tags.add(new AprilTag(
+					1,
+					new Pose3d(
+						new Translation3d(0, ourFieldWidth / 2, ourTagHeight),
+						new Rotation3d(0, 0, 0))));
+				tags.add(new AprilTag(
+					2,
+					new Pose3d(
+						new Translation3d(ourFieldLength / 2, ourFieldWidth, ourTagHeight),
+						new Rotation3d(0, 0, -0.5 * Math.PI))));
+				tags.add(new AprilTag(
+					3,
+					new Pose3d(
+						new Translation3d(ourFieldLength, ourFieldWidth / 2, ourTagHeight),
+						new Rotation3d(0, 0, Math.PI))));
+				tags.add(new AprilTag(
+					4,
+					new Pose3d(
+						new Translation3d(ourFieldLength / 2, 0, 2.2),
+						new Rotation3d(0, 0, Math.PI / 2))));
+
+				kOurFieldLayout = new AprilTagFieldLayout(tags, ourFieldLength, ourFieldWidth);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
 
 		public static AprilTagFieldLayout getFieldLayout() {
-			if (Robot.isReal()) {
-				if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) return kBlueFieldLayout;
-				else return kRedFieldLayout;
-			} else return kBlueFieldLayout;
+			if (kUseOurField)
+				return kOurFieldLayout;
+
+			if (!RobotState.isSimulated()) {
+				if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+					return kBlueFieldLayout;
+				return kRedFieldLayout;
+			}
+			return kBlueFieldLayout;
 		}
 
 		public class Simulation {
@@ -470,27 +485,45 @@ public final class Constants {
 		 * Get the april tag that the translation between it and the robot is closest to the given direction,
 		 * for example if robot is moving to amp, the amp tag will be returned
 		 * @param dir The direction to find the closest camera to, field relative
+		 * @param distLimit Limit distance so far away tags will be disqualified
 		 * @return The apriltag that is closest by direction
 		 */
-		public static AprilTag getTagByDirection(Translation2d dir) {
+		public static AprilTag getTagByDirection(Translation2d dir, double distLimit) {
 			Rotation2d dirAngle = dir.getAngle();
 			AprilTag closestTag = null;
 			Rotation2d closestAngleDiff = Rotation2d.fromDegrees(Double.MAX_VALUE);
 
 			for (AprilTag tag : getFieldLayout().getTags()) {
+				if (tag.pose
+								.toPose2d()
+								.getTranslation()
+								.getDistance(RobotState.getRobotPose().getTranslation())
+						> distLimit) continue;
+
 				Rotation2d robotToTagAngle = tag.pose
 						.toPose2d()
 						.getTranslation()
 						.minus(RobotState.getRobotPose().getTranslation())
 						.getAngle();
 
-				if (dirAngle.minus(robotToTagAngle).getDegrees() < closestAngleDiff.getDegrees()) {
+				if (Math.abs(dirAngle.minus(robotToTagAngle).getDegrees()) < Math.abs(closestAngleDiff.getDegrees())) {
 					closestAngleDiff = dirAngle.minus(robotToTagAngle);
 					closestTag = tag;
 				}
 			}
 
 			return closestTag;
+		}
+
+		/**
+		 * Get the april tag that the translation between it and the robot is closest to the given direction,
+		 * for example if robot is moving to amp, the amp tag will be returned
+		 *
+		 * @param dir The direction to find the closest camera to, field relative
+		 * @return The apriltag that is closest by direction
+		 */
+		public static AprilTag getTagByDirection(Translation2d dir) {
+			return getTagByDirection(dir, Double.MAX_VALUE);
 		}
 
 		/**

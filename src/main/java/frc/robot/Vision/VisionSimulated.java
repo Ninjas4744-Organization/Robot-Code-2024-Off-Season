@@ -35,7 +35,7 @@ public class VisionSimulated extends VisionIO {
 			_simulatedCameras[i] = new PhotonCameraSim(_cameras[i].getCamera(), _cameraProperties[i]);
 
 			_visionSystemSim.addCamera(
-					_simulatedCameras[i], VisionConstants.getCamerasPoses().get(_cameras[i].getName()));
+				_simulatedCameras[i], VisionConstants.kCameras.get(_cameras[i].getName()));
 		}
 	}
 
