@@ -457,8 +457,9 @@ public final class Constants {
 					tags.add(tag);
 				}
 			}
-			}
 			layout = new AprilTagFieldLayout(tags, layout.getFieldLength(),layout.getFieldWidth());
+			}
+			
 			return layout;
 		}
 
