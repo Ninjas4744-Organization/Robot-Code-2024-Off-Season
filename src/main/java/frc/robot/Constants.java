@@ -406,7 +406,7 @@ public final class Constants {
 				double ourFieldLength = 7.3;
 				double ourFieldWidth = 6.4;
 				double ourTagHeight = 1.6;
-				List<AprilTag> tags = new ArrayList<>();
+				List<AprilTag> tags = new ArrayList<AprilTag>();
 				tags.add(new AprilTag(
 					1,
 					new Pose3d(
@@ -435,15 +435,31 @@ public final class Constants {
 		}
 
 		public static AprilTagFieldLayout getFieldLayout() {
+			List<Integer> wantedTags = new ArrayList<Integer>();
+			AprilTagFieldLayout layout;
+			List<AprilTag> tags = new ArrayList<AprilTag>();
+
 			if (kUseOurField)
 				return kOurFieldLayout;
 
 			if (!RobotState.isSimulated()) {
+				
 				if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-					return kBlueFieldLayout;
-				return kRedFieldLayout;
+				
+					layout = kBlueFieldLayout;
+				layout = kRedFieldLayout;
 			}
-			return kBlueFieldLayout;
+
+			layout = kBlueFieldLayout;
+			if( !wantedTags.isEmpty()){
+				for (AprilTag tag: kBlueFieldLayout.getTags()){
+				if (wantedTags.contains(tag.ID )){
+					tags.add(tag);
+				}
+			}
+			}
+			layout = new AprilTagFieldLayout(tags, layout.getFieldLength(),layout.getFieldWidth());
+			return layout;
 		}
 
 		public class Simulation {
