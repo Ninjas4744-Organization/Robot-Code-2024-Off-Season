@@ -149,4 +149,9 @@ public abstract class VisionIO extends SubsystemBase {
 
 		return closestCamera;
 	}
+
+	public void ignoreTag(int id) {
+		for (VisionCamera camera : _cameras)
+			camera.ignoreTag(id);
+	}
 }

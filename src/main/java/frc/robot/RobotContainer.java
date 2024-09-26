@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -9,7 +8,6 @@ import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Elevator;
 import frc.robot.Subsystems.ShooterAngle;
-import frc.robot.Swerve.SwerveDemand;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
 
@@ -30,6 +28,8 @@ public class RobotContainer {
 		ShooterAngle.getInstance();
 		Elevator.getInstance();
 
+//		VisionIO.getInstance().ignoreTag(1);
+
 		configureBindings();
 	}
 
@@ -44,17 +44,20 @@ public class RobotContainer {
 						() -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
 						() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY())));
 
-		_driverJoystick.square().onTrue(Commands.runOnce(() -> {
-			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.BAYBLADE)
-				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-			else SwerveIO.getInstance().setState(SwerveDemand.SwerveState.BAYBLADE);
-		}));
+//		_driverJoystick.square().onTrue(Commands.runOnce(() -> {
+//			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.BAYBLADE)
+//				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+//			else SwerveIO.getInstance().setState(SwerveDemand.SwerveState.BAYBLADE);
+//		}));
 
-		_driverJoystick.triangle().onTrue(Commands.runOnce(() ->
-			SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE), SwerveIO.getInstance()));
+//		_driverJoystick.triangle().onTrue(Commands.runOnce(() ->
+//			SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE), SwerveIO.getInstance()));
 
 		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
+
+//		_driverJoystick.triangle().onTrue(Commands.runOnce(() ->
+//			SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE), SwerveIO.getInstance()));
 
 //		_driverJoystick.square().onTrue(Commands.runOnce(() -> {
 //			if (RobotState.getRobotState() == RobotStates.PREPARE_SHOOT) {
@@ -67,14 +70,14 @@ public class RobotContainer {
 //			}
 //		}));
 
-		_driverJoystick.povLeft().onTrue(Commands.runOnce(() -> {
-			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.POSITION)
-				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-			else {
-				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.POSITION);
-				SwerveIO.getInstance().updateDemand(Constants.VisionConstants.getTagPose(6));
-			}
-		}));
+//		_driverJoystick.povLeft().onTrue(Commands.runOnce(() -> {
+//			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.POSITION)
+//				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
+//			else {
+//				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.POSITION);
+//				SwerveIO.getInstance().updateDemand(Constants.VisionConstants.getTagPose(6));
+//			}
+//		}));
 
 		_driverJoystick.povLeft().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_AMP));
 		_driverJoystick.povDown().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_SPEAKER));

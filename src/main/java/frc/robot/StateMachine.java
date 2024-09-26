@@ -1,12 +1,12 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DataClasses.StateEndCondition;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Swerve.SwerveIO;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +34,7 @@ public class StateMachine extends SubsystemBase {
 	 * Set in this function the end condition for each state with _endConditionMap
 	 */
 	private void setEndConditionMap() {
-
+		_endConditionMap.put(RobotStates.DRIVE_TO_AMP, new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.PREPARE_AMP_OUTAKE));
 	}
 
 	/**
@@ -114,7 +114,6 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.AMP_OUTAKE_READY) {
 					RobotState.setRobotState(wantedState);
 				}
-
 				break;
 
 			case PREPARE_TRAP_OUTAKE:
@@ -147,13 +146,19 @@ public class StateMachine extends SubsystemBase {
 				break;
 
 			case DRIVE_TO_AMP:
-				if(wantedState == RobotStates.PREPARE_AMP_OUTAKE)
+				if (wantedState == RobotStates.PREPARE_AMP_OUTAKE || wantedState == RobotStates.CLOSE)
 					RobotState.setRobotState(wantedState);
+				break;
 		}
 
-		if (wantedState == RobotStates.IDLE && RobotState.hasNote()) RobotState.setRobotState(RobotStates.HOLDING_NOTE);
+		if (RobotState.getRobotState() == RobotStates.CLOSE) RobotState.setRobotState(RobotStates.IDLE);
 
-		if (wantedState == RobotStates.IDLE && !RobotState.hasNote()) RobotState.setRobotState(RobotStates.NOTE_SEARCH);
+		if (RobotState.getRobotState() == RobotStates.IDLE) {
+			if (RobotState.hasNote())
+				RobotState.setRobotState(RobotStates.HOLDING_NOTE);
+			else
+				RobotState.setRobotState(RobotStates.NOTE_SEARCH);
+		}
 	}
 
 	/**
@@ -187,9 +192,7 @@ public class StateMachine extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		for (RobotStates state : RobotStates.values()) {
-			if (_endConditionMap.get(state).condition.getAsBoolean())
-				changeRobotState(_endConditionMap.get(state).nextState);
-		}
+		if (_endConditionMap.get(RobotState.getRobotState()).condition.getAsBoolean())
+			changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState);
 	}
 }

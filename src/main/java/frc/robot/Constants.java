@@ -383,8 +383,8 @@ public final class Constants {
 	public static class VisionConstants {
 		public static final Map<String, Transform3d> kCameras = Map.of(
 			"Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)),
-			"BackLeft", new Transform3d(-0.325 + 0.2, 0.175 - 0.34641016151, 0.2075, new Rotation3d(0, 0, Units.degreesToRadians(120))),
-			"BackRight", new Transform3d(-0.325 + 0.25, -0.175 + 0.43301270189, 0.1875, new Rotation3d(0, 0, Units.degreesToRadians(-120)))
+			"BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, Units.degreesToRadians(120))),
+			"BackRight", new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, Units.degreesToRadians(-120)))
 		);
 
 		public static final double kMaxAmbiguity = 0.2;
@@ -434,33 +434,26 @@ public final class Constants {
 			}
 		}
 
-		public static AprilTagFieldLayout getFieldLayout() {
-			List<Integer> wantedTags = new ArrayList<Integer>();
+		public static AprilTagFieldLayout getFieldLayout(List<Integer> ignoredTags) {
 			AprilTagFieldLayout layout;
-			List<AprilTag> tags = new ArrayList<AprilTag>();
 
-			if (kUseOurField)
-				return kOurFieldLayout;
-
-			if (!RobotState.isSimulated()) {
-				
-				if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-				
-					layout = kBlueFieldLayout;
-				layout = kRedFieldLayout;
+			if (RobotState.isSimulated())
+				layout = kUseOurField ? kOurFieldLayout : kBlueFieldLayout;
+			else {
+				if (kUseOurField)
+					layout = kOurFieldLayout;
+				else
+					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? kBlueFieldLayout : kRedFieldLayout;
 			}
 
-			layout = kBlueFieldLayout;
-			if( !wantedTags.isEmpty()){
-				for (AprilTag tag: kBlueFieldLayout.getTags()){
-				if (wantedTags.contains(tag.ID )){
-					tags.add(tag);
-				}
-			}
-			layout = new AprilTagFieldLayout(tags, layout.getFieldLength(),layout.getFieldWidth());
-			}
+			if (!ignoredTags.isEmpty())
+				layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));
 			
 			return layout;
+		}
+
+		public static AprilTagFieldLayout getFieldLayout() {
+			return getFieldLayout(List.of());
 		}
 
 		public class Simulation {

@@ -18,7 +18,6 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
-import frc.robot.StateMachine;
 import frc.robot.Swerve.SwerveDemand.SwerveState;
 import frc.robot.Vision.NoteDetection;
 
@@ -57,7 +56,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		_anglePID.enableContinuousInput(-180, 180);
 
 		_axisPID = new PIDController(
-			SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+			SwerveConstants.AutoConstants.kP * 1.5, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
 
 		_xPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
 		_yPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
@@ -198,6 +197,8 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		double error = -(a * robotPose.getX() + b * robotPose.getY() + c) / Math.sqrt(a * a + b * b);
 		Translation2d pid = perpendicularAxis.times(_axisPID.calculate(-error));
 
+		SmartDashboard.putNumber("Axis Lock Error", -error);
+
 		Translation2d driver =
 				axis.times(isXDriverInput ? -driverInput.vyMetersPerSecond : -driverInput.vxMetersPerSecond);
 
@@ -205,6 +206,10 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 				driver.getX() + pid.getX(), driver.getY() + pid.getY(), driverInput.omegaRadiansPerSecond);
 
 		drive(speeds, true);
+	}
+
+	public boolean isPathFollowingFinished() {
+		return _pathFollower.isFinished();
 	}
 
 	/**
@@ -320,7 +325,8 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 				break;
 
 			case FOLLOW_PATH:
-				drive(_pathFollower.followPath(_demand.targetPose), true);
+				Pose2d target = new Pose2d(_demand.targetPose.getX(), _demand.targetPose.getY(), _demand.targetPose.getRotation().unaryMinus());
+				drive(_pathFollower.followPath(target), true);
 				break;
 
 			case BAYBLADE:
@@ -383,24 +389,21 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 
 	@Override
 	protected void setFunctionMaps() {
-		addFunctionToOnChangeMap(() -> setState(SwerveState.DEFAULT), RobotStates.IDLE, RobotStates.CLOSE, RobotStates.RESET);
+		addFunctionToOnChangeMap(() -> setState(SwerveState.DEFAULT), RobotStates.IDLE, RobotStates.CLOSE, RobotStates.RESET, RobotStates.HOLDING_NOTE, RobotStates.NOTE_SEARCH);
 
 		addFunctionToPeriodicMap(
 				() -> {
 					_demand.targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getAmpPose(), 1.25);
 
 					double dist = RobotState.getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());
-					if (dist < 2)
+					if (dist < SwerveConstants.kDriveAssistDistThreshold)
 						setState(SwerveState.FOLLOW_PATH);
-
-					if(_pathFollower.isFinished())
-						StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_AMP_OUTAKE);
 				},
 				RobotStates.DRIVE_TO_AMP);
 
 		addFunctionToOnChangeMap(() -> {
 			setState(SwerveState.LOCKED_AXIS);
-			updateDemand(Rotation2d.fromDegrees(90), 2, false);
+			updateDemand(Rotation2d.fromDegrees(90), 1.84, false);
 		}, RobotStates.PREPARE_AMP_OUTAKE);
 	}
 }

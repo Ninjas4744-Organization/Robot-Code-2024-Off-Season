@@ -3,8 +3,6 @@ package frc.robot.Swerve;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.pathfinding.Pathfinding;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -14,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotState;
+
 import java.util.List;
 
 public class PathFollower {
@@ -65,7 +64,7 @@ public class PathFollower {
 		PathPlannerPath _path = new PathPlannerPath(
 				points,
 				Constants.SwerveConstants.AutoConstants.kConstraints,
-				new GoalEndState(0, targetPose.getRotation()));
+			new GoalEndState(0, RobotState.isSimulated() ? targetPose.getRotation().unaryMinus() : targetPose.getRotation()));
 
 		_trajectory = new PathPlannerTrajectory(
 				_path,
@@ -84,6 +83,7 @@ public class PathFollower {
 	 */
 	public void stop() {
 		started = false;
+		_trajectory = null;
 	}
 
 	/**
