@@ -15,7 +15,7 @@ public class Indexer extends NinjasSubsystem {
     }
     @Override
     protected void setController() {
-        _controller = new NinjasSparkMaxController(Constants.RollersConstants.kControllerConstants);
+        _controller = new NinjasSparkMaxController(Constants.IndexerConstants.kControllerConstants);
     }
 
     @Override
@@ -37,9 +37,16 @@ public class Indexer extends NinjasSubsystem {
                 RobotState.RobotStates.SHOOT);
         addFunctionToOnChangeMap(
                 () -> {
-                    controller().setPercent(Constants.IndexerConstants.States.kElevator);
+                    controller().stop();
                 },
-                RobotState.RobotStates.NOTE_TO_ELEVATOR);
+                RobotState.RobotStates.ELEVATOR_AMP_PREPARE,
+                RobotState.RobotStates.ELEVATOR_TRAP_PREPARE,
+                RobotState.RobotStates.CLOSE);
+        addFunctionToOnChangeMap(
+                () -> {
+                    controller().setPercent(Constants.IndexerConstants.States.kIntake);
+                },
+                RobotState.RobotStates.INTAKE);
         addFunctionToOnChangeMap(
                 () -> {
                     controller().stop();

@@ -1,11 +1,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DataClasses.StateEndCondition;
 import frc.robot.RobotState.RobotStates;
+import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Elevator;
 import frc.robot.Subsystems.Rotation;
 
@@ -20,6 +22,7 @@ public class StateMachine extends SubsystemBase {
 	private DigitalInput _bimBreakerSH;
 	private DigitalInput _LimitSwitchE;
 	private DigitalInput _LimitSwitchC;
+	private Timer _shootPrepareTimer = new Timer();
 
 
 
@@ -37,26 +40,49 @@ public class StateMachine extends SubsystemBase {
 		for (RobotStates state : RobotStates.values()) _endConditionMap.put(state, new StateEndCondition(() -> false, RobotStates.IDLE));
 
 		setEndConditionMap();
-		_bimBreakerENoteIn=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteInID);
-		_bimBreakerENoteOut=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteOutID);
-		_bimBreakerENOteIndexer=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteOutID);
-		_LimitSwitchE=new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
+//		_bimBreakerENoteIn=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteInID);
+//		_bimBreakerENoteOut=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteOutID);
+		_bimBreakerENOteIndexer=new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
+//		_LimitSwitchE=new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
 		_LimitSwitchC=new DigitalInput(Constants.ClimberConstants.kLimitSwitchID);
-		_bimBreakerSH=new DigitalInput(Constants.);
+		_bimBreakerSH=new DigitalInput(Constants.ShooterConstants.kbimBreakerNoteID);
 	}
 
 	/**
 	 * Set in this function the end condition for each state with _endConditionMap
 	 */
 	private void setEndConditionMap(){
-		_endConditionMap.put(RobotStates.ELEVATOR_AMP_PREPARE,
-			new StateEndCondition(() -> Elevator.getInstance().atGoal(), RobotStates.ELEVATOR_AMP_READY));
-		_endConditionMap.put(RobotStates.ELEVATOR_TRAP_PREPARE,
-				new StateEndCondition(() -> Elevator.getInstance().atGoal(), RobotStates.ELEVATOR_TRAP_READY));
-		_endConditionMap.put(RobotStates.CLOSE,
-				new StateEndCondition(() -> Elevator.getInstance().atGoal(), RobotStates.IDLE));
-		_endConditionMap.put(RobotStates.NOTE_TO_ELEVATOR,
-				new StateEndCondition(() ->_LimitSwitchE.get() , RobotStates.ELEVATOR_TRAP_READY));
+//		_endConditionMap.put(RobotStates.ELEVATOR_AMP_PREPARE,
+//			new StateEndCondition(() -> Elevator.getInstance().atGoal(), RobotStates.ELEVATOR_AMP_READY));
+//		_endConditionMap.put(RobotStates.ELEVATOR_TRAP_PREPARE,
+//				new StateEndCondition(() -> Elevator.getInstance().atGoal(), RobotStates.ELEVATOR_TRAP_READY));
+//		_endConditionMap.put(RobotStates.CLOSE,
+//				new StateEndCondition(() -> Elevator.getInstance().atGoal(), RobotStates.IDLE));
+//		_endConditionMap.put(RobotStates.NOTE_TO_ELEVATOR,
+//				new StateEndCondition(() ->_LimitSwitchE.get() , RobotStates.ELEVATOR_TRAP_READY));
+		_endConditionMap.put(RobotStates.INTAKE,
+				new StateEndCondition(() -> RobotState.getbimBreakerIndexer(), RobotStates.NOTE_IN_INDEXER));
+
+		_endConditionMap.put(RobotStates.SHOOT_AMP_PREPARE,
+				new StateEndCondition(() ->_shootPrepareTimer.advanceIfElapsed(1) , RobotStates.SHOOT_AMP_RADY));
+		_endConditionMap.put(RobotStates.SHOOT,
+				new StateEndCondition(() -> !RobotState.getbimBreakerShoot(), RobotStates.CLOSE));
+
+
+		_endConditionMap.put(RobotStates.SHOOT_PREPARE,
+				new StateEndCondition(() ->_shootPrepareTimer.advanceIfElapsed(1), RobotStates.SHOOT_READY));
+		_endConditionMap.put(RobotStates.SHOOT_READY,
+				new StateEndCondition(() -> !RobotState.getbimBreakerShoot(), RobotStates.CLOSE));
+
+		_endConditionMap.put(RobotStates.PREPARE_CLIMB,
+				new StateEndCondition(() -> Climber.getInstance().atGoal(), RobotStates.CLIMB_READY));
+		_endConditionMap.put(RobotStates.CLIMB,
+				new StateEndCondition(() -> Climber.getInstance().atGoal(), RobotStates.CLIMBED));
+
+
+
+
+
 	}
 
 	/**
@@ -85,12 +111,6 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
-			case ELEVATOR_AMP_READY:
-				if (wantedState == RobotStates.INTAKE
-						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
-				break;
-
 			case CLOSE, RESET:
 				if (wantedState == RobotStates.IDLE) RobotState.setRobotState(wantedState);
 				break;
@@ -100,15 +120,7 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.NOTE_SEARCH
 						|| wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.PREPARE_CLIMB
-						|| wantedState == RobotStates.PREPARE_SHOOT)) RobotState.setRobotState(wantedState);
-				break;
-
-			case NOTE_TO_ELEVATOR:
-				if (wantedState == RobotStates.RESET
-						|| wantedState == RobotStates.ELEVATOR_TRAP_PREPARE
-						|| wantedState == RobotStates.ELEVATOR_AMP_PREPARE
-						|| wantedState == RobotStates.PREPARE_CLIMB
-						|| wantedState == RobotStates.PREPARE_SHOOT) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.SHOOT_PREPARE)) RobotState.setRobotState(wantedState);
 				break;
 
 			case INTAKE, SHOOT, ELEVATOR_OUTAKE:
@@ -157,10 +169,13 @@ public class StateMachine extends SubsystemBase {
 					RobotState.setRobotState(wantedState);
 				break;
 			case NOTE_TO_ELEVATOR:
-				if(wantedState == RobotStates.ELEVATOR_AMP_PREPARE || wantedState == RobotStates.ELEVATOR_TRAP_PREPARE){
-					RobotState.setRobotState(wantedState);
-					break;
-				}
+				if (wantedState == RobotStates.RESET
+						|| wantedState == RobotStates.ELEVATOR_TRAP_PREPARE
+						|| wantedState == RobotStates.ELEVATOR_AMP_PREPARE
+						|| wantedState == RobotStates.PREPARE_CLIMB
+						|| wantedState == RobotStates.SHOOT_PREPARE) RobotState.setRobotState(wantedState);
+				break;
+
 		}
 	}
 

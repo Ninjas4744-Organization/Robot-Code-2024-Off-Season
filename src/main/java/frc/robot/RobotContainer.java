@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
+import frc.robot.Subsystems.Climber;
+import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
@@ -24,12 +26,17 @@ public class RobotContainer {
 		AutoCommandBuilder.configureAutoBuilder();
 		AutoCommandBuilder.registerCommands();
 
+		Climber.getInstance();
+		Indexer.getInstance();
 		Shooter.getInstance();
 
 		configureBindings();
 	}
 
 	private void configureBindings() {
+		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(()->StateMachine.getInstance().changeRobotState(RobotStates.SHOOT)));
+		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(()->StateMachine.getInstance().changeRobotState(RobotStates.CLIMB)));
+		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(()->StateMachine.getInstance().changeRobotState(RobotStates.NOTE_SEARCH)));
 		configureDriverBindings();
 		configureOperatorBindings();
 	}

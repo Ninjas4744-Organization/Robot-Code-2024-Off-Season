@@ -27,8 +27,11 @@ public class RobotState {
 		CLOSE,
 		RESET,
 		SHOOT_PREPARE,
+		SHOOT_AMP_PREPARE,
 		SHOOT_READY,
+		SHOOT_AMP_RADY,
 		SHOOT,
+		SHOOT_TO_AMP,
 		NOTE_SEARCH,
 		NOTE_IN_INDEXER,
 		NOTE_TO_ELEVATOR,
@@ -39,6 +42,13 @@ public class RobotState {
 		CLIMBED
 	}
 
+	private static DigitalInput _bimBreakerENoteIn=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteInID);
+	private static DigitalInput _bimBreakerENoteOut=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteOutID);
+	private static DigitalInput _bimBreakerENOteIndexer=new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
+	private static DigitalInput _bimBreakerSH=new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
+	private static DigitalInput _LimitSwitchE=new DigitalInput(Constants.ClimberConstants.kLimitSwitchID);
+	private static DigitalInput _LimitSwitchC=new DigitalInput(Constants.ShooterConstants.kbimBreakerNoteID);
+
 	private static RobotStates robotState = RobotStates.IDLE;
 	private static AHRS navX = new AHRS();
 	private static SwerveDrivePoseEstimator poseEstimator;
@@ -46,6 +56,16 @@ public class RobotState {
 	private static StructPublisher<Pose2d> _robotPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic("Robot Pose", Pose2d.struct)
 			.publish();
+	public static boolean getbimBreakerShoot(){
+		return _bimBreakerSH.get();
+	}
+	public static boolean getbimBreakerClimber(){
+		return _LimitSwitchC.get();
+	}
+	public static boolean getbimBreakerIndexer(){
+		return _bimBreakerENOteIndexer.get();
+	}
+
 
 	/**
 	 * @return State of the robot

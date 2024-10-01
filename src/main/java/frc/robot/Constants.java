@@ -42,7 +42,10 @@ public final class Constants {
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
+
+
 		}
+		public static final int kbimBreakerNoteID = 7;
 	}
 
 	public static class  ElevatorConstants {
@@ -130,36 +133,38 @@ public final class Constants {
 			public static final double kElevator = 0.4;
 			public static final double kShoot = 0;
 			public static final double kClose = 0;
+			public static final double kIntake=1;
+			public static final double k=1;
 		}
 	}
 
-	public static class RollersConstants {
-		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
-		public static final SimulatedControllerConstants kSimulatedControllerConstants =
-				new SimulatedControllerConstants();
-
-		static {
-			kControllerConstants.main.id = 24;
-			kControllerConstants.main.inverted = true;
-			kControllerConstants.currentLimit = 40;
-			kControllerConstants.subsystemName = "Rollers";
-			kControllerConstants.PIDFConstants = new PIDFConstants(5, 0, 0, 8, 8);
-			kControllerConstants.positionGoalTolerance = 0.01;
-			kControllerConstants.encoderConversionFactor = 0.0098174;
-			kControllerConstants.encoderHomePosition = 0;
-			kControllerConstants.gearRatio = 1;
-
-			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.motorTorque = 1;
-		}
-
-		public static final int kLimitSwitchID = 7;
-
-		public class States {
-			public static final double kIntake = -1;
-			public static final double kOutake = 1;
-		}
-	}
+//	public static class RollersConstants {
+//		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+//		public static final SimulatedControllerConstants kSimulatedControllerConstants =
+//				new SimulatedControllerConstants();
+//
+//		static {
+//			kControllerConstants.main.id = 24;
+//			kControllerConstants.main.inverted = true;
+//			kControllerConstants.currentLimit = 40;
+//			kControllerConstants.subsystemName = "Rollers";
+//			kControllerConstants.PIDFConstants = new PIDFConstants(5, 0, 0, 8, 8);
+//			kControllerConstants.positionGoalTolerance = 0.01;
+//			kControllerConstants.encoderConversionFactor = 0.0098174;
+//			kControllerConstants.encoderHomePosition = 0;
+//			kControllerConstants.gearRatio = 1;
+//
+//			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+//			kSimulatedControllerConstants.motorTorque = 1;
+//		}
+//
+//		public static final int kLimitSwitchID = 7;
+//
+//		public class States {
+//			public static final double kIntake = -1;
+//			public static final double kOutake = 1;
+//		}
+//	}
 	public static class RollersIntakeConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
 		public static final SimulatedControllerConstants kSimulatedControllerConstants =
