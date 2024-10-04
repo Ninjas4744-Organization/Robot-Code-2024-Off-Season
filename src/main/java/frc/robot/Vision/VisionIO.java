@@ -2,13 +2,13 @@ package frc.robot.Vision;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.DataClasses.VisionEstimation;
 import frc.robot.DataClasses.VisionOutput;
 import frc.robot.RobotState;
+
 import java.util.HashMap;
 
 public abstract class VisionIO extends SubsystemBase {
@@ -26,12 +26,11 @@ public abstract class VisionIO extends SubsystemBase {
 	}
 
 	public VisionIO() {
-		HashMap<String, Transform3d> camerasPoses = VisionConstants.getCamerasPoses();
-		String[] camerasNames = camerasPoses.keySet().toArray(new String[0]);
+		String[] camerasNames = VisionConstants.kCameras.keySet().toArray(new String[0]);
 
 		_cameras = new VisionCamera[camerasNames.length];
-		for (int i = 0; i < camerasPoses.size(); i++)
-			_cameras[i] = new VisionCamera(camerasNames[i], camerasPoses.get(camerasNames[i]));
+		for (int i = 0; i < VisionConstants.kCameras.size(); i++)
+			_cameras[i] = new VisionCamera(camerasNames[i], VisionConstants.kCameras.get(camerasNames[i]));
 
 		_estimationsData = new VisionEstimation[camerasNames.length];
 		_outputs = new HashMap<>();
@@ -136,12 +135,11 @@ public abstract class VisionIO extends SubsystemBase {
 		String closestCamera = "";
 		Rotation2d closestAngleDiff = Rotation2d.fromDegrees(Double.MAX_VALUE);
 
-		HashMap<String, Transform3d> camerasPoses = VisionConstants.getCamerasPoses();
-		String[] camerasNames = camerasPoses.keySet().toArray(new String[0]);
+		String[] camerasNames = VisionConstants.kCameras.keySet().toArray(new String[0]);
 
 		for (String camera : camerasNames) {
 			Rotation2d cameraAngle = Rotation2d.fromRadians(
-					camerasPoses.get(camera).getRotation().getZ());
+				VisionConstants.kCameras.get(camera).getRotation().getZ());
 
 			if (dirAngle.minus(cameraAngle).getDegrees() < closestAngleDiff.getDegrees()) {
 				closestAngleDiff = dirAngle.minus(cameraAngle);
@@ -150,5 +148,10 @@ public abstract class VisionIO extends SubsystemBase {
 		}
 
 		return closestCamera;
+	}
+
+	public void ignoreTag(int id) {
+		for (VisionCamera camera : _cameras)
+			camera.ignoreTag(id);
 	}
 }

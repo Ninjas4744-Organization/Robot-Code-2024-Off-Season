@@ -1,0 +1,284 @@
+{
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/AutoCommandBuilder.java": {
+    "language": "Java",
+    "code": 29,
+    "comment": 16,
+    "blank": 7
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/DataClasses/ControllerConstants.java": {
+    "language": "Java",
+    "code": 5,
+    "comment": 9,
+    "blank": 3
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/StateMachine.java": {
+    "language": "Java",
+    "code": 135,
+    "comment": 15,
+    "blank": 34
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Subsystems/Leds.java": {
+    "language": "Java",
+    "code": 47,
+    "comment": 6,
+    "blank": 7
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Subsystems/Elevator.java": {
+    "language": "Java",
+    "code": 43,
+    "comment": 0,
+    "blank": 10
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/TeleopCommandBuilder.java": {
+    "language": "Java",
+    "code": 40,
+    "comment": 0,
+    "blank": 6
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Subsystems/Shooter.java": {
+    "language": "Java",
+    "code": 27,
+    "comment": 0,
+    "blank": 9
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/DataClasses/MainControllerConstants.java": {
+    "language": "Java",
+    "code": 17,
+    "comment": 24,
+    "blank": 15
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/DataClasses/VisionOutput.java": {
+    "language": "Java",
+    "code": 15,
+    "comment": 9,
+    "blank": 11
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/DataClasses/VisionEstimation.java": {
+    "language": "Java",
+    "code": 12,
+    "comment": 10,
+    "blank": 6
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/DataClasses/SwerveModuleConstants.java": {
+    "language": "Java",
+    "code": 14,
+    "comment": 8,
+    "blank": 4
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/DataClasses/StateEndCondition.java": {
+    "language": "Java",
+    "code": 11,
+    "comment": 0,
+    "blank": 4
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/DataClasses/SimulatedControllerConstants.java": {
+    "language": "Java",
+    "code": 13,
+    "comment": 2,
+    "blank": 4
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Subsystems/ShooterFeeder.java": {
+    "language": "Java",
+    "code": 41,
+    "comment": 0,
+    "blank": 10
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/DataClasses/PIDFConstants.java": {
+    "language": "Java",
+    "code": 51,
+    "comment": 30,
+    "blank": 17
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Subsystems/ShooterAngle.java": {
+    "language": "Java",
+    "code": 38,
+    "comment": 0,
+    "blank": 10
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/RobotContainer.java": {
+    "language": "Java",
+    "code": 81,
+    "comment": 3,
+    "blank": 22
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/RobotState.java": {
+    "language": "Java",
+    "code": 126,
+    "comment": 53,
+    "blank": 21
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Robot.java": {
+    "language": "Java",
+    "code": 52,
+    "comment": 0,
+    "blank": 19
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Main.java": {
+    "language": "Java",
+    "code": 8,
+    "comment": 3,
+    "blank": 5
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Constants.java": {
+    "language": "Java",
+    "code": 371,
+    "comment": 52,
+    "blank": 96
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Vision/VisionSimulated.java": {
+    "language": "Java",
+    "code": 38,
+    "comment": 0,
+    "blank": 10
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/AbstractClasses/NinjasVictorSPXController.java": {
+    "language": "Java",
+    "code": 54,
+    "comment": 0,
+    "blank": 17
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/AbstractClasses/NinjasTalonSRXController.java": {
+    "language": "Java",
+    "code": 84,
+    "comment": 0,
+    "blank": 25
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/AbstractClasses/NinjasTalonFXController.java": {
+    "language": "Java",
+    "code": 102,
+    "comment": 0,
+    "blank": 22
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/AbstractClasses/NinjasSparkMaxController.java": {
+    "language": "Java",
+    "code": 125,
+    "comment": 0,
+    "blank": 34
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/AbstractClasses/NinjasSimulatedController.java": {
+    "language": "Java",
+    "code": 126,
+    "comment": 0,
+    "blank": 25
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Vision/VisionIO.java": {
+    "language": "Java",
+    "code": 91,
+    "comment": 41,
+    "blank": 23
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/AbstractClasses/NinjasSubsystem.java": {
+    "language": "Java",
+    "code": 59,
+    "comment": 67,
+    "blank": 22
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Vision/VisionCamera.java": {
+    "language": "Java",
+    "code": 80,
+    "comment": 15,
+    "blank": 20
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Vision/Vision.java": {
+    "language": "Java",
+    "code": 2,
+    "comment": 0,
+    "blank": 2
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Vision/NoteDetection.java": {
+    "language": "Java",
+    "code": 40,
+    "comment": 7,
+    "blank": 12
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Swerve/LocalADStarAK.java": {
+    "language": "Java",
+    "code": 57,
+    "comment": 32,
+    "blank": 14
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Swerve/DriveAssist.java": {
+    "language": "Java",
+    "code": 97,
+    "comment": 22,
+    "blank": 25
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Vision/LimelightHelpers.java": {
+    "language": "Java",
+    "code": 918,
+    "comment": 102,
+    "blank": 234
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/AbstractClasses/NinjasController.java": {
+    "language": "Java",
+    "code": 125,
+    "comment": 71,
+    "blank": 30
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Swerve/CANSparkMaxUtil.java": {
+    "language": "Java",
+    "code": 38,
+    "comment": 30,
+    "blank": 6
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Swerve/CANCoderUtil.java": {
+    "language": "Java",
+    "code": 12,
+    "comment": 24,
+    "blank": 4
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Swerve/SwerveIO.java": {
+    "language": "Java",
+    "code": 224,
+    "comment": 116,
+    "blank": 57
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Swerve/SwerveModule.java": {
+    "language": "Java",
+    "code": 145,
+    "comment": 25,
+    "blank": 34
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Swerve/SwerveDemand.java": {
+    "language": "Java",
+    "code": 24,
+    "comment": 0,
+    "blank": 4
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Swerve/Swerve.java": {
+    "language": "Java",
+    "code": 82,
+    "comment": 25,
+    "blank": 17
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Swerve/SwerveSimulated.java": {
+    "language": "Java",
+    "code": 32,
+    "comment": 0,
+    "blank": 6
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/java/frc/robot/Swerve/OnboardModuleState.java": {
+    "language": "Java",
+    "code": 39,
+    "comment": 14,
+    "blank": 5
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/main/deploy/pathplanner/navgrid.json": {
+    "language": "JSON",
+    "code": 1,
+    "comment": 0,
+    "blank": 0
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/test/java/frc/robot/Swerve/SwerveTest.java": {
+    "language": "Java",
+    "code": 10,
+    "comment": 17,
+    "blank": 5
+  },
+  "file:///c%3A/Users/eitan/Documents/Projects/Robotics/Robot-Code-2024-Off-Season/src/test/java/frc/robot/IntakeTest.java": {
+    "language": "Java",
+    "code": 3,
+    "comment": 11,
+    "blank": 2
+  }
+}

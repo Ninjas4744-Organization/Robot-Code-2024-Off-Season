@@ -1,21 +1,14 @@
 package frc.robot.AbstractClasses;
 
-import com.ctre.phoenix6.configs.AudioConfigs;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import frc.robot.DataClasses.MainControllerConstants;
 
 public class NinjasTalonFXController extends NinjasController {
-	private TalonFX _main;
-	private TalonFX[] _followers;
+	private final TalonFX _main;
+	private final TalonFX[] _followers;
 
 	public NinjasTalonFXController(MainControllerConstants constants) {
 		super(constants);
@@ -23,6 +16,11 @@ public class NinjasTalonFXController extends NinjasController {
 		_main = new TalonFX(constants.main.id);
 		_main.getConfigurator()
 				.apply(new TalonFXConfiguration()
+					.withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
+						.withForwardSoftLimitEnable(constants.isMaxSoftLimit)
+						.withReverseSoftLimitEnable(constants.isMinSoftLimit)
+						.withForwardSoftLimitThreshold(constants.maxSoftLimit)
+						.withReverseSoftLimitThreshold(constants.minSoftLimit))
 						.withAudio(new AudioConfigs().withBeepOnBoot(true))
 						.withMotorOutput(new MotorOutputConfigs()
 								.withInverted(
@@ -61,14 +59,36 @@ public class NinjasTalonFXController extends NinjasController {
 	public void setPosition(double position) {
 		super.setPosition(position);
 
-		_main.setControl(new MotionMagicVoltage(position / _constants.encoderConversionFactor));
+		switch (_controlState) {
+			case PIDF_POSITION:
+				_main.setControl(new MotionMagicVoltage(position / _constants.encoderConversionFactor));
+				break;
+
+			case PID_POSITION:
+				_main.setControl(new PositionVoltage(position / _constants.encoderConversionFactor));
+				break;
+
+			case FF_POSITION:
+				throw new UnsupportedOperationException("Feedforward control not supported on Talon FX");
+		}
 	}
 
 	@Override
 	public void setVelocity(double velocity) {
 		super.setVelocity(velocity);
 
-		_main.setControl(new MotionMagicVelocityVoltage(velocity / (_constants.encoderConversionFactor / 60)));
+		switch (_controlState) {
+			case PIDF_VELOCITY:
+				_main.setControl(new MotionMagicVelocityVoltage(velocity / _constants.encoderConversionFactor));
+				break;
+
+			case PID_VELOCITY:
+				_main.setControl(new VelocityVoltage(velocity / _constants.encoderConversionFactor));
+				break;
+
+			case FF_VELOCITY:
+				throw new UnsupportedOperationException("Feedforward control not supported on Talon FX");
+		}
 	}
 
 	@Override
@@ -78,7 +98,7 @@ public class NinjasTalonFXController extends NinjasController {
 
 	@Override
 	public double getVelocity() {
-		return _main.getVelocity().getValueAsDouble() * _constants.encoderConversionFactor / 60;
+		return _main.getVelocity().getValueAsDouble() * _constants.encoderConversionFactor;
 	}
 
 	@Override
@@ -89,15 +109,5 @@ public class NinjasTalonFXController extends NinjasController {
 	@Override
 	public void setEncoder(double position) {
 		_main.setPosition(position / _constants.encoderConversionFactor);
-	}
-
-	@Override
-	public boolean atGoal() {
-		if (_controlState == ControlState.PIDF_POSITION)
-			return Math.abs(getGoal() - getPosition()) < _constants.positionGoalTolerance;
-		else if (_controlState == ControlState.PIDF_VELOCITY)
-			return Math.abs(getGoal() - getVelocity()) < _constants.velocityGoalTolerance;
-
-		return false;
 	}
 }

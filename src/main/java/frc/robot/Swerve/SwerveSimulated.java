@@ -19,10 +19,10 @@ public class SwerveSimulated extends SwerveIO {
 
 		RobotState.setRobotPose(new Pose2d(
 				RobotState.getRobotPose().getX()
-						+ _currentChassisSpeeds.vxMetersPerSecond
+						+ _xAcceleration.calculate(_currentChassisSpeeds.vxMetersPerSecond)
 								* SwerveConstants.Simulation.kSimToRealSpeedConversion,
 				RobotState.getRobotPose().getY()
-						+ _currentChassisSpeeds.vyMetersPerSecond
+						+ _yAcceleration.calculate(_currentChassisSpeeds.vyMetersPerSecond)
 								* SwerveConstants.Simulation.kSimToRealSpeedConversion,
 				RobotState.getRobotPose()
 						.getRotation()

@@ -5,16 +5,14 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import frc.robot.DataClasses.MainControllerConstants;
 
 public class NinjasVictorSPXController extends NinjasController {
-	private VictorSPX _main;
-	private VictorSPX[] _followers;
+	private final VictorSPX _main;
+	private final VictorSPX[] _followers;
 
 	public NinjasVictorSPXController(MainControllerConstants constants) {
 		super(constants);
 
 		_main = new VictorSPX(constants.main.id);
-
 		_main.configFactoryDefault();
-
 		_main.setInverted(constants.main.inverted);
 
 		_followers = new VictorSPX[constants.followers.length];

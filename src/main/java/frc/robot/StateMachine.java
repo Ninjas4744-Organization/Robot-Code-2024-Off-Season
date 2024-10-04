@@ -8,8 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DataClasses.StateEndCondition;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;
-import frc.robot.Subsystems.Elevator;
-import frc.robot.Subsystems.Rotation;
+import frc.robot.Swerve.SwerveIO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +36,8 @@ public class StateMachine extends SubsystemBase {
 	private StateMachine() {
 		_endConditionMap = new HashMap<>();
 
-		for (RobotStates state : RobotStates.values()) _endConditionMap.put(state, new StateEndCondition(() -> false, RobotStates.IDLE));
+		for (RobotStates state : RobotStates.values())
+			_endConditionMap.put(state, new StateEndCondition(() -> false, RobotStates.IDLE));
 
 		setEndConditionMap();
 //		_bimBreakerENoteIn=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteInID);
@@ -83,6 +83,8 @@ public class StateMachine extends SubsystemBase {
 
 
 
+	private void setEndConditionMap() {
+		_endConditionMap.put(RobotStates.DRIVE_TO_AMP, new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.PREPARE_AMP_OUTAKE));
 	}
 
 	/**
@@ -123,8 +125,23 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.SHOOT_PREPARE)) RobotState.setRobotState(wantedState);
 				break;
 
+			case HOLDING_NOTE:
+				if (wantedState == RobotStates.RESET
+						|| wantedState == RobotStates.PREPARE_AMP_OUTAKE
+						|| wantedState == RobotStates.PREPARE_TRAP_OUTAKE
+						|| wantedState == RobotStates.PREPARE_CLIMB
+						|| wantedState == RobotStates.PREPARE_SHOOT
+						|| wantedState == RobotStates.DRIVE_TO_AMP) RobotState.setRobotState(wantedState);
+				break;
+
+			case INTAKE, OUTAKE:
 			case INTAKE, SHOOT, ELEVATOR_OUTAKE:
 				if (wantedState == RobotStates.RESET || wantedState == RobotStates.CLOSE)
+					RobotState.setRobotState(wantedState);
+				break;
+
+			case SHOOT:
+				if (wantedState == RobotStates.RESET || wantedState == RobotStates.IDLE)
 					RobotState.setRobotState(wantedState);
 				break;
 
@@ -139,7 +156,9 @@ public class StateMachine extends SubsystemBase {
 			case ELEVATOR_AMP_PREPARE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.ELEVATOR_AMP_READY) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.ELEVATOR_AMP_READY) {
+					RobotState.setRobotState(wantedState);
+				}
 				break;
 
 			case ELEVATOR_TRAP_PREPARE:
@@ -168,6 +187,12 @@ public class StateMachine extends SubsystemBase {
 				if(wantedState == RobotStates.NOTE_TO_ELEVATOR ||wantedState == RobotStates.SHOOT_PREPARE)
 					RobotState.setRobotState(wantedState);
 				break;
+
+			case DRIVE_TO_AMP:
+				if (wantedState == RobotStates.PREPARE_AMP_OUTAKE || wantedState == RobotStates.CLOSE)
+					RobotState.setRobotState(wantedState);
+				break;
+		}
 			case NOTE_TO_ELEVATOR:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.ELEVATOR_TRAP_PREPARE
@@ -176,6 +201,14 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.SHOOT_PREPARE) RobotState.setRobotState(wantedState);
 				break;
 
+		}
+		if (RobotState.getRobotState() == RobotStates.CLOSE) RobotState.setRobotState(RobotStates.IDLE);
+
+		if (RobotState.getRobotState() == RobotStates.IDLE) {
+			if (RobotState.hasNote())
+				RobotState.setRobotState(RobotStates.HOLDING_NOTE);
+			else
+				RobotState.setRobotState(RobotStates.NOTE_SEARCH);
 		}
 	}
 
@@ -209,9 +242,7 @@ public class StateMachine extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		for(RobotStates state : RobotStates.values()){
-			if(_endConditionMap.get(state).condition.getAsBoolean())
-				changeRobotState(_endConditionMap.get(state).nextState);
-		}
+		if (_endConditionMap.get(RobotState.getRobotState()).condition.getAsBoolean())
+			changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState);
 	}
 }
