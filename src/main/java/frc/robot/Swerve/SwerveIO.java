@@ -37,6 +37,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	private SwerveState _state;
 	private SwerveState _previousState;
 
+
 	/** Returns the swerve instance, simulated/real depends on if the code is simulated/real. */
 	public static SwerveIO getInstance() {
 		if (_instance == null) {
@@ -406,4 +407,5 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 			updateDemand(Rotation2d.fromDegrees(90), 1.84, false);
 		}, RobotStates.PREPARE_AMP_OUTAKE);
 	}
+
 }

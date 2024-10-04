@@ -25,4 +25,6 @@ public class SwerveDemand {
 	public Rotation2d angle = new Rotation2d();
 	public double phase = 0;
 	public boolean isXDriverInput = false;
+
+
 }

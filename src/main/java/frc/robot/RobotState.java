@@ -101,7 +101,7 @@ public class RobotState {
 	public static void updateRobotPose(VisionEstimation visionEstimation) {
 		if (visionEstimation.hasTargets)
 			poseEstimator.addVisionMeasurement(visionEstimation.pose, visionEstimation.timestamp);
-
+		
 		_robotPosePublisher.set(getRobotPose());
 	}
 
