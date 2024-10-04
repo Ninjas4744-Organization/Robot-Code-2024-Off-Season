@@ -19,53 +19,39 @@ public class RobotState {
 	public enum RobotStates {
 		IDLE,
 		INTAKE,
-		ELEVATOR_AMP_PREPARE,
-		ELEVATOR_OUTAKE,
-		ELEVATOR_TRAP_PREPARE,
-		ELEVATOR_AMP_READY,
-		ELEVATOR_TRAP_READY,
 		CLOSE,
 		RESET,
-		SHOOT_PREPARE,
+		SHOOT_SPEAKER_PREPARE,
 		SHOOT_AMP_PREPARE,
 		SHOOT_READY,
-		SHOOT_AMP_RADY,
 		SHOOT,
-		SHOOT_TO_AMP,
 		NOTE_SEARCH,
 		NOTE_IN_INDEXER,
-		NOTE_TO_ELEVATOR,
-		NOTE_TO_SHOOTER,
-		PREPARE_CLIMB,
+		CLIMB_PREPARE,
 		CLIMB_READY,
 		CLIMB,
-		DRIVE_TO_AMP, DRIVE_TO_SPEAKER, DRIVE_TO_SOURCE, CLIMBED
+		CLIMBED,
+		DRIVE_TO_AMP,
+		DRIVE_TO_SPEAKER,
+		DRIVE_TO_SOURCE
 	}
 
-	private static DigitalInput _bimBreakerENoteIn=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteInID);
-	private static DigitalInput _bimBreakerENoteOut=new DigitalInput(Constants.ElevatorConstants.kbimBreakerNoteOutID);
-	private static DigitalInput _bimBreakerENOteIndexer=new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
-	private static DigitalInput _bimBreakerSH=new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
-	private static DigitalInput _LimitSwitchE=new DigitalInput(Constants.ClimberConstants.kLimitSwitchID);
-	private static DigitalInput _LimitSwitchC=new DigitalInput(Constants.ShooterConstants.kbimBreakerNoteID);
 
 	private static RobotStates robotState = RobotStates.IDLE;
 	private static AHRS navX = new AHRS();
 	private static SwerveDrivePoseEstimator poseEstimator;
-
 	private static StructPublisher<Pose2d> _robotPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic("Robot Pose", Pose2d.struct)
 			.publish();
-	public static boolean getbimBreakerShoot(){
-		return _bimBreakerSH.get();
-	}
-	public static boolean getbimBreakerClimber(){
-		return _LimitSwitchC.get();
-	}
-	public static boolean getbimBreakerIndexer(){
-		return _bimBreakerENOteIndexer.get();
-	}
 
+	private static DigitalInput _indexerNote = new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
+
+	/**
+	 * @return Whether there's a note in the indexer according to its beam breaker
+	 */
+	public static boolean getNoteInIndexer(){
+		return _indexerNote.get();
+	}
 
 	/**
 	 * @return State of the robot
@@ -178,35 +164,5 @@ public class RobotState {
 	 */
 	public static boolean isSimulated() {
 		return Robot.isSimulation();
-	}
-
-	/**
-	 * @return Whether the robot is close to its alliance's amp
-	 */
-	public static boolean atAmp() {
-		return RobotState.getRobotPose()
-						.getTranslation()
-						.getDistance(VisionConstants.getAmpPose().getTranslation())
-				< 0.5;
-	}
-
-	/**
-	 * @return Whether the robot is close to its alliance's source
-	 */
-	public static boolean atSource() {
-		return RobotState.getRobotPose()
-						.getTranslation()
-						.getDistance(VisionConstants.getSourcePose().getTranslation())
-				< 0.5;
-	}
-
-	/**
-	 * @return Whether the robot is close to its alliance's speaker
-	 */
-	public static boolean atSpeaker() {
-		return RobotState.getRobotPose()
-						.getTranslation()
-						.getDistance(VisionConstants.getSpeakerPose().getTranslation())
-				< 2.5;
 	}
 }

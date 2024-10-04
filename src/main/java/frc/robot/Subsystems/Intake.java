@@ -3,14 +3,12 @@ package frc.robot.Subsystems;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
-import frc.robot.AbstractClasses.NinjasSubsystem;
-import frc.robot.Constants;
-import frc.robot.Constants.RollersConstants;
+import frc.robot.AbstractClasses.StateMachineMotoredSubsystem;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
-import frc.robot.StateMachine;
 
-public class Intake extends NinjasSubsystem {
+public class Intake extends StateMachineMotoredSubsystem {
 	private static Intake _instance;
 
 	private Timer _outakeTimer = new Timer();
@@ -23,28 +21,24 @@ public class Intake extends NinjasSubsystem {
 
 	@Override
 	protected void setController() {
-		_controller = new NinjasSparkMaxController(RollersConstants.kControllerConstants);
+		_controller = new NinjasSparkMaxController(IntakeConstants.kControllerConstants);
 	}
 
 	@Override
 	protected void setSimulationController() {
-		_simulatedController = new NinjasSimulatedController(RollersConstants.kSimulatedControllerConstants);
+		_simulatedController = new NinjasSimulatedController(IntakeConstants.kSimulatedControllerConstants);
 	}
 
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-				() -> {
-					controller().setPercent(RollersConstants.States.kIntake);
-				},
+				() -> controller().setPercent(IntakeConstants.States.kIntake),
 				RobotStates.INTAKE);
+
 		addFunctionToOnChangeMap(
-				() -> {
-					controller().stop();
-				},
-				RobotState.RobotStates.ELEVATOR_AMP_PREPARE,
-				RobotState.RobotStates.ELEVATOR_TRAP_PREPARE,
+				() -> controller().stop(),
 				RobotState.RobotStates.CLOSE);
+
 		addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotStates.RESET);
 
 	}

@@ -1,5 +1,6 @@
 package frc.robot.Subsystems;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
@@ -7,6 +8,7 @@ import frc.robot.AbstractClasses.StateMachineMotoredSubsystem;
 import frc.robot.Constants.ShooterAngleConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
+import frc.robot.RobotState.RobotStates;
 
 public class ShooterAngle extends StateMachineMotoredSubsystem {
 	private static ShooterAngle _instance;
@@ -27,21 +29,28 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 		_simulatedController = new NinjasSimulatedController(ShooterAngleConstants.kSimulatedControllerConstants);
 	}
 
+	private Rotation2d calculateAngle(Pose3d target){
+		double dist = RobotState.getRobotPose()
+			.getTranslation()
+			.getDistance(target.toPose2d().getTranslation());
+
+		Rotation2d angle = Rotation2d.fromRadians(Math.atan2(
+			target.getZ() - ShooterAngleConstants.kShooterHeight, dist));
+
+		double angleClamped =
+			Math.min(Math.max(angle.getDegrees(), 30), 80);
+
+		return Rotation2d.fromDegrees(angleClamped);
+	}
+
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToPeriodicMap(
-				() -> {
-					double dist = RobotState.getRobotPose()
-							.getTranslation()
-							.getDistance(VisionConstants.getTagPose(15).getTranslation());
+				() -> controller().setPosition(calculateAngle(VisionConstants.getAmpTag().pose).getDegrees()),
+				RobotStates.SHOOT_AMP_PREPARE);
 
-					Rotation2d angle = Rotation2d.fromRadians(Math.atan2(
-							ShooterAngleConstants.kTargetHeight - ShooterAngleConstants.kShooterHeight, dist));
-					double angleClamped =
-							Math.min(Math.max(angle.getDegrees() - ShooterAngleConstants.kShooterStartAngle, 0), 120);
-
-					controller().setPosition(angleClamped);
-				},
-				RobotState.RobotStates.PREPARE_SHOOT);
+		addFunctionToPeriodicMap(
+			() -> controller().setPosition(calculateAngle(VisionConstants.getSpeakerTag().pose).getDegrees()),
+			RobotStates.SHOOT_SPEAKER_PREPARE);
 	}
 }

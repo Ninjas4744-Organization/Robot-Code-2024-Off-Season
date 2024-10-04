@@ -17,8 +17,6 @@ public class ShooterFeeder extends StateMachineMotoredSubsystem {
 		return _instance;
 	}
 
-	Timer shootTimer = new Timer();
-
 	@Override
 	protected void setController() {
 		_controller = new NinjasSparkMaxController(ShooterFeederConstants.kControllerConstants);
@@ -32,19 +30,11 @@ public class ShooterFeeder extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-				() -> {
-					controller().setPercent(1);
-					shootTimer.restart();
-				},
+				() -> controller().setPercent(ShooterFeederConstants.States.kRoll),
 				RobotState.RobotStates.SHOOT);
 
-		addFunctionToPeriodicMap(
-				() -> {
-					if (shootTimer.get() > 0.5) {
-						StateMachine.getInstance().changeRobotState(RobotState.RobotStates.IDLE);
-						controller().stop();
-					}
-				},
-				RobotState.RobotStates.SHOOT);
+		addFunctionToOnChangeMap(
+				() -> controller().stop(),
+				RobotState.RobotStates.CLOSE);
 	}
 }

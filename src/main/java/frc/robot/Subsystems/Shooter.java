@@ -4,7 +4,7 @@ import frc.robot.AbstractClasses.NinjasSimulatedController;
 import frc.robot.AbstractClasses.NinjasSparkMaxController;
 import frc.robot.AbstractClasses.StateMachineMotoredSubsystem;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.RobotState;
+import frc.robot.RobotState.RobotStates;
 
 public class Shooter extends StateMachineMotoredSubsystem {
 	private static Shooter _instance;
@@ -28,8 +28,8 @@ public class Shooter extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-				() -> controller().setVelocity(ShooterConstants.kShootVelocity), RobotState.RobotStates.PREPARE_SHOOT);
+				() -> controller().setVelocity(ShooterConstants.States.kShoot), RobotStates.SHOOT);
 
-		addFunctionToOnChangeMap(() -> controller().stop(), RobotState.RobotStates.NOTE_SEARCH);
+		addFunctionToOnChangeMap(() -> controller().stop(), RobotStates.CLOSE);
 	}
 }
