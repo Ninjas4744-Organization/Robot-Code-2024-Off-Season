@@ -10,10 +10,12 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Swerve.SwerveIO;
 import frc.robot.Vision.VisionIO;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class TeleopCommandBuilder {
-	public static Command swerveDrive(Supplier<Translation2d> translation, Supplier<Translation2d> rotation) {
+	public static Command swerveDrive(Supplier<Translation2d> translation, Supplier<Translation2d> rotation, BooleanSupplier isLookAt, BooleanSupplier isBayblade) {
 		return Commands.runOnce(
 				() -> {
 					double lx = -MathUtil.applyDeadband(translation.get().getX(), SwerveConstants.kJoystickDeadband);
@@ -22,8 +24,15 @@ public class TeleopCommandBuilder {
 							* MathUtil.applyDeadband(rotation.get().getX(), SwerveConstants.kJoystickDeadband);
 					double ry = -MathUtil.applyDeadband(rotation.get().getY(), SwerveConstants.kJoystickDeadband);
 
-					SwerveIO.getInstance().updateDemand(new ChassisSpeeds(ly, lx, rx));
-					SwerveIO.getInstance().updateDemand(new Translation2d(ry, rx));
+					double finalRotation = rx;
+
+					if(isLookAt.getAsBoolean())
+						finalRotation = SwerveIO.getInstance().lookAt(new Translation2d(lx, ly), 45);
+
+					if(isBayblade.getAsBoolean())
+						finalRotation = SwerveConstants.maxAngularVelocity;
+
+					SwerveIO.getInstance().updateDemand(new ChassisSpeeds(ly, lx, finalRotation));
 				},
 				SwerveIO.getInstance());
 	}

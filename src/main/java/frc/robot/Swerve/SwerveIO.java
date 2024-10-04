@@ -248,7 +248,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	 * @see #updateDemand(Pose2d)
 	 * @see #updateDemand(Rotation2d, double, boolean isXDriverInput)
 	 * @see #updateDemand(ChassisSpeeds, boolean)
-	 * @see #updateDemand(Translation2d)
 	 */
 	public void updateDemand(ChassisSpeeds driverInput) {
 		_demand.driverInput = driverInput;
@@ -263,7 +262,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	 * @see #updateDemand(Pose2d)
 	 * @see #updateDemand(Rotation2d, double, boolean isXDriverInput)
 	 * @see #updateDemand(ChassisSpeeds, boolean)
-	 * @see #updateDemand(Translation2d)
 	 */
 	public void updateDemand(ChassisSpeeds velocity, boolean fieldRelative) {
 		_demand.velocity = velocity;
@@ -278,7 +276,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	 * @see #updateDemand(Pose2d)
 	 * @see #updateDemand(Rotation2d, double, boolean isXDriverInput)
 	 * @see #updateDemand(ChassisSpeeds, boolean)
-	 * @see #updateDemand(Translation2d)
 	 */
 	public void updateDemand(Pose2d targetPose) {
 		_demand.targetPose = targetPose;
@@ -295,26 +292,11 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	 * @see #updateDemand(Pose2d)
 	 * @see #updateDemand(Rotation2d, double, boolean isXDriverInput)
 	 * @see #updateDemand(ChassisSpeeds, boolean)
-	 * @see #updateDemand(Translation2d)
 	 */
 	public void updateDemand(Rotation2d angle, double phase, boolean isXDriverInput) {
 		_demand.angle = angle;
 		_demand.phase = phase;
 		_demand.isXDriverInput = isXDriverInput;
-	}
-
-	/**
-	 * Update the swerve demand. The demand of the swerve is the values the swerve should work with when working according to states.
-	 * In this case it is the translation to make the swerve look at.
-	 * @param lookAtTranslation the wanted looking direction
-	 * @see #updateDemand(ChassisSpeeds)
-	 * @see #updateDemand(Pose2d)
-	 * @see #updateDemand(Rotation2d, double, boolean isXDriverInput)
-	 * @see #updateDemand(ChassisSpeeds, boolean)
-	 * @see #updateDemand(Translation2d)
-	 */
-	public void updateDemand(Translation2d lookAtTranslation) {
-		_demand.lookAtTranslation = lookAtTranslation;
 	}
 
 	@Override
@@ -327,24 +309,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 			case FOLLOW_PATH:
 				Pose2d target = new Pose2d(_demand.targetPose.getX(), _demand.targetPose.getY(), _demand.targetPose.getRotation().unaryMinus());
 				drive(_pathFollower.followPath(target), true);
-				break;
-
-			case BAYBLADE:
-				_demand.driverInput = fromPercent(_demand.driverInput);
-
-				drive(new ChassisSpeeds(
-						_demand.driverInput.vxMetersPerSecond,
-						_demand.driverInput.vyMetersPerSecond,
-						SwerveConstants.maxAngularVelocity), SwerveConstants.kFieldRelative);
-				break;
-
-			case LOOK_AT_ANGLE:
-				_demand.driverInput = fromPercent(_demand.driverInput);
-
-				drive(new ChassisSpeeds(
-						_demand.driverInput.vxMetersPerSecond,
-						_demand.driverInput.vyMetersPerSecond,
-						lookAt(_demand.lookAtTranslation, 45)), SwerveConstants.kFieldRelative);
 				break;
 
 			case LOOK_AT_TARGET:
@@ -389,21 +353,40 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 
 	@Override
 	protected void setFunctionMaps() {
-		addFunctionToOnChangeMap(() -> setState(SwerveState.DEFAULT), RobotStates.IDLE, RobotStates.CLOSE, RobotStates.RESET, RobotStates.HOLDING_NOTE, RobotStates.NOTE_SEARCH);
+		addFunctionToOnChangeMap(() -> setState(SwerveState.DEFAULT), RobotStates.IDLE, RobotStates.CLOSE, RobotStates.RESET, RobotStates.NOTE_IN_INDEXER, RobotStates.NOTE_SEARCH);
 
 		addFunctionToPeriodicMap(
 				() -> {
-					_demand.targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getAmpPose(), 1.25);
+					_demand.targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getAmpTag().pose.toPose2d(), 1.25);
 
 					double dist = RobotState.getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());
-					if (dist < SwerveConstants.kDriveAssistDistThreshold)
+					if (dist < SwerveConstants.kPathFollowerDistThreshold)
 						setState(SwerveState.FOLLOW_PATH);
 				},
 				RobotStates.DRIVE_TO_AMP);
 
+		addFunctionToOnChangeMap(
+			() -> {
+				setState(SwerveState.LOOK_AT_TARGET);
+				updateDemand(VisionConstants.getSpeakerTag().pose.toPose2d());
+			},
+			RobotStates.SHOOT_SPEAKER_PREPARE);
+
+		addFunctionToPeriodicMap(
+			() -> {
+				_demand.targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getSourceTag().pose.toPose2d(), SwerveConstants.kTrackWidth / 2);
+
+				double dist = RobotState.getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());
+				if (dist < SwerveConstants.kPathFollowerDistThreshold)
+					setState(SwerveState.FOLLOW_PATH);
+			},
+			RobotStates.DRIVE_TO_SOURCE);
+
 		addFunctionToOnChangeMap(() -> {
 			setState(SwerveState.LOCKED_AXIS);
 			updateDemand(Rotation2d.fromDegrees(90), 1.84, false);
-		}, RobotStates.PREPARE_AMP_OUTAKE);
+		}, RobotStates.SHOOT_AMP_PREPARE);
+
+		addFunctionToOnChangeMap(() -> setState(SwerveState.DRIVE_ASSIST), RobotStates.NOTE_SEARCH);
 	}
 }

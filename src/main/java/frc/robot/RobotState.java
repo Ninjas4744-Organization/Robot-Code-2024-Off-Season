@@ -32,7 +32,6 @@ public class RobotState {
 		CLIMB,
 		CLIMBED,
 		DRIVE_TO_AMP,
-		DRIVE_TO_SPEAKER,
 		DRIVE_TO_SOURCE
 	}
 

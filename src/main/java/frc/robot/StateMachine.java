@@ -101,7 +101,6 @@ public class StateMachine extends StateMachineSubsystem {
 
 			case NOTE_IN_INDEXER:
 				if(wantedState == RobotStates.DRIVE_TO_AMP ||
-					wantedState == RobotStates.DRIVE_TO_SPEAKER ||
 					wantedState == RobotStates.CLIMB_PREPARE ||
 					wantedState == RobotStates.SHOOT_AMP_PREPARE ||
 					wantedState == RobotStates.SHOOT_SPEAKER_PREPARE ||
@@ -146,9 +145,6 @@ public class StateMachine extends StateMachineSubsystem {
 
 		_endConditionMap.put(RobotStates.DRIVE_TO_AMP,
 			new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.SHOOT_AMP_PREPARE));
-
-		_endConditionMap.put(RobotStates.DRIVE_TO_SPEAKER,
-			new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.SHOOT_SPEAKER_PREPARE));
 
 		_endConditionMap.put(RobotStates.DRIVE_TO_SOURCE,
 			new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.NOTE_SEARCH));

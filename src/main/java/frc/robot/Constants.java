@@ -259,15 +259,10 @@ public final class Constants {
 		public static final boolean canCoderInvert = false;
 
 		/**
-		 * Swerve drive assist angle threshold, if the drive assist angle difference from driver angle is
-		 * bigger than this value, the drive assist will be ignored. degrees
-		 */
-		public static final double kDriveAssistAngleThreshold = 120;
-		/**
 		 * Swerve drive assist distance threshold, if the robot distance from target is
 		 * bigger than this value, the drive assist will be ignored. meters
 		 */
-		public static final double kDriveAssistDistThreshold = 2;
+		public static final double kPathFollowerDistThreshold = 2;
 
 		/* Module Specific Constants */
 		/** Front Left Module - Module 0 */

@@ -11,14 +11,11 @@ public class SwerveDemand {
 		POSITION,
 		VELOCITY,
 		LOCKED_AXIS,
-		LOOK_AT_ANGLE,
 		LOOK_AT_TARGET,
-		BAYBLADE,
         PATHFINDING, DRIVE_ASSIST, FOLLOW_PATH
 	}
 
 	public ChassisSpeeds driverInput = new ChassisSpeeds(0, 0, 0);
-	public Translation2d lookAtTranslation = new Translation2d();
 	public ChassisSpeeds velocity = new ChassisSpeeds(0, 0, 0);
 	public boolean fieldRelative = true;
 	public Pose2d targetPose = new Pose2d();
