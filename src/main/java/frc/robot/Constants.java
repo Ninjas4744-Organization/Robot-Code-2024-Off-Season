@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.DataClasses.ControllerConstants;
 import frc.robot.DataClasses.MainControllerConstants;
 import frc.robot.DataClasses.PIDFConstants;
 import frc.robot.DataClasses.SimulatedControllerConstants;
@@ -54,14 +55,16 @@ public final class Constants {
 				new SimulatedControllerConstants();
 
 		static {
-			kControllerConstants.main.id = 23;
+			kControllerConstants.main.id = 4;
 			kControllerConstants.currentLimit = 40;
 			kControllerConstants.subsystemName = "Shooter";
 			kControllerConstants.PIDFConstants = new PIDFConstants(1, 0, 0, 20, 40);
 			kControllerConstants.positionGoalTolerance = 3;
 			kControllerConstants.encoderConversionFactor = 1 / 2048;
-
-			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
+			kControllerConstants.followers = new ControllerConstants[1];
+			kControllerConstants.followers[0].id = 4;
+			kControllerConstants.followers[0].inverted = true;
+			
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
