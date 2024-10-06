@@ -27,7 +27,7 @@ public class TeleopCommandBuilder {
 					double finalRotation = rx;
 
 					if(isLookAt.getAsBoolean())
-						finalRotation = SwerveIO.getInstance().lookAt(new Translation2d(lx, ly), 45);
+						finalRotation = SwerveIO.getInstance().lookAt(new Translation2d(ry, rx), 45);
 
 					if(isBayblade.getAsBoolean())
 						finalRotation = SwerveConstants.maxAngularVelocity;

@@ -18,12 +18,12 @@ public class Climber extends StateMachineMotoredSubsystem {
 
     @Override
     protected void setController() {
-        _controller = new NinjasSparkMaxController(ShooterAngleConstants.kControllerConstants);
+        _controller = new NinjasSparkMaxController(ClimberConstants.kControllerConstants);
     }
 
     @Override
     protected void setSimulationController() {
-        _simulatedController = new NinjasSimulatedController(ShooterAngleConstants.kSimulatedControllerConstants);
+        _simulatedController = new NinjasSimulatedController(ClimberConstants.kSimulatedControllerConstants);
     }
 
     @Override

@@ -2,6 +2,8 @@ package frc.robot.Subsystems;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.NinjasLib.NinjasSimulatedController;
 import frc.robot.NinjasLib.NinjasSparkMaxController;
 import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
@@ -46,11 +48,11 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToPeriodicMap(
-				() -> controller().setPosition(calculateAngle(VisionConstants.getAmpTag().pose).getDegrees()),
+				() -> controller().setPosition(calculateAngle(new Pose3d(VisionConstants.getSpeakerTag().pose.getX(), VisionConstants.getSpeakerTag().pose.getY(), ShooterAngleConstants.States.kAmpHeight, new Rotation3d())).getDegrees()),
 				RobotStates.SHOOT_AMP_PREPARE);
 
 		addFunctionToPeriodicMap(
-			() -> controller().setPosition(calculateAngle(VisionConstants.getSpeakerTag().pose).getDegrees()),
+			() -> controller().setPosition(calculateAngle(new Pose3d(VisionConstants.getSpeakerTag().pose.getX() + 0.35, VisionConstants.getSpeakerTag().pose.getY(), ShooterAngleConstants.States.kSpeakerHeight, new Rotation3d())).getDegrees()),
 			RobotStates.SHOOT_SPEAKER_PREPARE);
 	}
 }

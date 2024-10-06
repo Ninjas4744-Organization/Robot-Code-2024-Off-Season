@@ -35,6 +35,8 @@ public class RobotContainer {
 		Shooter.getInstance();
 		ShooterAngle.getInstance();
 
+		StateMachine.getInstance().setTriggerForSimulationTesting(_driverJoystick.R2());
+
 		configureBindings();
 	}
 
@@ -62,10 +64,11 @@ public class RobotContainer {
 
 		_driverJoystick.povLeft().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_AMP));
 		_driverJoystick.povUp().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_SOURCE));
+		_driverJoystick.povDown().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 	}
 
 	private void configureOperatorBindings() {
-		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
+		_driverJoystick.cross().onTrue(Commands.runOnce(() -> StateMachine.getInstance().changeRobotState(RobotStates.SHOOT)));
 		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE));
 	}
 

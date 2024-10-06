@@ -42,6 +42,11 @@ public final class Constants {
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
+		public class States{
+			public static final double kAmpHeight = 0.88;
+			public static final double kSpeakerHeight = 1.97;
+		}
+
 		public static final double kShooterHeight = 0.55;
 	}
 
@@ -62,7 +67,8 @@ public final class Constants {
 		}
 
 		public class States{
-			public static final double kShoot = 67;
+			public static final double kSpeaker = 67;
+			public static final double kAmp = 13;
 		}
 	}
 

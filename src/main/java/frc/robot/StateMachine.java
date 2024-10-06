@@ -1,10 +1,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.NinjasLib.StateMachineSubsystem;
 import frc.robot.NinjasLib.DataClasses.StateEndCondition;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;
+import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
@@ -27,9 +31,13 @@ public class StateMachine extends StateMachineSubsystem {
 		_endConditionMap = new HashMap<>();
 
 		for (RobotStates state : RobotStates.values())
-			_endConditionMap.put(state, new StateEndCondition(() -> false, RobotStates.IDLE));
+			_endConditionMap.put(state, new StateEndCondition(() -> false, state));
 
 		setEndConditionMap();
+	}
+
+	public void setTriggerForSimulationTesting(Trigger trigger) {
+		trigger.onTrue(Commands.runOnce(() -> changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState)));
 	}
 
 	/**
@@ -101,6 +109,7 @@ public class StateMachine extends StateMachineSubsystem {
 
 			case NOTE_IN_INDEXER:
 				if(wantedState == RobotStates.DRIVE_TO_AMP ||
+					wantedState == RobotStates.DRIVE_TO_SOURCE ||
 					wantedState == RobotStates.CLIMB_PREPARE ||
 					wantedState == RobotStates.SHOOT_AMP_PREPARE ||
 					wantedState == RobotStates.SHOOT_SPEAKER_PREPARE ||
@@ -125,6 +134,12 @@ public class StateMachine extends StateMachineSubsystem {
 	 * Set in this function the end condition for each state with _endConditionMap
 	 */
 	private void setEndConditionMap(){
+		_endConditionMap.put(RobotStates.RESET,
+			new StateEndCondition(() -> ShooterAngle.getInstance().isHomed() && Indexer.getInstance().isHomed() && Climber.getInstance().isHomed(), RobotStates.IDLE));
+
+		_endConditionMap.put(RobotStates.CLOSE,
+			new StateEndCondition(() -> ShooterAngle.getInstance().atGoal() && Indexer.getInstance().atGoal() && Climber.getInstance().atGoal(), RobotStates.IDLE));
+
 		_endConditionMap.put(RobotStates.INTAKE,
 			new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
 
@@ -154,7 +169,7 @@ public class StateMachine extends StateMachineSubsystem {
 	public void periodic() {
 		super.periodic();
 
-		if (_endConditionMap.get(RobotState.getRobotState()).condition.getAsBoolean())
+		if (_endConditionMap.get(RobotState.getRobotState()).condition.getAsBoolean() && !RobotState.isSimulated())
 			changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState);
 	}
 
