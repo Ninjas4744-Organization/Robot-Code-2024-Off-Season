@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Swerve.LocalADStarAK;
-import frc.robot.Swerve.SwerveIO;
+import frc.robot.NinjasLib.Swerve.PathFollowing.LocalADStarAK;
+import frc.robot.NinjasLib.Swerve.SwerveIO;
 
 public class AutoCommandBuilder {
 	public static void configureAutoBuilder() {

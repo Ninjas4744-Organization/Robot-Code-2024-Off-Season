@@ -4,14 +4,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
-import frc.robot.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
-import frc.robot.Swerve.SwerveIO;
-import frc.robot.Vision.VisionIO;
+import frc.robot.NinjasLib.Swerve.SwerveIO;
+import frc.robot.NinjasLib.Vision.VisionIO;
 
 public class RobotContainer {
 	private final CommandPS5Controller _driverJoystick;

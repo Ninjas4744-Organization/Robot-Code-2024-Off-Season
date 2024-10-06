@@ -1,13 +1,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.AbstractClasses.StateMachineSubsystem;
-import frc.robot.DataClasses.StateEndCondition;
+import frc.robot.NinjasLib.StateMachineSubsystem;
+import frc.robot.NinjasLib.DataClasses.StateEndCondition;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
-import frc.robot.Swerve.SwerveIO;
+import frc.robot.NinjasLib.Swerve.SwerveIO;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -2,9 +2,9 @@ package frc.robot.Subsystems;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.AbstractClasses.NinjasSimulatedController;
-import frc.robot.AbstractClasses.NinjasSparkMaxController;
-import frc.robot.AbstractClasses.StateMachineMotoredSubsystem;
+import frc.robot.NinjasLib.NinjasSimulatedController;
+import frc.robot.NinjasLib.NinjasSparkMaxController;
+import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
 import frc.robot.Constants.ShooterAngleConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;

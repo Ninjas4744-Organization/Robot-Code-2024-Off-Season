@@ -1,8 +1,8 @@
 package frc.robot.Subsystems;
 
-import frc.robot.AbstractClasses.NinjasSimulatedController;
-import frc.robot.AbstractClasses.NinjasSparkMaxController;
-import frc.robot.AbstractClasses.StateMachineMotoredSubsystem;
+import frc.robot.NinjasLib.NinjasSimulatedController;
+import frc.robot.NinjasLib.NinjasSparkMaxController;
+import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.ShooterAngleConstants;
 import frc.robot.RobotState.RobotStates;

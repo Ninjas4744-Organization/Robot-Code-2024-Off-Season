@@ -11,10 +11,10 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.DataClasses.MainControllerConstants;
-import frc.robot.DataClasses.PIDFConstants;
-import frc.robot.DataClasses.SimulatedControllerConstants;
-import frc.robot.DataClasses.SwerveModuleConstants;
+import frc.robot.NinjasLib.DataClasses.MainControllerConstants;
+import frc.robot.NinjasLib.DataClasses.PIDFConstants;
+import frc.robot.NinjasLib.DataClasses.SimulatedControllerConstants;
+import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
 
 import java.io.IOException;
 import java.util.ArrayList;

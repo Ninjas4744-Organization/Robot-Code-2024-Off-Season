@@ -1,9 +1,9 @@
 package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.AbstractClasses.NinjasSimulatedController;
-import frc.robot.AbstractClasses.NinjasSparkMaxController;
-import frc.robot.AbstractClasses.StateMachineMotoredSubsystem;
+import frc.robot.NinjasLib.NinjasSimulatedController;
+import frc.robot.NinjasLib.NinjasSparkMaxController;
+import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;

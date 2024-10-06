@@ -10,10 +10,9 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.DataClasses.VisionEstimation;
-import frc.robot.Swerve.Swerve;
-import frc.robot.Swerve.SwerveIO;
+import frc.robot.NinjasLib.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.Swerve.Swerve;
+import frc.robot.NinjasLib.Swerve.SwerveIO;
 
 public class RobotState {
 	public enum RobotStates {
