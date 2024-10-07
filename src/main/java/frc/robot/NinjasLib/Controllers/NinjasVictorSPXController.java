@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib;
+package frc.robot.NinjasLib.Controllers;
 
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;

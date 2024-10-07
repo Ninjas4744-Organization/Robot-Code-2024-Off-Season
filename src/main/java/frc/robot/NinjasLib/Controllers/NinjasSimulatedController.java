@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib;
+package frc.robot.NinjasLib.Controllers;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;

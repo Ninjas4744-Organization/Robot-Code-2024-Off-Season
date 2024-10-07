@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib;
+package frc.robot.NinjasLib.Controllers;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.ControlType;

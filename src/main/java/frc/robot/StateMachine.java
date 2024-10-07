@@ -2,16 +2,15 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.NinjasLib.StateMachineSubsystem;
 import frc.robot.NinjasLib.DataClasses.StateEndCondition;
+import frc.robot.NinjasLib.StateMachineSubsystem;
+import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
-import frc.robot.NinjasLib.Swerve.SwerveIO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +36,8 @@ public class StateMachine extends StateMachineSubsystem {
 	}
 
 	public void setTriggerForSimulationTesting(Trigger trigger) {
-		trigger.onTrue(Commands.runOnce(() -> changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState)));
+		if (RobotState.isSimulated())
+			trigger.onTrue(Commands.runOnce(() -> changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState)));
 	}
 
 	/**
@@ -72,8 +72,13 @@ public class StateMachine extends StateMachineSubsystem {
 					RobotState.setRobotState(wantedState);
 				break;
 
-			case INTAKE, SHOOT:
+			case SHOOT:
 				if (wantedState == RobotStates.RESET || wantedState == RobotStates.CLOSE)
+					RobotState.setRobotState(wantedState);
+				break;
+
+			case INTAKE:
+				if (wantedState == RobotStates.RESET || wantedState == RobotStates.CLOSE || wantedState == RobotStates.NOTE_IN_INDEXER)
 					RobotState.setRobotState(wantedState);
 				break;
 
@@ -119,7 +124,12 @@ public class StateMachine extends StateMachineSubsystem {
 				break;
 
 			case DRIVE_TO_AMP:
-				if (wantedState == RobotStates.SHOOT_AMP_PREPARE || wantedState == RobotStates.CLOSE)
+				if (wantedState == RobotStates.SHOOT_AMP_PREPARE || wantedState == RobotStates.CLOSE || wantedState == wantedState.RESET)
+					RobotState.setRobotState(wantedState);
+				break;
+
+			case DRIVE_TO_SOURCE:
+				if (wantedState == RobotStates.INTAKE || wantedState == RobotStates.CLOSE || wantedState == wantedState.RESET)
 					RobotState.setRobotState(wantedState);
 				break;
 		}
@@ -162,7 +172,7 @@ public class StateMachine extends StateMachineSubsystem {
 			new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.SHOOT_AMP_PREPARE));
 
 		_endConditionMap.put(RobotStates.DRIVE_TO_SOURCE,
-			new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.NOTE_SEARCH));
+			new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.INTAKE));
 	}
 
 	@Override

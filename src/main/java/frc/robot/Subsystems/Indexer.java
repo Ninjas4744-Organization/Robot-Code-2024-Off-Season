@@ -1,10 +1,9 @@
 package frc.robot.Subsystems;
 
-import frc.robot.Constants;
-import frc.robot.NinjasLib.NinjasSimulatedController;
-import frc.robot.NinjasLib.NinjasSparkMaxController;
-import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
+import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
+import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
 import frc.robot.RobotState;
 
 public class Indexer extends StateMachineMotoredSubsystem {

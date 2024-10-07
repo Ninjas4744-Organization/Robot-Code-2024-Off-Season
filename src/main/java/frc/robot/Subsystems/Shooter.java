@@ -1,9 +1,9 @@
 package frc.robot.Subsystems;
 
-import frc.robot.NinjasLib.NinjasSimulatedController;
-import frc.robot.NinjasLib.NinjasSparkMaxController;
-import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
+import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
+import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
 import frc.robot.RobotState.RobotStates;
 
 public class Shooter extends StateMachineMotoredSubsystem {

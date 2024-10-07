@@ -5,13 +5,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.Swerve.SwerveIO;
+import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
-import frc.robot.NinjasLib.Swerve.SwerveIO;
-import frc.robot.NinjasLib.Vision.VisionIO;
 
 public class RobotContainer {
 	private final CommandPS5Controller _driverJoystick;
@@ -68,7 +68,7 @@ public class RobotContainer {
 	}
 
 	private void configureOperatorBindings() {
-		_driverJoystick.cross().onTrue(Commands.runOnce(() -> StateMachine.getInstance().changeRobotState(RobotStates.SHOOT)));
+		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
 		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE));
 	}
 

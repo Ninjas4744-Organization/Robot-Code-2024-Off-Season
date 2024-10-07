@@ -1,9 +1,8 @@
-package frc.robot.NinjasLib;
+package frc.robot.NinjasLib.Controllers;
 
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.NinjasLib.DataClasses.MainControllerConstants;
-import java.util.HashMap;
+
 import java.util.Map;
 
 public abstract class NinjasController {

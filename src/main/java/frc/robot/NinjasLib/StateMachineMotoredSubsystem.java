@@ -2,6 +2,8 @@ package frc.robot.NinjasLib;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.NinjasLib.Controllers.NinjasController;
+import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.RobotState;
 
 public abstract class StateMachineMotoredSubsystem extends StateMachineSubsystem {

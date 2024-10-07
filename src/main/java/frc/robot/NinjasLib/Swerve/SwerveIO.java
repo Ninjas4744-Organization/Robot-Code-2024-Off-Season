@@ -13,15 +13,15 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.NinjasLib.DataClasses.SwerveDemand;
-import frc.robot.NinjasLib.StateMachineSubsystem;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.NinjasLib.DataClasses.SwerveDemand;
+import frc.robot.NinjasLib.DataClasses.SwerveDemand.SwerveState;
+import frc.robot.NinjasLib.StateMachineSubsystem;
 import frc.robot.NinjasLib.Swerve.PathFollowing.PathFollower;
+import frc.robot.NinjasLib.Vision.NoteDetection;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
-import frc.robot.NinjasLib.DataClasses.SwerveDemand.SwerveState;
-import frc.robot.NinjasLib.Vision.NoteDetection;
 
 public abstract class SwerveIO extends StateMachineSubsystem {
 	private static SwerveIO _instance;
@@ -309,7 +309,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 				break;
 
 			case FOLLOW_PATH:
-				Pose2d target = new Pose2d(_demand.targetPose.getX(), _demand.targetPose.getY(), _demand.targetPose.getRotation().unaryMinus());
+				Pose2d target = new Pose2d(_demand.targetPose.getX(), _demand.targetPose.getY(), _demand.targetPose.getRotation().rotateBy(new Rotation2d(Math.PI)));
 				drive(_pathFollower.followPath(target), true);
 				break;
 
@@ -376,7 +376,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 
 		addFunctionToPeriodicMap(
 			() -> {
-				_demand.targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getSourceTag().pose.toPose2d(), SwerveConstants.kTrackWidth / 2);
+				_demand.targetPose = VisionConstants.getOffsetTagPose(VisionConstants.getSourceTag().pose.toPose2d(), 1.25);
 
 				double dist = RobotState.getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());
 				if (dist < SwerveConstants.kPathFollowerDistThreshold)

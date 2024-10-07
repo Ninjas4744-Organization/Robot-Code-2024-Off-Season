@@ -42,12 +42,13 @@ public final class Constants {
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
-		public class States{
-			public static final double kAmpHeight = 0.88;
-			public static final double kSpeakerHeight = 1.97;
-		}
+		public static final Translation3d kAmpOffset = new Translation3d(0, 0, 0.88);
+		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 1.97);
+		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.5);
 
-		public static final double kShooterHeight = 0.55;
+		public static double getTrendAngleFixer(double dist) {
+			return 0;
+		}
 	}
 
 	public static class ShooterConstants {
@@ -69,25 +70,6 @@ public final class Constants {
 		public class States{
 			public static final double kSpeaker = 67;
 			public static final double kAmp = 13;
-		}
-	}
-
-	public static class ShooterFeederConstants {
-		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
-		public static final SimulatedControllerConstants kSimulatedControllerConstants =
-				new SimulatedControllerConstants();
-
-		static {
-			kControllerConstants.main.id = 23;
-			kControllerConstants.currentLimit = 40;
-			kControllerConstants.subsystemName = "ShooterFeeder";
-
-			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.motorTorque = 1;
-		}
-
-		public class States{
-			public static final double kRoll = 1;
 		}
 	}
 
@@ -141,33 +123,6 @@ public final class Constants {
 
 		public class States {
 			public static final double kRoll = 1;
-		}
-	}
-
-	public static class IntakeConstants {
-		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
-		public static final SimulatedControllerConstants kSimulatedControllerConstants =
-				new SimulatedControllerConstants();
-
-		static {
-			kControllerConstants.main.id = 24;
-			kControllerConstants.main.inverted = true;
-			kControllerConstants.currentLimit = 40;
-			kControllerConstants.subsystemName = "RollersIntake";
-			kControllerConstants.PIDFConstants = new PIDFConstants(5, 0, 0, 8, 8);
-			kControllerConstants.positionGoalTolerance = 0.01;
-			kControllerConstants.encoderConversionFactor = 0.0098174;
-			kControllerConstants.encoderHomePosition = 0;
-
-			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.gearRatio = 1;
-			kSimulatedControllerConstants.motorTorque = 1;
-		}
-
-		public static final int kLimitSwitchID = 7;
-
-		public class States {
-			public static final double kIntake = 1;
 		}
 	}
 
@@ -400,6 +355,11 @@ public final class Constants {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
+
+			System.out.println("----------------------------------------------------------------------------");
+			for (AprilTag tag : getFieldLayout().getTags())
+				System.out.println("Id " + tag.ID + ": x" + Math.round(tag.pose.getX() * 100) / 100 + ", y" + Math.round(tag.pose.getY() * 100) / 100 + ", z" + Math.round(tag.pose.getZ() * 100) / 100 + ", theta" + Math.round(tag.pose.getRotation().toRotation2d().getDegrees()));
+			System.out.println("----------------------------------------------------------------------------");
 		}
 
 		public static AprilTagFieldLayout getFieldLayout(List<Integer> ignoredTags) {
@@ -508,9 +468,9 @@ public final class Constants {
 		 * @return the pose of the offset tag
 		 */
 		public static Pose2d getOffsetTagPose(Pose2d tagPose, double offset) {
-			Translation2d offsetTranslation =
-					new Translation2d(offset, tagPose.getRotation().rotateBy(Rotation2d.fromDegrees(90)));
-			return tagPose.transformBy(new Transform2d(offsetTranslation, new Rotation2d()));
+//			Translation2d offsetTranslation =
+//					new Translation2d(offset, tagPose.getRotation().rotateBy(Rotation2d.fromDegrees(0)));
+			return tagPose.transformBy(new Transform2d(offset, 0, new Rotation2d()));
 		}
 	}
 

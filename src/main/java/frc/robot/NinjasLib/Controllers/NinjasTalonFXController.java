@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib;
+package frc.robot.NinjasLib.Controllers;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.*;
