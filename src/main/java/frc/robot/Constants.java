@@ -393,19 +393,19 @@ public final class Constants {
 		}
 
 		public static AprilTag getAmpTag() {
-			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+			if (RobotState.getAlliance() == DriverStation.Alliance.Blue)
 				return getFieldLayout().getTags().get(6 - 1);
 			else return getFieldLayout().getTags().get(5 - 1);
 		}
 
 		public static AprilTag getSourceTag() {
-			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+			if (RobotState.getAlliance() == DriverStation.Alliance.Blue)
 				return getFieldLayout().getTags().get(2 - 1);
 			else return getFieldLayout().getTags().get(9 - 1);
 		}
 
 		public static AprilTag getSpeakerTag() {
-			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+			if (RobotState.getAlliance() == DriverStation.Alliance.Blue)
 				return getFieldLayout().getTags().get(7 - 1);
 			else return getFieldLayout().getTags().get(4 - 1);
 		}

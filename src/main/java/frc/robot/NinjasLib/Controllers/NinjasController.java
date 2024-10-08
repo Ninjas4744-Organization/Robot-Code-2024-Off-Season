@@ -73,6 +73,7 @@ public abstract class NinjasController {
 	 */
 	public void setPercent(double percent) {
 		_controlState = ControlState.PERCENT_OUTPUT;
+		_goal = percent;
 	}
 
 	/**

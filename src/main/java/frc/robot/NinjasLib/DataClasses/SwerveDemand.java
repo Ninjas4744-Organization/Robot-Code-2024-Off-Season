@@ -7,7 +7,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 public class SwerveDemand {
 	public enum SwerveState {
 		DEFAULT,
-		POSITION,
 		VELOCITY,
 		LOCKED_AXIS,
 		LOOK_AT_TARGET,
