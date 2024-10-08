@@ -10,43 +10,45 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.DataClasses.VisionEstimation;
-import frc.robot.Swerve.Swerve;
-import frc.robot.Swerve.SwerveIO;
+import frc.robot.NinjasLib.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.Swerve.Swerve;
+import frc.robot.NinjasLib.Swerve.SwerveIO;
 
 public class RobotState {
 	public enum RobotStates {
 		IDLE,
-		PREPARE_INTAKE,
-		INTAKE_READY,
 		INTAKE,
-		PREPARE_AMP_OUTAKE,
-		AMP_OUTAKE_READY,
-		PREPARE_TRAP_OUTAKE,
-		TRAP_OUTAKE_READY,
-		OUTAKE,
 		CLOSE,
 		RESET,
-		PREPARE_SHOOT,
+		SHOOT_SPEAKER_PREPARE,
+		SHOOT_AMP_PREPARE,
 		SHOOT_READY,
 		SHOOT,
 		NOTE_SEARCH,
-		HOLDING_NOTE,
-		PREPARE_CLIMB,
+		NOTE_IN_INDEXER,
+		CLIMB_PREPARE,
 		CLIMB_READY,
 		CLIMB,
-		DRIVE_TO_AMP, DRIVE_TO_SPEAKER, DRIVE_TO_SOURCE, CLIMBED
+		CLIMBED,
+		DRIVE_TO_AMP,
+		DRIVE_TO_SOURCE
 	}
 
 	private static RobotStates robotState = RobotStates.IDLE;
 	private static AHRS navX = new AHRS();
 	private static SwerveDrivePoseEstimator poseEstimator;
-	private static DigitalInput noteDetector = new DigitalInput(Constants.kNoteDetectorID);
-
 	private static StructPublisher<Pose2d> _robotPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic("Robot Pose", Pose2d.struct)
 			.publish();
+
+	private static DigitalInput _indexerNote = new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
+
+	/**
+	 * @return Whether there's a note in the indexer according to its beam breaker
+	 */
+	public static boolean getNoteInIndexer() {
+		return _indexerNote.get();
+	}
 
 	/**
 	 * @return State of the robot
@@ -154,46 +156,9 @@ public class RobotState {
 	}
 
 	/**
-	 * @return Whether there is a note in the robot
-	 */
-	public static boolean hasNote() {
-		return isSimulated() || noteDetector.get();
-	}
-
-	/**
 	 * @return Whether the robot is at simulation mode or deployed on a real robot
 	 */
 	public static boolean isSimulated() {
 		return Robot.isSimulation();
-	}
-
-	/**
-	 * @return Whether the robot is close to its alliance's amp
-	 */
-	public static boolean atAmp() {
-		return RobotState.getRobotPose()
-						.getTranslation()
-						.getDistance(VisionConstants.getAmpPose().getTranslation())
-				< 0.5;
-	}
-
-	/**
-	 * @return Whether the robot is close to its alliance's source
-	 */
-	public static boolean atSource() {
-		return RobotState.getRobotPose()
-						.getTranslation()
-						.getDistance(VisionConstants.getSourcePose().getTranslation())
-				< 0.5;
-	}
-
-	/**
-	 * @return Whether the robot is close to its alliance's speaker
-	 */
-	public static boolean atSpeaker() {
-		return RobotState.getRobotPose()
-						.getTranslation()
-						.getDistance(VisionConstants.getSpeakerPose().getTranslation())
-				< 2.5;
 	}
 }

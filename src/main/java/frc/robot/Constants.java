@@ -11,11 +11,10 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.DataClasses.MainControllerConstants;
-import frc.robot.DataClasses.PIDFConstants;
-import frc.robot.DataClasses.SimulatedControllerConstants;
-import frc.robot.DataClasses.SwerveModuleConstants;
-
+import frc.robot.NinjasLib.DataClasses.MainControllerConstants;
+import frc.robot.NinjasLib.DataClasses.PIDFConstants;
+import frc.robot.NinjasLib.DataClasses.SimulatedControllerConstants;
+import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,6 @@ import java.util.Map;
 public final class Constants {
 	public static final int kDriverJoystickPort = 0;
 	public static final int kOperatorJoystickPort = 1;
-	public static final int kNoteDetectorID = 0;
 
 	public static class ShooterAngleConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
@@ -43,9 +41,13 @@ public final class Constants {
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
-		public static final double kShooterHeight = 0.55;
-		public static final double kShooterStartAngle = -30;
-		public static final double kTargetHeight = 2.25;
+		public static final Translation3d kAmpOffset = new Translation3d(0, 0, 0.88);
+		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 1.97);
+		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.5);
+
+		public static Rotation2d getTrendAngleFixer(double dist) {
+			return Rotation2d.fromDegrees(0);
+		}
 	}
 
 	public static class ShooterConstants {
@@ -59,57 +61,14 @@ public final class Constants {
 			kControllerConstants.subsystemName = "Shooter";
 			kControllerConstants.PIDFConstants = new PIDFConstants(1, 0, 0, 20, 40);
 			kControllerConstants.positionGoalTolerance = 3;
-			kControllerConstants.encoderConversionFactor = 1 / 2048;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
-
-		public static final double kShootVelocity = 67;
-	}
-
-	public static class ShooterFeederConstants {
-		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
-		public static final SimulatedControllerConstants kSimulatedControllerConstants =
-				new SimulatedControllerConstants();
-
-		static {
-			kControllerConstants.main.id = 23;
-			kControllerConstants.currentLimit = 40;
-			kControllerConstants.subsystemName = "ShooterFeeder";
-
-			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.motorTorque = 1;
-		}
-	}
-
-	public static class ElevatorConstants {
-		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
-		public static final SimulatedControllerConstants kSimulatedControllerConstants =
-				new SimulatedControllerConstants();
-
-		static {
-			kControllerConstants.main.id = 24;
-			kControllerConstants.main.inverted = true;
-			kControllerConstants.currentLimit = 40;
-			kControllerConstants.subsystemName = "Elevator";
-			kControllerConstants.PIDFConstants = new PIDFConstants(5, 0, 0, 8, 8);
-			kControllerConstants.positionGoalTolerance = 0.01;
-			kControllerConstants.encoderConversionFactor = 0.0098174;
-			kControllerConstants.encoderHomePosition = 0;
-
-			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.motorType = SimulatedControllerConstants.MotorType.KRAKEN;
-			kSimulatedControllerConstants.gearRatio = 1;
-			kSimulatedControllerConstants.motorTorque = 1;
-		}
-
-		public static final int kLimitSwitchID = 7;
 
 		public class States {
-			public static final double kAmp = 0.4;
-			public static final double kTrap = 0;
-			public static final double kClose = 0;
+			public static final double kSpeaker = 67;
+			public static final double kAmp = 13;
 		}
 	}
 
@@ -141,7 +100,7 @@ public final class Constants {
 		}
 	}
 
-	public static class RotationConstants {
+	public static class IndexerConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
 		public static final SimulatedControllerConstants kSimulatedControllerConstants =
 				new SimulatedControllerConstants();
@@ -150,51 +109,19 @@ public final class Constants {
 			kControllerConstants.main.id = 24;
 			kControllerConstants.main.inverted = true;
 			kControllerConstants.currentLimit = 40;
-			kControllerConstants.subsystemName = "Rotation";
-			kControllerConstants.PIDFConstants = new PIDFConstants(5, 0, 0, 8, 8);
+			kControllerConstants.subsystemName = "Indexer";
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.gearRatio = 1;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
 		public static final int kLimitSwitchID = 7;
 
 		public class States {
-			public static final double kAmp = 0.4;
-			public static final double kTrap = 0;
-			public static final double kClose = 0;
-		}
-	}
-
-	public static class RollersConstants {
-		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
-		public static final SimulatedControllerConstants kSimulatedControllerConstants =
-				new SimulatedControllerConstants();
-
-		static {
-			kControllerConstants.main.id = 24;
-			kControllerConstants.main.inverted = true;
-			kControllerConstants.currentLimit = 40;
-			kControllerConstants.subsystemName = "Rollers";
-			kControllerConstants.PIDFConstants = new PIDFConstants(5, 0, 0, 8, 8);
-			kControllerConstants.positionGoalTolerance = 0.01;
-			kControllerConstants.encoderConversionFactor = 0.0098174;
-			kControllerConstants.encoderHomePosition = 0;
-
-			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.gearRatio = 1;
-			kSimulatedControllerConstants.motorTorque = 1;
-		}
-
-		public static final int kLimitSwitchID = 7;
-
-		public class States {
-			public static final double kIntake = -1;
-			public static final double kOutake = 1;
+			public static final double kRoll = 1;
 		}
 	}
 
@@ -292,15 +219,10 @@ public final class Constants {
 		public static final boolean canCoderInvert = false;
 
 		/**
-		 * Swerve drive assist angle threshold, if the drive assist angle difference from driver angle is
-		 * bigger than this value, the drive assist will be ignored. degrees
-		 */
-		public static final double kDriveAssistAngleThreshold = 120;
-		/**
 		 * Swerve drive assist distance threshold, if the robot distance from target is
 		 * bigger than this value, the drive assist will be ignored. meters
 		 */
-		public static final double kDriveAssistDistThreshold = 2;
+		public static final double kPathFollowerDistThreshold = 2;
 
 		/* Module Specific Constants */
 		/** Front Left Module - Module 0 */
@@ -359,7 +281,7 @@ public final class Constants {
 			public static final double kI = 0;
 			public static final double kD = 1;
 			public static final double kPTheta = 0.1;
-//		public static final double kPTheta = 0.025;
+			//		public static final double kPTheta = 0.025;
 			public static final double kITheta = 0;
 			public static final double kDTheta = 0;
 
@@ -368,24 +290,25 @@ public final class Constants {
 			public static final double kMaxAngularSpeed = 8;
 			public static final double kAngularAcceleration = 16;
 
-		public static final PathConstraints kConstraints =
-				new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);
+			public static final PathConstraints kConstraints =
+					new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);
 
-		public static final HolonomicPathFollowerConfig kAutonomyConfig = new HolonomicPathFollowerConfig(
-				new PIDConstants(kP, 0, 0),
-				new PIDConstants(kPTheta, 0, 0),
-				SwerveConstants.maxModuleSpeed,
-				SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
-				new ReplanningConfig() // Default path replanning config.
-				);}
+			public static final HolonomicPathFollowerConfig kAutonomyConfig = new HolonomicPathFollowerConfig(
+					new PIDConstants(kP, 0, 0),
+					new PIDConstants(kPTheta, 0, 0),
+					SwerveConstants.maxModuleSpeed,
+					SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
+					new ReplanningConfig() // Default path replanning config.
+					);
+		}
 	}
 
 	public static class VisionConstants {
 		public static final Map<String, Transform3d> kCameras = Map.of(
-			"Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)),
-			"BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, Units.degreesToRadians(120))),
-			"BackRight", new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, Units.degreesToRadians(-120)))
-		);
+				"Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)),
+				"BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, Units.degreesToRadians(120))),
+				"BackRight",
+						new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, Units.degreesToRadians(-120))));
 
 		public static final double kMaxAmbiguity = 0.2;
 
@@ -408,47 +331,49 @@ public final class Constants {
 				double ourTagHeight = 1.6;
 				List<AprilTag> tags = new ArrayList<AprilTag>();
 				tags.add(new AprilTag(
-					1,
-					new Pose3d(
-						new Translation3d(0, ourFieldWidth / 2, ourTagHeight),
-						new Rotation3d(0, 0, 0))));
+						1, new Pose3d(new Translation3d(0, ourFieldWidth / 2, ourTagHeight), new Rotation3d(0, 0, 0))));
 				tags.add(new AprilTag(
-					2,
-					new Pose3d(
-						new Translation3d(ourFieldLength / 2, ourFieldWidth, ourTagHeight),
-						new Rotation3d(0, 0, -0.5 * Math.PI))));
+						2,
+						new Pose3d(
+								new Translation3d(ourFieldLength / 2, ourFieldWidth, ourTagHeight),
+								new Rotation3d(0, 0, -0.5 * Math.PI))));
 				tags.add(new AprilTag(
-					3,
-					new Pose3d(
-						new Translation3d(ourFieldLength, ourFieldWidth / 2, ourTagHeight),
-						new Rotation3d(0, 0, Math.PI))));
+						3,
+						new Pose3d(
+								new Translation3d(ourFieldLength, ourFieldWidth / 2, ourTagHeight),
+								new Rotation3d(0, 0, Math.PI))));
 				tags.add(new AprilTag(
-					4,
-					new Pose3d(
-						new Translation3d(ourFieldLength / 2, 0, 2.2),
-						new Rotation3d(0, 0, Math.PI / 2))));
+						4,
+						new Pose3d(new Translation3d(ourFieldLength / 2, 0, 2.2), new Rotation3d(0, 0, Math.PI / 2))));
 
 				kOurFieldLayout = new AprilTagFieldLayout(tags, ourFieldLength, ourFieldWidth);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
+
+			System.out.println("----------------------------------------------------------------------------");
+			for (AprilTag tag : getFieldLayout().getTags())
+				System.out.println("Id " + tag.ID + ": x" + Math.round(tag.pose.getX() * 100) / 100 + ", y"
+						+ Math.round(tag.pose.getY() * 100) / 100 + ", z" + Math.round(tag.pose.getZ() * 100) / 100
+						+ ", theta"
+						+ Math.round(tag.pose.getRotation().toRotation2d().getDegrees()));
+			System.out.println("----------------------------------------------------------------------------");
 		}
 
 		public static AprilTagFieldLayout getFieldLayout(List<Integer> ignoredTags) {
 			AprilTagFieldLayout layout;
 
-			if (RobotState.isSimulated())
-				layout = kUseOurField ? kOurFieldLayout : kBlueFieldLayout;
+			if (RobotState.isSimulated()) layout = kUseOurField ? kOurFieldLayout : kBlueFieldLayout;
 			else {
-				if (kUseOurField)
-					layout = kOurFieldLayout;
+				if (kUseOurField) layout = kOurFieldLayout;
 				else
-					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? kBlueFieldLayout : kRedFieldLayout;
+					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
+							? kBlueFieldLayout
+							: kRedFieldLayout;
 			}
 
-			if (!ignoredTags.isEmpty())
-				layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));
-			
+			if (!ignoredTags.isEmpty()) layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));
+
 			return layout;
 		}
 
@@ -467,25 +392,22 @@ public final class Constants {
 			public static final int kLatencyStdDev = 5;
 		}
 
-		public static Pose2d getAmpPose() {
+		public static AprilTag getAmpTag() {
 			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-				return getFieldLayout().getTagPose(6).get().toPose2d();
-			else return getFieldLayout().getTagPose(5).get().toPose2d();
-			//			return new Pose2d();
+				return getFieldLayout().getTags().get(6 - 1);
+			else return getFieldLayout().getTags().get(5 - 1);
 		}
 
-		public static Pose2d getSourcePose() {
+		public static AprilTag getSourceTag() {
 			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-				return getFieldLayout().getTagPose(2).get().toPose2d();
-			else return getFieldLayout().getTagPose(9).get().toPose2d();
-			//			return new Pose2d();
+				return getFieldLayout().getTags().get(2 - 1);
+			else return getFieldLayout().getTags().get(9 - 1);
 		}
 
-		public static Pose2d getSpeakerPose() {
+		public static AprilTag getSpeakerTag() {
 			if (Robot.isSimulation() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-				return getFieldLayout().getTagPose(7).get().toPose2d();
-			else return getFieldLayout().getTagPose(4).get().toPose2d();
-			//			return new Pose2d();
+				return getFieldLayout().getTags().get(7 - 1);
+			else return getFieldLayout().getTags().get(4 - 1);
 		}
 
 		public static Pose2d getTagPose(int id) {
@@ -543,9 +465,9 @@ public final class Constants {
 		 * @return the pose of the offset tag
 		 */
 		public static Pose2d getOffsetTagPose(Pose2d tagPose, double offset) {
-			Translation2d offsetTranslation =
-					new Translation2d(offset, tagPose.getRotation().rotateBy(Rotation2d.fromDegrees(90)));
-			return tagPose.transformBy(new Transform2d(offsetTranslation, new Rotation2d()));
+			//			Translation2d offsetTranslation =
+			//					new Translation2d(offset, tagPose.getRotation().rotateBy(Rotation2d.fromDegrees(0)));
+			return tagPose.transformBy(new Transform2d(offset, 0, new Rotation2d()));
 		}
 	}
 

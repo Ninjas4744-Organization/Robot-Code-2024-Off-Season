@@ -1,10 +1,10 @@
 package frc.robot.Subsystems;
 
-import frc.robot.AbstractClasses.NinjasSimulatedController;
-import frc.robot.AbstractClasses.NinjasSparkMaxController;
-import frc.robot.AbstractClasses.StateMachineMotoredSubsystem;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.RobotState;
+import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
+import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
+import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
+import frc.robot.RobotState.RobotStates;
 
 public class Shooter extends StateMachineMotoredSubsystem {
 	private static Shooter _instance;
@@ -28,8 +28,11 @@ public class Shooter extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-				() -> controller().setVelocity(ShooterConstants.kShootVelocity), RobotState.RobotStates.PREPARE_SHOOT);
+				() -> controller().setVelocity(ShooterConstants.States.kSpeaker), RobotStates.SHOOT_SPEAKER_PREPARE);
 
-		addFunctionToOnChangeMap(() -> controller().stop(), RobotState.RobotStates.NOTE_SEARCH);
+		addFunctionToOnChangeMap(
+				() -> controller().setVelocity(ShooterConstants.States.kAmp), RobotStates.SHOOT_AMP_PREPARE);
+
+		addFunctionToOnChangeMap(() -> controller().stop(), RobotStates.CLOSE);
 	}
 }
