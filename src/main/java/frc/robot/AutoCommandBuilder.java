@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.NinjasLib.DataClasses.SwerveDemand;
 import frc.robot.NinjasLib.Swerve.PathFollowing.LocalADStarAK;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 
@@ -18,8 +19,7 @@ public class AutoCommandBuilder {
 				RobotState::setRobotPose, // Method to reset odometry (will be called if your auto has a starting
 				// pose)
 				SwerveIO.getInstance()::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-				(drive) -> SwerveIO.getInstance()
-						.drive(drive, false), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+				(drive) -> SwerveIO.getInstance().updateDemand(drive, false), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
 				Constants.SwerveConstants.AutoConstants.kAutonomyConfig,
 				// Boolean supplier that mirrors path if red alliance
 				() -> DriverStation.getAlliance().get() == Alliance.Red,
@@ -38,7 +38,10 @@ public class AutoCommandBuilder {
 	 * @return final autonomy command from pathplanner
 	 */
 	public static Command autoCommand(String auto) {
-		return Commands.none();
+		SwerveIO.getInstance().setState(SwerveDemand.SwerveState.VELOCITY);
+		RobotState.setRobotState(RobotState.RobotStates.RESET);
+
+		return AutoBuilder.buildAuto(auto);
 	}
 
 	// public static Command EXAMPLE() {
