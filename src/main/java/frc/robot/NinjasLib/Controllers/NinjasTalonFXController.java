@@ -16,11 +16,11 @@ public class NinjasTalonFXController extends NinjasController {
 		_main = new TalonFX(constants.main.id);
 		_main.getConfigurator()
 				.apply(new TalonFXConfiguration()
-					.withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
-						.withForwardSoftLimitEnable(constants.isMaxSoftLimit)
-						.withReverseSoftLimitEnable(constants.isMinSoftLimit)
-						.withForwardSoftLimitThreshold(constants.maxSoftLimit)
-						.withReverseSoftLimitThreshold(constants.minSoftLimit))
+						.withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
+								.withForwardSoftLimitEnable(constants.isMaxSoftLimit)
+								.withReverseSoftLimitEnable(constants.isMinSoftLimit)
+								.withForwardSoftLimitThreshold(constants.maxSoftLimit)
+								.withReverseSoftLimitThreshold(constants.minSoftLimit))
 						.withAudio(new AudioConfigs().withBeepOnBoot(true))
 						.withMotorOutput(new MotorOutputConfigs()
 								.withInverted(

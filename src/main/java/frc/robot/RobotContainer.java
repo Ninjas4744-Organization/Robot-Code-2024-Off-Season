@@ -41,9 +41,12 @@ public class RobotContainer {
 	}
 
 	private void configureBindings() {
-		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(()->StateMachine.getInstance().changeRobotState(RobotStates.SHOOT)));
-		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(()->StateMachine.getInstance().changeRobotState(RobotStates.CLIMB)));
-		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(()->StateMachine.getInstance().changeRobotState(RobotStates.NOTE_SEARCH)));
+		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(() -> StateMachine.getInstance()
+				.changeRobotState(RobotStates.SHOOT)));
+		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(() -> StateMachine.getInstance()
+				.changeRobotState(RobotStates.CLIMB)));
+		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(() -> StateMachine.getInstance()
+				.changeRobotState(RobotStates.NOTE_SEARCH)));
 		configureDriverBindings();
 		configureOperatorBindings();
 	}

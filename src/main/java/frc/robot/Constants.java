@@ -15,7 +15,6 @@ import frc.robot.NinjasLib.DataClasses.MainControllerConstants;
 import frc.robot.NinjasLib.DataClasses.PIDFConstants;
 import frc.robot.NinjasLib.DataClasses.SimulatedControllerConstants;
 import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +66,7 @@ public final class Constants {
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
-		public class States{
+		public class States {
 			public static final double kSpeaker = 67;
 			public static final double kAmp = 13;
 		}
@@ -282,7 +281,7 @@ public final class Constants {
 			public static final double kI = 0;
 			public static final double kD = 1;
 			public static final double kPTheta = 0.1;
-//		public static final double kPTheta = 0.025;
+			//		public static final double kPTheta = 0.025;
 			public static final double kITheta = 0;
 			public static final double kDTheta = 0;
 
@@ -291,24 +290,25 @@ public final class Constants {
 			public static final double kMaxAngularSpeed = 8;
 			public static final double kAngularAcceleration = 16;
 
-		public static final PathConstraints kConstraints =
-				new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);
+			public static final PathConstraints kConstraints =
+					new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);
 
-		public static final HolonomicPathFollowerConfig kAutonomyConfig = new HolonomicPathFollowerConfig(
-				new PIDConstants(kP, 0, 0),
-				new PIDConstants(kPTheta, 0, 0),
-				SwerveConstants.maxModuleSpeed,
-				SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
-				new ReplanningConfig() // Default path replanning config.
-				);}
+			public static final HolonomicPathFollowerConfig kAutonomyConfig = new HolonomicPathFollowerConfig(
+					new PIDConstants(kP, 0, 0),
+					new PIDConstants(kPTheta, 0, 0),
+					SwerveConstants.maxModuleSpeed,
+					SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
+					new ReplanningConfig() // Default path replanning config.
+					);
+		}
 	}
 
 	public static class VisionConstants {
 		public static final Map<String, Transform3d> kCameras = Map.of(
-			"Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)),
-			"BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, Units.degreesToRadians(120))),
-			"BackRight", new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, Units.degreesToRadians(-120)))
-		);
+				"Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)),
+				"BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, Units.degreesToRadians(120))),
+				"BackRight",
+						new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, Units.degreesToRadians(-120))));
 
 		public static final double kMaxAmbiguity = 0.2;
 
@@ -331,25 +331,20 @@ public final class Constants {
 				double ourTagHeight = 1.6;
 				List<AprilTag> tags = new ArrayList<AprilTag>();
 				tags.add(new AprilTag(
-					1,
-					new Pose3d(
-						new Translation3d(0, ourFieldWidth / 2, ourTagHeight),
-						new Rotation3d(0, 0, 0))));
+						1, new Pose3d(new Translation3d(0, ourFieldWidth / 2, ourTagHeight), new Rotation3d(0, 0, 0))));
 				tags.add(new AprilTag(
-					2,
-					new Pose3d(
-						new Translation3d(ourFieldLength / 2, ourFieldWidth, ourTagHeight),
-						new Rotation3d(0, 0, -0.5 * Math.PI))));
+						2,
+						new Pose3d(
+								new Translation3d(ourFieldLength / 2, ourFieldWidth, ourTagHeight),
+								new Rotation3d(0, 0, -0.5 * Math.PI))));
 				tags.add(new AprilTag(
-					3,
-					new Pose3d(
-						new Translation3d(ourFieldLength, ourFieldWidth / 2, ourTagHeight),
-						new Rotation3d(0, 0, Math.PI))));
+						3,
+						new Pose3d(
+								new Translation3d(ourFieldLength, ourFieldWidth / 2, ourTagHeight),
+								new Rotation3d(0, 0, Math.PI))));
 				tags.add(new AprilTag(
-					4,
-					new Pose3d(
-						new Translation3d(ourFieldLength / 2, 0, 2.2),
-						new Rotation3d(0, 0, Math.PI / 2))));
+						4,
+						new Pose3d(new Translation3d(ourFieldLength / 2, 0, 2.2), new Rotation3d(0, 0, Math.PI / 2))));
 
 				kOurFieldLayout = new AprilTagFieldLayout(tags, ourFieldLength, ourFieldWidth);
 			} catch (IOException e) {
@@ -358,24 +353,26 @@ public final class Constants {
 
 			System.out.println("----------------------------------------------------------------------------");
 			for (AprilTag tag : getFieldLayout().getTags())
-				System.out.println("Id " + tag.ID + ": x" + Math.round(tag.pose.getX() * 100) / 100 + ", y" + Math.round(tag.pose.getY() * 100) / 100 + ", z" + Math.round(tag.pose.getZ() * 100) / 100 + ", theta" + Math.round(tag.pose.getRotation().toRotation2d().getDegrees()));
+				System.out.println("Id " + tag.ID + ": x" + Math.round(tag.pose.getX() * 100) / 100 + ", y"
+						+ Math.round(tag.pose.getY() * 100) / 100 + ", z" + Math.round(tag.pose.getZ() * 100) / 100
+						+ ", theta"
+						+ Math.round(tag.pose.getRotation().toRotation2d().getDegrees()));
 			System.out.println("----------------------------------------------------------------------------");
 		}
 
 		public static AprilTagFieldLayout getFieldLayout(List<Integer> ignoredTags) {
 			AprilTagFieldLayout layout;
 
-			if (RobotState.isSimulated())
-				layout = kUseOurField ? kOurFieldLayout : kBlueFieldLayout;
+			if (RobotState.isSimulated()) layout = kUseOurField ? kOurFieldLayout : kBlueFieldLayout;
 			else {
-				if (kUseOurField)
-					layout = kOurFieldLayout;
+				if (kUseOurField) layout = kOurFieldLayout;
 				else
-					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? kBlueFieldLayout : kRedFieldLayout;
+					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
+							? kBlueFieldLayout
+							: kRedFieldLayout;
 			}
 
-			if (!ignoredTags.isEmpty())
-				layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));
+			if (!ignoredTags.isEmpty()) layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));
 
 			return layout;
 		}
@@ -468,8 +465,8 @@ public final class Constants {
 		 * @return the pose of the offset tag
 		 */
 		public static Pose2d getOffsetTagPose(Pose2d tagPose, double offset) {
-//			Translation2d offsetTranslation =
-//					new Translation2d(offset, tagPose.getRotation().rotateBy(Rotation2d.fromDegrees(0)));
+			//			Translation2d offsetTranslation =
+			//					new Translation2d(offset, tagPose.getRotation().rotateBy(Rotation2d.fromDegrees(0)));
 			return tagPose.transformBy(new Transform2d(offset, 0, new Rotation2d()));
 		}
 	}

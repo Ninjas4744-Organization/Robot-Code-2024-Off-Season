@@ -11,7 +11,9 @@ public class SwerveDemand {
 		VELOCITY,
 		LOCKED_AXIS,
 		LOOK_AT_TARGET,
-        PATHFINDING, DRIVE_ASSIST, FOLLOW_PATH
+		PATHFINDING,
+		DRIVE_ASSIST,
+		FOLLOW_PATH
 	}
 
 	public ChassisSpeeds driverInput = new ChassisSpeeds(0, 0, 0);

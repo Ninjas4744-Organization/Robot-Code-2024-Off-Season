@@ -7,38 +7,34 @@ import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
 import frc.robot.RobotState;
 
 public class Indexer extends StateMachineMotoredSubsystem {
-    private static Indexer _instance;
+	private static Indexer _instance;
 
-    public static Indexer getInstance() {
-        if (_instance == null) _instance = new Indexer();
+	public static Indexer getInstance() {
+		if (_instance == null) _instance = new Indexer();
 
-        return _instance;
-    }
+		return _instance;
+	}
 
-    @Override
-    protected void setController() {
-        _controller = new NinjasSparkMaxController(IndexerConstants.kControllerConstants);
-    }
+	@Override
+	protected void setController() {
+		_controller = new NinjasSparkMaxController(IndexerConstants.kControllerConstants);
+	}
 
-    @Override
-    protected void setSimulationController() {
-        _simulatedController = new NinjasSimulatedController(IndexerConstants.kSimulatedControllerConstants);
-    }
+	@Override
+	protected void setSimulationController() {
+		_simulatedController = new NinjasSimulatedController(IndexerConstants.kSimulatedControllerConstants);
+	}
 
-    @Override
-    protected void setFunctionMaps() {
-        addFunctionToOnChangeMap(
-                () -> controller().setPercent(IndexerConstants.States.kRoll),
-                RobotState.RobotStates.SHOOT);
+	@Override
+	protected void setFunctionMaps() {
+		addFunctionToOnChangeMap(
+				() -> controller().setPercent(IndexerConstants.States.kRoll), RobotState.RobotStates.SHOOT);
 
-        addFunctionToOnChangeMap(
-                () -> controller().stop(),
-                RobotState.RobotStates.CLOSE);
+		addFunctionToOnChangeMap(() -> controller().stop(), RobotState.RobotStates.CLOSE);
 
-        addFunctionToOnChangeMap(
-            () -> controller().setPercent(IndexerConstants.States.kRoll),
-            RobotState.RobotStates.INTAKE);
+		addFunctionToOnChangeMap(
+				() -> controller().setPercent(IndexerConstants.States.kRoll), RobotState.RobotStates.INTAKE);
 
-        addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotState.RobotStates.RESET);
-    }
+		addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotState.RobotStates.RESET);
+	}
 }

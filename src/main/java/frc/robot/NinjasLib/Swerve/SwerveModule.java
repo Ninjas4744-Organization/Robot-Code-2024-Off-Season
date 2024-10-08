@@ -15,11 +15,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
 import frc.robot.NinjasLib.Swerve.Extras.CANCoderUtil;
+import frc.robot.NinjasLib.Swerve.Extras.CANCoderUtil.CCUsage;
 import frc.robot.NinjasLib.Swerve.Extras.CANSparkMaxUtil;
+import frc.robot.NinjasLib.Swerve.Extras.CANSparkMaxUtil.Usage;
 import frc.robot.NinjasLib.Swerve.Extras.OnboardModuleState;
 import frc.robot.RobotState;
-import frc.robot.NinjasLib.Swerve.Extras.CANCoderUtil.CCUsage;
-import frc.robot.NinjasLib.Swerve.Extras.CANSparkMaxUtil.Usage;
 
 public class SwerveModule {
 	public int moduleNumber;

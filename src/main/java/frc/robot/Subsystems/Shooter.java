@@ -31,7 +31,7 @@ public class Shooter extends StateMachineMotoredSubsystem {
 				() -> controller().setVelocity(ShooterConstants.States.kSpeaker), RobotStates.SHOOT_SPEAKER_PREPARE);
 
 		addFunctionToOnChangeMap(
-			() -> controller().setVelocity(ShooterConstants.States.kAmp), RobotStates.SHOOT_AMP_PREPARE);
+				() -> controller().setVelocity(ShooterConstants.States.kAmp), RobotStates.SHOOT_AMP_PREPARE);
 
 		addFunctionToOnChangeMap(() -> controller().stop(), RobotStates.CLOSE);
 	}

@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.RobotState;
-
 import java.util.List;
 
 public class PathFollower {
@@ -50,7 +49,8 @@ public class PathFollower {
 		double yFeedforward = desiredState.velocityMps * heading.getSin();
 
 		double thetaFeedback = SwerveIO.getInstance().lookAt(desiredState.targetHolonomicRotation.getDegrees(), 1);
-		Translation2d feedback = SwerveIO.getInstance().pidTo(new Translation2d(desiredState.positionMeters.getX(), desiredState.positionMeters.getY()));
+		Translation2d feedback = SwerveIO.getInstance()
+				.pidTo(new Translation2d(desiredState.positionMeters.getX(), desiredState.positionMeters.getY()));
 
 		return new ChassisSpeeds(xFeedforward + feedback.getX(), yFeedforward + feedback.getY(), thetaFeedback);
 	}
@@ -65,7 +65,9 @@ public class PathFollower {
 		PathPlannerPath _path = new PathPlannerPath(
 				points,
 				Constants.SwerveConstants.AutoConstants.kConstraints,
-			new GoalEndState(0, RobotState.isSimulated() ? targetPose.getRotation().unaryMinus() : targetPose.getRotation()));
+				new GoalEndState(
+						0,
+						RobotState.isSimulated() ? targetPose.getRotation().unaryMinus() : targetPose.getRotation()));
 
 		_trajectory = new PathPlannerTrajectory(
 				_path,

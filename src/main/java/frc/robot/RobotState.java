@@ -34,7 +34,6 @@ public class RobotState {
 		DRIVE_TO_SOURCE
 	}
 
-
 	private static RobotStates robotState = RobotStates.IDLE;
 	private static AHRS navX = new AHRS();
 	private static SwerveDrivePoseEstimator poseEstimator;
@@ -47,7 +46,7 @@ public class RobotState {
 	/**
 	 * @return Whether there's a note in the indexer according to its beam breaker
 	 */
-	public static boolean getNoteInIndexer(){
+	public static boolean getNoteInIndexer() {
 		return _indexerNote.get();
 	}
 
@@ -155,7 +154,6 @@ public class RobotState {
 						SwerveIO.getInstance().getModulePositions(),
 						new Pose2d());
 	}
-
 
 	/**
 	 * @return Whether the robot is at simulation mode or deployed on a real robot

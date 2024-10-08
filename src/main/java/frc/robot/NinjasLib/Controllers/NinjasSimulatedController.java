@@ -21,28 +21,28 @@ public class NinjasSimulatedController extends NinjasController {
 			case KRAKEN:
 				_main = new DCMotorSim(
 						DCMotor.getKrakenX60(constants.mainControllerConstants.followers.length + 1),
-					constants.gearRatio,
+						constants.gearRatio,
 						constants.motorTorque);
 				break;
 			case FALCON:
 				_main = new DCMotorSim(
 						DCMotor.getFalcon500(constants.mainControllerConstants.followers.length + 1),
-					constants.gearRatio,
+						constants.gearRatio,
 						constants.motorTorque);
 			case NEO:
 				_main = new DCMotorSim(
 						DCMotor.getNEO(constants.mainControllerConstants.followers.length + 1),
-					constants.gearRatio,
+						constants.gearRatio,
 						constants.motorTorque);
 			case VORTEX:
 				_main = new DCMotorSim(
 						DCMotor.getNeoVortex(constants.mainControllerConstants.followers.length + 1),
-					constants.gearRatio,
+						constants.gearRatio,
 						constants.motorTorque);
 			case NEO550:
 				_main = new DCMotorSim(
 						DCMotor.getNeo550(constants.mainControllerConstants.followers.length + 1),
-					constants.gearRatio,
+						constants.gearRatio,
 						constants.motorTorque);
 		}
 
@@ -106,36 +106,49 @@ public class NinjasSimulatedController extends NinjasController {
 		for (int i = 0; i < _constants.followers.length + 1; i++)
 			switch (_controlState) {
 				case PIDF_POSITION:
-					_main.setInput(i, _pid.calculate(getPosition(),
-						_profile.calculate(
-							_trapozoidTimer.get(),
-							new TrapezoidProfile.State(getPosition(), 0),
-							new TrapezoidProfile.State(getGoal(), 0))
-							.position));
+					_main.setInput(
+							i,
+							_pid.calculate(
+									getPosition(),
+									_profile.calculate(
+													_trapozoidTimer.get(),
+													new TrapezoidProfile.State(getPosition(), 0),
+													new TrapezoidProfile.State(getGoal(), 0))
+											.position));
 					break;
 
 				case PIDF_VELOCITY:
-					_main.setInput(i, _pid.calculate(getVelocity(),
-						_profile.calculate(
-							_trapozoidTimer.get(),
-							new TrapezoidProfile.State(0, getVelocity()),
-							new TrapezoidProfile.State(0, getGoal()))
-							.velocity));
+					_main.setInput(
+							i,
+							_pid.calculate(
+									getVelocity(),
+									_profile.calculate(
+													_trapozoidTimer.get(),
+													new TrapezoidProfile.State(0, getVelocity()),
+													new TrapezoidProfile.State(0, getGoal()))
+											.velocity));
 					break;
 
 				case FF_POSITION:
-					_main.setInput(i, _profile.calculate(
-						_trapozoidTimer.get(),
-						new TrapezoidProfile.State(getPosition(), getVelocity()),
-						new TrapezoidProfile.State(getGoal(), 0))
-						.velocity
-						/ _constants.PIDFConstants.kMaxVelocity);
+					_main.setInput(
+							i,
+							_profile.calculate(
+													_trapozoidTimer.get(),
+													new TrapezoidProfile.State(getPosition(), getVelocity()),
+													new TrapezoidProfile.State(getGoal(), 0))
+											.velocity
+									/ _constants.PIDFConstants.kMaxVelocity);
 					break;
 
 				case FF_VELOCITY:
-					_main.setInput(i, _profile.calculate(_trapozoidTimer.get(), new TrapezoidProfile.State(getVelocity(), 0), new TrapezoidProfile.State(getGoal(), 0))
-						.velocity
-						/ _constants.PIDFConstants.kMaxVelocity);
+					_main.setInput(
+							i,
+							_profile.calculate(
+													_trapozoidTimer.get(),
+													new TrapezoidProfile.State(getVelocity(), 0),
+													new TrapezoidProfile.State(getGoal(), 0))
+											.velocity
+									/ _constants.PIDFConstants.kMaxVelocity);
 					break;
 
 				default:

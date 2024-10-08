@@ -30,18 +30,18 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 		_simulatedController = new NinjasSimulatedController(ShooterAngleConstants.kSimulatedControllerConstants);
 	}
 
-	private Rotation2d calculateAngle(Pose3d target){
+	private Rotation2d calculateAngle(Pose3d target) {
 		double dist = RobotState.getRobotPose()
-			.getTranslation().plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
-			.getDistance(target.toPose2d().getTranslation());
+				.getTranslation()
+				.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
+				.getDistance(target.toPose2d().getTranslation());
 
-		Rotation2d angle = Rotation2d.fromRadians(Math.atan2(
-			target.getZ() - ShooterAngleConstants.kShooterPose.getZ(), dist));
+		Rotation2d angle =
+				Rotation2d.fromRadians(Math.atan2(target.getZ() - ShooterAngleConstants.kShooterPose.getZ(), dist));
 
 		angle = angle.rotateBy(ShooterAngleConstants.getTrendAngleFixer(dist));
 
-		double angleClamped =
-			Math.min(Math.max(angle.getDegrees(), 30), 80);
+		double angleClamped = Math.min(Math.max(angle.getDegrees(), 30), 80);
 
 		return Rotation2d.fromDegrees(angleClamped);
 	}
@@ -49,19 +49,29 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToPeriodicMap(
-			() -> controller().setPosition(calculateAngle(
-					new Pose3d(VisionConstants.getAmpTag().pose.getX() + ShooterAngleConstants.kAmpOffset.getX(),
-							VisionConstants.getAmpTag().pose.getY() + ShooterAngleConstants.kAmpOffset.getY(),
-							VisionConstants.getAmpTag().pose.getZ() + ShooterAngleConstants.kAmpOffset.getZ(),
-							new Rotation3d())).getDegrees()),
+				() -> controller()
+						.setPosition(calculateAngle(new Pose3d(
+										VisionConstants.getAmpTag().pose.getX()
+												+ ShooterAngleConstants.kAmpOffset.getX(),
+										VisionConstants.getAmpTag().pose.getY()
+												+ ShooterAngleConstants.kAmpOffset.getY(),
+										VisionConstants.getAmpTag().pose.getZ()
+												+ ShooterAngleConstants.kAmpOffset.getZ(),
+										new Rotation3d()))
+								.getDegrees()),
 				RobotStates.SHOOT_AMP_PREPARE);
 
 		addFunctionToPeriodicMap(
-				() -> controller().setPosition(calculateAngle(
-						new Pose3d(VisionConstants.getSpeakerTag().pose.getX() + ShooterAngleConstants.kSpeakerOffset.getX(),
-								VisionConstants.getSpeakerTag().pose.getY() + ShooterAngleConstants.kSpeakerOffset.getY(),
-								VisionConstants.getSpeakerTag().pose.getZ() + ShooterAngleConstants.kSpeakerOffset.getZ(),
-								new Rotation3d())).getDegrees()),
-			RobotStates.SHOOT_SPEAKER_PREPARE);
+				() -> controller()
+						.setPosition(calculateAngle(new Pose3d(
+										VisionConstants.getSpeakerTag().pose.getX()
+												+ ShooterAngleConstants.kSpeakerOffset.getX(),
+										VisionConstants.getSpeakerTag().pose.getY()
+												+ ShooterAngleConstants.kSpeakerOffset.getY(),
+										VisionConstants.getSpeakerTag().pose.getZ()
+												+ ShooterAngleConstants.kSpeakerOffset.getZ(),
+										new Rotation3d()))
+								.getDegrees()),
+				RobotStates.SHOOT_SPEAKER_PREPARE);
 	}
 }

@@ -20,7 +20,8 @@ public class NinjasTalonSRXController extends NinjasController {
 		_main.config_kI(0, constants.PIDFConstants.kI);
 		_main.config_kD(0, constants.PIDFConstants.kD);
 		_main.config_kF(0, constants.PIDFConstants.kF);
-		_main.configMotionCruiseVelocity(constants.PIDFConstants.kCruiseVelocity * constants.encoderConversionFactor / 10);
+		_main.configMotionCruiseVelocity(
+				constants.PIDFConstants.kCruiseVelocity * constants.encoderConversionFactor / 10);
 		_main.configMotionAcceleration(constants.PIDFConstants.kAcceleration * constants.encoderConversionFactor / 10);
 
 		_main.configForwardSoftLimitEnable(constants.isMaxSoftLimit);

@@ -11,7 +11,6 @@ import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +36,8 @@ public class StateMachine extends StateMachineSubsystem {
 
 	public void setTriggerForSimulationTesting(Trigger trigger) {
 		if (RobotState.isSimulated())
-			trigger.onTrue(Commands.runOnce(() -> changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState)));
+			trigger.onTrue(Commands.runOnce(
+					() -> changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState)));
 	}
 
 	/**
@@ -68,8 +68,7 @@ public class StateMachine extends StateMachineSubsystem {
 				if (wantedState == RobotStates.NOTE_IN_INDEXER
 						|| wantedState == RobotStates.NOTE_SEARCH
 						|| wantedState == RobotStates.RESET
-						|| wantedState == RobotStates.CLOSE)
-					RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.CLOSE) RobotState.setRobotState(wantedState);
 				break;
 
 			case SHOOT:
@@ -78,18 +77,17 @@ public class StateMachine extends StateMachineSubsystem {
 				break;
 
 			case INTAKE:
-				if (wantedState == RobotStates.RESET || wantedState == RobotStates.CLOSE || wantedState == RobotStates.NOTE_IN_INDEXER)
-					RobotState.setRobotState(wantedState);
+				if (wantedState == RobotStates.RESET
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == RobotStates.NOTE_IN_INDEXER) RobotState.setRobotState(wantedState);
 				break;
 
 			case CLIMB:
-				if (wantedState == RobotStates.CLIMBED)
-					RobotState.setRobotState(wantedState);
+				if (wantedState == RobotStates.CLIMBED) RobotState.setRobotState(wantedState);
 				break;
 
 			case CLIMBED:
-				if (wantedState == RobotStates.CLIMB_PREPARE)
-					RobotState.setRobotState(wantedState);
+				if (wantedState == RobotStates.CLIMB_PREPARE) RobotState.setRobotState(wantedState);
 				break;
 
 			case CLIMB_PREPARE:
@@ -105,37 +103,38 @@ public class StateMachine extends StateMachineSubsystem {
 				break;
 
 			case NOTE_SEARCH:
-				if (wantedState == RobotStates.INTAKE ||
-					wantedState == RobotStates.CLIMB_PREPARE ||
-					wantedState == RobotStates.CLOSE ||
-					wantedState == RobotStates.RESET)
-					RobotState.setRobotState(wantedState);
+				if (wantedState == RobotStates.INTAKE
+						|| wantedState == RobotStates.CLIMB_PREPARE
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
 			case NOTE_IN_INDEXER:
-				if(wantedState == RobotStates.DRIVE_TO_AMP ||
-					wantedState == RobotStates.DRIVE_TO_SOURCE ||
-					wantedState == RobotStates.CLIMB_PREPARE ||
-					wantedState == RobotStates.SHOOT_AMP_PREPARE ||
-					wantedState == RobotStates.SHOOT_SPEAKER_PREPARE ||
-					wantedState == RobotStates.CLOSE ||
-					wantedState == RobotStates.RESET)
-					RobotState.setRobotState(wantedState);
+				if (wantedState == RobotStates.DRIVE_TO_AMP
+						|| wantedState == RobotStates.DRIVE_TO_SOURCE
+						|| wantedState == RobotStates.CLIMB_PREPARE
+						|| wantedState == RobotStates.SHOOT_AMP_PREPARE
+						|| wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
 			case DRIVE_TO_AMP:
-				if (wantedState == RobotStates.SHOOT_AMP_PREPARE || wantedState == RobotStates.CLOSE || wantedState == wantedState.RESET)
-					RobotState.setRobotState(wantedState);
+				if (wantedState == RobotStates.SHOOT_AMP_PREPARE
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == wantedState.RESET) RobotState.setRobotState(wantedState);
 				break;
 
 			case DRIVE_TO_SOURCE:
-				if (wantedState == RobotStates.INTAKE || wantedState == RobotStates.CLOSE || wantedState == wantedState.RESET)
-					RobotState.setRobotState(wantedState);
+				if (wantedState == RobotStates.INTAKE
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == wantedState.RESET) RobotState.setRobotState(wantedState);
 				break;
 		}
 
-		if(RobotState.getRobotState() == RobotStates.IDLE)
-			RobotState.setRobotState(RobotState.getNoteInIndexer() ? RobotStates.NOTE_IN_INDEXER : RobotStates.NOTE_SEARCH);
+		if (RobotState.getRobotState() == RobotStates.IDLE)
+			RobotState.setRobotState(
+					RobotState.getNoteInIndexer() ? RobotStates.NOTE_IN_INDEXER : RobotStates.NOTE_SEARCH);
 	}
 
 	private Timer _shootTimer = new Timer();
@@ -143,36 +142,58 @@ public class StateMachine extends StateMachineSubsystem {
 	/**
 	 * Set in this function the end condition for each state with _endConditionMap
 	 */
-	private void setEndConditionMap(){
-		_endConditionMap.put(RobotStates.RESET,
-			new StateEndCondition(() -> ShooterAngle.getInstance().isHomed() && Indexer.getInstance().isHomed() && Climber.getInstance().isHomed(), RobotStates.IDLE));
+	private void setEndConditionMap() {
+		_endConditionMap.put(
+				RobotStates.RESET,
+				new StateEndCondition(
+						() -> ShooterAngle.getInstance().isHomed()
+								&& Indexer.getInstance().isHomed()
+								&& Climber.getInstance().isHomed(),
+						RobotStates.IDLE));
 
-		_endConditionMap.put(RobotStates.CLOSE,
-			new StateEndCondition(() -> ShooterAngle.getInstance().atGoal() && Indexer.getInstance().atGoal() && Climber.getInstance().atGoal(), RobotStates.IDLE));
+		_endConditionMap.put(
+				RobotStates.CLOSE,
+				new StateEndCondition(
+						() -> ShooterAngle.getInstance().atGoal()
+								&& Indexer.getInstance().atGoal()
+								&& Climber.getInstance().atGoal(),
+						RobotStates.IDLE));
 
-		_endConditionMap.put(RobotStates.INTAKE,
-			new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
+		_endConditionMap.put(
+				RobotStates.INTAKE, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
 
-		_endConditionMap.put(RobotStates.SHOOT_AMP_PREPARE,
-			new StateEndCondition(() -> ShooterAngle.getInstance().atGoal() && Shooter.getInstance().atGoal(), RobotStates.SHOOT_READY));
+		_endConditionMap.put(
+				RobotStates.SHOOT_AMP_PREPARE,
+				new StateEndCondition(
+						() -> ShooterAngle.getInstance().atGoal()
+								&& Shooter.getInstance().atGoal(),
+						RobotStates.SHOOT_READY));
 
-		_endConditionMap.put(RobotStates.SHOOT_SPEAKER_PREPARE,
-			new StateEndCondition(() -> ShooterAngle.getInstance().atGoal() && Shooter.getInstance().atGoal(), RobotStates.SHOOT_READY));
+		_endConditionMap.put(
+				RobotStates.SHOOT_SPEAKER_PREPARE,
+				new StateEndCondition(
+						() -> ShooterAngle.getInstance().atGoal()
+								&& Shooter.getInstance().atGoal(),
+						RobotStates.SHOOT_READY));
 
-		_endConditionMap.put(RobotStates.SHOOT,
-			new StateEndCondition(() -> _shootTimer.get() > 1, RobotStates.CLOSE));
+		_endConditionMap.put(RobotStates.SHOOT, new StateEndCondition(() -> _shootTimer.get() > 1, RobotStates.CLOSE));
 
-		_endConditionMap.put(RobotStates.CLIMB_PREPARE,
-			new StateEndCondition(() -> Climber.getInstance().atGoal(), RobotStates.CLIMB_READY));
+		_endConditionMap.put(
+				RobotStates.CLIMB_PREPARE,
+				new StateEndCondition(() -> Climber.getInstance().atGoal(), RobotStates.CLIMB_READY));
 
-		_endConditionMap.put(RobotStates.CLIMB,
-			new StateEndCondition(() -> Climber.getInstance().atGoal(), RobotStates.CLIMBED));
+		_endConditionMap.put(
+				RobotStates.CLIMB,
+				new StateEndCondition(() -> Climber.getInstance().atGoal(), RobotStates.CLIMBED));
 
-		_endConditionMap.put(RobotStates.DRIVE_TO_AMP,
-			new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.SHOOT_AMP_PREPARE));
+		_endConditionMap.put(
+				RobotStates.DRIVE_TO_AMP,
+				new StateEndCondition(
+						() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.SHOOT_AMP_PREPARE));
 
-		_endConditionMap.put(RobotStates.DRIVE_TO_SOURCE,
-			new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.INTAKE));
+		_endConditionMap.put(
+				RobotStates.DRIVE_TO_SOURCE,
+				new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.INTAKE));
 	}
 
 	@Override

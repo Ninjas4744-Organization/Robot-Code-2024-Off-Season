@@ -111,8 +111,8 @@ public class NinjasSparkMaxController extends NinjasController {
 				_main.getPIDController()
 						.setReference(
 								_profile.calculate(
-									_profileTimer.get(),
-									new State(getPosition(), getVelocity()),
+												_profileTimer.get(),
+												new State(getPosition(), getVelocity()),
 												new State(getGoal(), 0))
 										.position,
 								ControlType.kPosition);
@@ -122,16 +122,16 @@ public class NinjasSparkMaxController extends NinjasController {
 				_main.getPIDController()
 						.setReference(
 								_profile.calculate(
-									_profileTimer.get(),
-									new State(getVelocity(), 0),
-									new State(getGoal(), 0))
-									.position,
+												_profileTimer.get(),
+												new State(getVelocity(), 0),
+												new State(getGoal(), 0))
+										.position,
 								ControlType.kVelocity);
 				break;
 
 			case FF_POSITION:
 				_main.set(_profile.calculate(
-					_profileTimer.get(),
+										_profileTimer.get(),
 										new State(getPosition(), getVelocity()),
 										new State(getGoal(), 0))
 								.velocity
@@ -139,10 +139,9 @@ public class NinjasSparkMaxController extends NinjasController {
 				break;
 
 			case FF_VELOCITY:
-				_main.set(
-					_profile.calculate(_profileTimer.get(), new State(getVelocity(), 0), new State(getGoal(), 0))
-										.velocity
-								/ _constants.PIDFConstants.kMaxVelocity);
+				_main.set(_profile.calculate(_profileTimer.get(), new State(getVelocity(), 0), new State(getGoal(), 0))
+								.velocity
+						/ _constants.PIDFConstants.kMaxVelocity);
 				break;
 
 			default:
