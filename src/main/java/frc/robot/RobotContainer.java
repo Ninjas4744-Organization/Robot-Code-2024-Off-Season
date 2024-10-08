@@ -1,20 +1,24 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
-import frc.robot.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.Swerve.SwerveIO;
+import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.RobotState.RobotStates;
+import frc.robot.Subsystems.Climber;
+import frc.robot.Subsystems.Indexer;
+import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
-import frc.robot.Swerve.SwerveDemand;
-import frc.robot.Swerve.SwerveIO;
-import frc.robot.Vision.VisionIO;
 
 public class RobotContainer {
-	private CommandPS5Controller _driverJoystick;
-	private CommandPS5Controller _operatorJoystick;
+	private final CommandPS5Controller _driverJoystick;
+	private final CommandPS5Controller _operatorJoystick;
+
+	private boolean isSwerveLookAt = false;
+	private boolean isSwerveBayblade = false;
 
 	public RobotContainer() {
 		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
@@ -26,12 +30,23 @@ public class RobotContainer {
 		AutoCommandBuilder.configureAutoBuilder();
 		AutoCommandBuilder.registerCommands();
 
+		Climber.getInstance();
+		Indexer.getInstance();
+		Shooter.getInstance();
 		ShooterAngle.getInstance();
+
+		StateMachine.getInstance().setTriggerForSimulationTesting(_driverJoystick.R2());
 
 		configureBindings();
 	}
 
 	private void configureBindings() {
+		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(() -> StateMachine.getInstance()
+				.changeRobotState(RobotStates.SHOOT)));
+		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(() -> StateMachine.getInstance()
+				.changeRobotState(RobotStates.CLIMB)));
+		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(() -> StateMachine.getInstance()
+				.changeRobotState(RobotStates.NOTE_SEARCH)));
 		configureDriverBindings();
 		configureOperatorBindings();
 	}
@@ -40,54 +55,24 @@ public class RobotContainer {
 		SwerveIO.getInstance()
 				.setDefaultCommand(TeleopCommandBuilder.swerveDrive(
 						() -> new Translation2d(_driverJoystick.getLeftX(), _driverJoystick.getLeftY()),
-						() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY())));
+						() -> new Translation2d(_driverJoystick.getRightX(), _driverJoystick.getRightY()),
+						() -> isSwerveLookAt,
+						() -> isSwerveBayblade));
 
-		_driverJoystick.circle().onTrue(Commands.runOnce(() -> {
-			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.BAYBLADE)
-				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-			else SwerveIO.getInstance().setState(SwerveDemand.SwerveState.BAYBLADE);
-		}));
-
-		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> {
-			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOOK_AT_ANGLE)
-				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-			else SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_ANGLE);
-		}));
-
-		_driverJoystick.povUp().onTrue(Commands.runOnce(() -> {
-			if (SwerveIO.getInstance().getState() == SwerveDemand.SwerveState.LOCKED_AXIS)
-				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-			else {
-				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOCKED_AXIS);
-				SwerveIO.getInstance().updateDemand(Rotation2d.fromDegrees(-60), 6.25, false);
-			}
-		}));
+		_driverJoystick.square().onTrue(Commands.runOnce(() -> isSwerveBayblade = !isSwerveBayblade));
+		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
 
 		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
 
-		_driverJoystick.square().onTrue(Commands.runOnce(() -> {
-			if (RobotState.getRobotState() == RobotStates.PREPARE_SHOOT) {
-				SwerveIO.getInstance().setState(SwerveIO.getInstance().getPreviousState());
-				StateMachine.getInstance().changeRobotState(RobotStates.CLOSE);
-			} else {
-				SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_TARGET);
-				SwerveIO.getInstance().updateDemand(Constants.VisionConstants.getTagPose(15));
-				StateMachine.getInstance().changeRobotState(RobotStates.PREPARE_SHOOT);
-			}
-		}));
-
-		_driverJoystick
-				.R1()
-				.toggleOnTrue(Commands.startEnd(
-						() -> SwerveIO.getInstance().setDriveAssist(true),
-						() -> SwerveIO.getInstance().setDriveAssist(false)));
+		_driverJoystick.povLeft().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_AMP));
+		_driverJoystick.povUp().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_SOURCE));
+		_driverJoystick.povDown().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 	}
 
 	private void configureOperatorBindings() {
-		//		_driverJoystick.cross().onTrue(StateMachine.getInstance().Act());
-		//		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.PREPARE_CLIMB));
-		//		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
+		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
+		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE));
 	}
 
 	public void periodic() {
@@ -98,8 +83,7 @@ public class RobotContainer {
 
 	public void resetSubsystems() {
 		RobotState.setRobotPose(new Pose2d());
-		StateMachine.getInstance().changeRobotState(RobotStates.RESET);
-		StateMachine.getInstance().changeRobotState(RobotStates.IDLE);
+		RobotState.setRobotState(RobotStates.RESET);
 		TeleopCommandBuilder.resetGyro(false).schedule();
 	}
 }

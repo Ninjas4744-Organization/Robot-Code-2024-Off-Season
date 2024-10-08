@@ -1,14 +1,20 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.DataClasses.StateEndCondition;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.NinjasLib.DataClasses.StateEndCondition;
+import frc.robot.NinjasLib.StateMachineSubsystem;
+import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.RobotState.RobotStates;
+import frc.robot.Subsystems.Climber;
+import frc.robot.Subsystems.Indexer;
+import frc.robot.Subsystems.Shooter;
+import frc.robot.Subsystems.ShooterAngle;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StateMachine extends SubsystemBase {
+public class StateMachine extends StateMachineSubsystem {
 	private static StateMachine _instance;
 
 	public static StateMachine getInstance() {
@@ -23,15 +29,16 @@ public class StateMachine extends SubsystemBase {
 		_endConditionMap = new HashMap<>();
 
 		for (RobotStates state : RobotStates.values())
-			_endConditionMap.put(state, new StateEndCondition(() -> false, RobotStates.IDLE));
+			_endConditionMap.put(state, new StateEndCondition(() -> false, state));
 
 		setEndConditionMap();
 	}
 
-	/**
-	 * Set in this function the end condition for each state with _endConditionMap
-	 */
-	private void setEndConditionMap() {}
+	public void setTriggerForSimulationTesting(Trigger trigger) {
+		if (RobotState.isSimulated())
+			trigger.onTrue(Commands.runOnce(
+					() -> changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState)));
+	}
 
 	/**
 	 * Sets the state of the robot to the given state only if possible. For example if the current
@@ -41,12 +48,6 @@ public class StateMachine extends SubsystemBase {
 	 */
 	public void changeRobotState(RobotStates wantedState) {
 		switch (RobotState.getRobotState()) {
-			case AMP_OUTAKE_READY, TRAP_OUTAKE_READY:
-				if (wantedState == RobotStates.OUTAKE
-						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
-				break;
-
 			case SHOOT_READY:
 				if (wantedState == RobotStates.SHOOT
 						|| wantedState == RobotStates.CLOSE
@@ -59,125 +60,152 @@ public class StateMachine extends SubsystemBase {
 						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
-			case INTAKE_READY:
-				if (wantedState == RobotStates.INTAKE
-						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
-				break;
-
 			case CLOSE, RESET:
 				if (wantedState == RobotStates.IDLE) RobotState.setRobotState(wantedState);
 				break;
 
 			case IDLE:
-				if (wantedState == RobotStates.HOLDING_NOTE
+				if (wantedState == RobotStates.NOTE_IN_INDEXER
 						|| wantedState == RobotStates.NOTE_SEARCH
 						|| wantedState == RobotStates.RESET
-						|| wantedState == RobotStates.PREPARE_CLIMB
-						|| wantedState == RobotStates.PREPARE_INTAKE) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.CLOSE) RobotState.setRobotState(wantedState);
 				break;
 
-			case HOLDING_NOTE:
-				if (wantedState == RobotStates.RESET
-						|| wantedState == RobotStates.PREPARE_AMP_OUTAKE
-						|| wantedState == RobotStates.PREPARE_TRAP_OUTAKE
-						|| wantedState == RobotStates.PREPARE_CLIMB
-						|| wantedState == RobotStates.PREPARE_SHOOT) RobotState.setRobotState(wantedState);
-				break;
-
-			case INTAKE, OUTAKE:
+			case SHOOT:
 				if (wantedState == RobotStates.RESET || wantedState == RobotStates.CLOSE)
 					RobotState.setRobotState(wantedState);
 				break;
 
-			case SHOOT:
-				if (wantedState == RobotStates.RESET || wantedState == RobotStates.IDLE)
-					RobotState.setRobotState(wantedState);
+			case INTAKE:
+				if (wantedState == RobotStates.RESET
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == RobotStates.NOTE_IN_INDEXER) RobotState.setRobotState(wantedState);
 				break;
 
 			case CLIMB:
+				if (wantedState == RobotStates.CLIMBED) RobotState.setRobotState(wantedState);
 				break;
 
 			case CLIMBED:
-				if (wantedState == RobotStates.PREPARE_TRAP_OUTAKE || wantedState == RobotStates.PREPARE_CLIMB)
-					RobotState.setRobotState(wantedState);
+				if (wantedState == RobotStates.CLIMB_PREPARE) RobotState.setRobotState(wantedState);
 				break;
 
-			case PREPARE_AMP_OUTAKE:
-				if (wantedState == RobotStates.RESET
-						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.AMP_OUTAKE_READY) RobotState.setRobotState(wantedState);
-				break;
-
-			case PREPARE_TRAP_OUTAKE:
-				if (wantedState == RobotStates.RESET
-						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.TRAP_OUTAKE_READY) RobotState.setRobotState(wantedState);
-				break;
-
-			case PREPARE_CLIMB:
+			case CLIMB_PREPARE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
 						|| wantedState == RobotStates.CLIMB_READY) RobotState.setRobotState(wantedState);
 				break;
 
-			case PREPARE_INTAKE:
-				if (wantedState == RobotStates.RESET
-						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.INTAKE_READY) RobotState.setRobotState(wantedState);
-				break;
-
-			case PREPARE_SHOOT:
+			case SHOOT_SPEAKER_PREPARE, SHOOT_AMP_PREPARE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
 						|| wantedState == RobotStates.SHOOT_READY) RobotState.setRobotState(wantedState);
 				break;
 
 			case NOTE_SEARCH:
-				if (wantedState == RobotStates.PREPARE_INTAKE || wantedState == RobotStates.PREPARE_CLIMB)
-					RobotState.setRobotState(wantedState);
+				if (wantedState == RobotStates.INTAKE
+						|| wantedState == RobotStates.CLIMB_PREPARE
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+				break;
+
+			case NOTE_IN_INDEXER:
+				if (wantedState == RobotStates.DRIVE_TO_AMP
+						|| wantedState == RobotStates.DRIVE_TO_SOURCE
+						|| wantedState == RobotStates.CLIMB_PREPARE
+						|| wantedState == RobotStates.SHOOT_AMP_PREPARE
+						|| wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+				break;
+
+			case DRIVE_TO_AMP:
+				if (wantedState == RobotStates.SHOOT_AMP_PREPARE
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == wantedState.RESET) RobotState.setRobotState(wantedState);
+				break;
+
+			case DRIVE_TO_SOURCE:
+				if (wantedState == RobotStates.INTAKE
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == wantedState.RESET) RobotState.setRobotState(wantedState);
 				break;
 		}
 
-		if (wantedState == RobotStates.IDLE && RobotState.hasNote()) RobotState.setRobotState(RobotStates.HOLDING_NOTE);
-
-		if (wantedState == RobotStates.IDLE && !RobotState.hasNote()) RobotState.setRobotState(RobotStates.NOTE_SEARCH);
+		if (RobotState.getRobotState() == RobotStates.IDLE)
+			RobotState.setRobotState(
+					RobotState.getNoteInIndexer() ? RobotStates.NOTE_IN_INDEXER : RobotStates.NOTE_SEARCH);
 	}
 
+	private Timer _shootTimer = new Timer();
+
 	/**
-	 * Sets the robot state to the state according to the action that should be taken. Used for when
-	 * you press a button on the controller it will change to the right state
-	 *
-	 * @return the command that changes the state
+	 * Set in this function the end condition for each state with _endConditionMap
 	 */
-	public Command Act() {
-		return Commands.runOnce(
-				() -> {
-					switch (RobotState.getRobotState()) {
-						case AMP_OUTAKE_READY, TRAP_OUTAKE_READY:
-							changeRobotState(RobotStates.OUTAKE);
-							break;
+	private void setEndConditionMap() {
+		_endConditionMap.put(
+				RobotStates.RESET,
+				new StateEndCondition(
+						() -> ShooterAngle.getInstance().isHomed()
+								&& Indexer.getInstance().isHomed()
+								&& Climber.getInstance().isHomed(),
+						RobotStates.IDLE));
 
-						case CLIMB_READY:
-							changeRobotState(RobotStates.CLIMB);
-							break;
+		_endConditionMap.put(
+				RobotStates.CLOSE,
+				new StateEndCondition(
+						() -> ShooterAngle.getInstance().atGoal()
+								&& Indexer.getInstance().atGoal()
+								&& Climber.getInstance().atGoal(),
+						RobotStates.IDLE));
 
-						case SHOOT_READY:
-							changeRobotState(RobotStates.SHOOT);
-							break;
+		_endConditionMap.put(
+				RobotStates.INTAKE, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
 
-						default:
-							break;
-					}
-				},
-				this);
+		_endConditionMap.put(
+				RobotStates.SHOOT_AMP_PREPARE,
+				new StateEndCondition(
+						() -> ShooterAngle.getInstance().atGoal()
+								&& Shooter.getInstance().atGoal(),
+						RobotStates.SHOOT_READY));
+
+		_endConditionMap.put(
+				RobotStates.SHOOT_SPEAKER_PREPARE,
+				new StateEndCondition(
+						() -> ShooterAngle.getInstance().atGoal()
+								&& Shooter.getInstance().atGoal(),
+						RobotStates.SHOOT_READY));
+
+		_endConditionMap.put(RobotStates.SHOOT, new StateEndCondition(() -> _shootTimer.get() > 1, RobotStates.CLOSE));
+
+		_endConditionMap.put(
+				RobotStates.CLIMB_PREPARE,
+				new StateEndCondition(() -> Climber.getInstance().atGoal(), RobotStates.CLIMB_READY));
+
+		_endConditionMap.put(
+				RobotStates.CLIMB,
+				new StateEndCondition(() -> Climber.getInstance().atGoal(), RobotStates.CLIMBED));
+
+		_endConditionMap.put(
+				RobotStates.DRIVE_TO_AMP,
+				new StateEndCondition(
+						() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.SHOOT_AMP_PREPARE));
+
+		_endConditionMap.put(
+				RobotStates.DRIVE_TO_SOURCE,
+				new StateEndCondition(() -> SwerveIO.getInstance().isPathFollowingFinished(), RobotStates.INTAKE));
 	}
 
 	@Override
 	public void periodic() {
-		for (RobotStates state : RobotStates.values()) {
-			if (_endConditionMap.get(state).condition.getAsBoolean())
-				changeRobotState(_endConditionMap.get(state).nextState);
-		}
+		super.periodic();
+
+		if (_endConditionMap.get(RobotState.getRobotState()).condition.getAsBoolean() && !RobotState.isSimulated())
+			changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState);
+	}
+
+	@Override
+	protected void setFunctionMaps() {
+		addFunctionToOnChangeMap(() -> _shootTimer.restart(), RobotStates.SHOOT);
 	}
 }
