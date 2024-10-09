@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Speaker"
+            "pathName": "Left To Speaker"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker Note 1"
+            "pathName": "Speaker To Note 1"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Note 1 Speaker"
+            "pathName": "Note 1 To Speaker"
           }
         },
         {
@@ -68,7 +68,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker Park Right"
+            "pathName": null
           }
         }
       ]

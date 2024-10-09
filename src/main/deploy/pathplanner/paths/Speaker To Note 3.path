@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 1.9,
-        "y": 4.2
+        "y": 5.5
       },
       "prevControl": null,
       "nextControl": {
         "x": 1.9486293987138654,
-        "y": 4.2
+        "y": 5.5
       },
       "isLocked": false,
-      "linkedName": "Note3"
+      "linkedName": "Speaker"
     },
     {
       "anchor": {
         "x": 1.9,
-        "y": 5.5
+        "y": 4.2
       },
       "prevControl": {
         "x": 1.9037885152693366,
-        "y": 5.5
+        "y": 4.2
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Speaker"
+      "linkedName": "Note3"
     }
   ],
   "rotationTargets": [],
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Notes",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

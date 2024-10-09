@@ -14,19 +14,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left mid left"
+            "pathName": "Left To Middle Left"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid left to right"
+            "pathName": "Middle Left To Middle Right"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid right to end right"
+            "pathName": null
           }
         }
       ]

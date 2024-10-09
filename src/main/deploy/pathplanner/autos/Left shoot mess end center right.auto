@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Speaker"
+            "pathName": "Left To Speaker"
           }
         },
         {
@@ -32,19 +32,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source mid left"
+            "pathName": "Speaker To Middle Left"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid left to right"
+            "pathName": "Middle Left To Middle Right"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid right to end center right"
+            "pathName": null
           }
         }
       ]
