@@ -12,33 +12,21 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Prepare Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Left To Speaker"
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Speaker To Note 1"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
           }
         },
         {
@@ -50,13 +38,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Note 1 To Speaker"
+            "pathName": "Run Over Note 2"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.5
+            "name": "Prepare Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note 2 To Speaker"
           }
         },
         {
@@ -68,24 +62,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker To Middle Left"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle Left To Middle Right"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": null
+            "pathName": "Speaker To Park Left"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Left Autos",
   "choreoAuto": false
 }

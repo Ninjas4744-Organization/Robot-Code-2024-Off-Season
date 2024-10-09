@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9,
-        "y": 4.2
+        "x": 3.0,
+        "y": 5.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9,
-        "y": 4.2
+        "x": 3.0486293987138655,
+        "y": 5.5
       },
       "isLocked": false,
-      "linkedName": "Note3"
+      "linkedName": "OverNote2"
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 4.2
+        "x": 1.9,
+        "y": 5.5
       },
       "prevControl": {
-        "x": 2.0,
-        "y": 4.2
+        "x": 1.9037885152693366,
+        "y": 5.5
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OverNote3"
+      "linkedName": "Speaker"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "Notes",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

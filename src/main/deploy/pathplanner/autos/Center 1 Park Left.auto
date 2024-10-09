@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 0.6,
-      "y": 7.2
+      "y": 4.0
     },
     "rotation": 180.0
   },
@@ -12,15 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Left To Speaker"
+            "name": "Prepare Shoot"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.5
+            "pathName": "Center To Speaker"
           }
         },
         {
@@ -32,24 +32,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker To Middle Left"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle Left To Middle Right"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": null
+            "pathName": "Speaker To Park Left"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Center Autos",
   "choreoAuto": false
 }

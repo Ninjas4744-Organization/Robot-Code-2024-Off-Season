@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 0.6,
-      "y": 7.2
+      "y": 2.5
     },
     "rotation": 180.0
   },
@@ -12,15 +12,45 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Left To Speaker"
+            "name": "Prepare Shoot"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.5
+            "pathName": "Right To Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Run Over Note 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Prepare Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note 2 To Speaker"
           }
         },
         {
@@ -32,24 +62,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker To Middle Left"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle Left To Middle Right"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": null
+            "pathName": "Speaker To Park Left"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Right Autos",
   "choreoAuto": false
 }

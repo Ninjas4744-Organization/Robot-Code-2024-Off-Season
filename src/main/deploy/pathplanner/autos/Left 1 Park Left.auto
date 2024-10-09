@@ -12,26 +12,32 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Left To Middle Left"
+            "name": "Prepare Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle Left To Middle Right"
+            "pathName": "Left To Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "Speaker To Park Left"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Left Autos",
   "choreoAuto": false
 }

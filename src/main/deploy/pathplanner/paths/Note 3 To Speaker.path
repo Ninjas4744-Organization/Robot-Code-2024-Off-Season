@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9,
+        "x": 3.0,
         "y": 4.2
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9486293987138654,
+        "x": 3.0486293987138655,
         "y": 4.2
       },
       "isLocked": false,
-      "linkedName": "Note3"
+      "linkedName": "OverNote3"
     },
     {
       "anchor": {
