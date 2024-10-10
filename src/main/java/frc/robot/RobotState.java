@@ -20,6 +20,7 @@ public class RobotState {
 	public enum RobotStates {
 		IDLE,
 		INTAKE,
+		INDEX,
 		CLOSE,
 		RESET,
 		SHOOT_SPEAKER_PREPARE,
@@ -43,13 +44,13 @@ public class RobotState {
 			.getStructTopic("Robot Pose", Pose2d.struct)
 			.publish();
 
-	private static DigitalInput _indexerNote = new DigitalInput(Constants.IndexerConstants.kLimitSwitchID);
+	private static DigitalInput _indexerNote = new DigitalInput(Constants.kIndexerBeamBreakerId);
 
 	/**
 	 * @return Whether there's a note in the indexer according to its beam breaker
 	 */
 	public static boolean getNoteInIndexer() {
-		return _indexerNote.get();
+		return !_indexerNote.get();
 	}
 
 	/**
@@ -65,6 +66,7 @@ public class RobotState {
 	 * @param state - the state to set the robot state to
 	 */
 	public static void setRobotState(RobotStates state) {
+		System.out.println("[Robot State Change] " + robotState.toString() + " -> " + state.toString());
 		robotState = state;
 		SmartDashboard.putString("Robot State", robotState.toString());
 	}

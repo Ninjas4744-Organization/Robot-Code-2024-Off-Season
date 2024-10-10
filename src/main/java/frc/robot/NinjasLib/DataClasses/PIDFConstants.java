@@ -26,11 +26,15 @@ public class PIDFConstants {
 	 */
 	public double kIZone = Double.POSITIVE_INFINITY;
 
-	/** I do not know what the fuck this is */
-	public double kF = 0;
+	/**
+	 * How much voltage to overcome static friction
+	 */
+	public double kS = 0;
 
-	/** I do not know what the fuck this is */
-	public int kPositionDeadband = 0;
+	/**
+	 * Wanted velocity to voltage feedforward
+	 */
+	public double kV = 0;
 
 	/**
 	 * the max velocity the feedforward should reach, this is the velocity the PIDF will be most of
@@ -44,54 +48,50 @@ public class PIDFConstants {
 	 */
 	public double kAcceleration = 0;
 
-	/**
-	 * the maximum velocity of the controller trying to follow the feedforward, this is used when trying to feedforward a controller
-	 */
-	public double kMaxVelocity = 0;
-
-	public PIDFConstants() {}
-
-	public PIDFConstants(double kP, double kI, double kD) {
-		this.kP = kP;
-		this.kI = kI;
-		this.kD = kD;
-	}
-
-	public PIDFConstants(double kP, double kI, double kD, double kIZone) {
-		this(kP, kI, kD);
-		this.kIZone = kIZone;
-	}
-
-	public PIDFConstants(double kP, double kI, double kD, double kCruiseVelocity, double kAcceleration) {
-		this(kP, kI, kD);
-		this.kCruiseVelocity = kCruiseVelocity;
-		this.kAcceleration = kAcceleration;
-	}
-
-	public PIDFConstants(double kCruiseVelocity, double kAcceleration, float kMaxVelocity) {
-		this.kCruiseVelocity = kCruiseVelocity;
-		this.kAcceleration = kAcceleration;
-		this.kMaxVelocity = kMaxVelocity;
-	}
-
-	public PIDFConstants(
-			double kP,
-			double kI,
-			double kD,
-			double kIZone,
-			double kF,
-			int kPositionDeadband,
-			double kCruiseVelocity,
-			double kAcceleration) {
-		this(kP, kI, kD, kCruiseVelocity, kAcceleration);
-		this.kIZone = kIZone;
-		this.kF = kF;
-		this.kPositionDeadband = kPositionDeadband;
-	}
+//	public PIDFConstants() {}
+//
+//	public PIDFConstants(double kP, double kI, double kD) {
+//		this.kP = kP;
+//		this.kI = kI;
+//		this.kD = kD;
+//	}
+//
+//	public PIDFConstants(double kP, double kI, double kD, double kIZone) {
+//		this(kP, kI, kD);
+//		this.kIZone = kIZone;
+//	}
+//
+//	public PIDFConstants(double kP, double kI, double kD, double kCruiseVelocity, double kAcceleration) {
+//		this(kP, kI, kD);
+//		this.kCruiseVelocity = kCruiseVelocity;
+//		this.kAcceleration = kAcceleration;
+//	}
+//
+//	public PIDFConstants(double kCruiseVelocity, double kAcceleration, double kS, double kV) {
+//		this.kCruiseVelocity = kCruiseVelocity;
+//		this.kAcceleration = kAcceleration;
+//		this.kV = kV;
+//		this.kS = kS;
+//	}
+//
+//	public PIDFConstants(
+//			double kP,
+//			double kI,
+//			double kD,
+//			double kIZone,
+//			double kS,
+//			double kV,
+//			double kCruiseVelocity,
+//			double kAcceleration) {
+//		this(kP, kI, kD, kCruiseVelocity, kAcceleration);
+//		this.kIZone = kIZone;
+//		this.kS = kS;
+//		this.kV = kV;
+//	}
 
 	@Override
 	public String toString() {
-		return "kP: " + kP + " kI: " + kI + " kD: " + kD + " kIZone: " + kIZone + " kF: " + kF + " kPositionDeadband: "
-				+ kPositionDeadband + " kCruiseVelocity: " + kCruiseVelocity + " kAcceleration: " + kAcceleration;
+		return "kP: " + kP + " kI: " + kI + " kD: " + kD + " kIZone: " + kIZone + " kS: " + kS + " kV: "
+			+ kV + " kCruiseVelocity: " + kCruiseVelocity + " kAcceleration: " + kAcceleration;
 	}
 }

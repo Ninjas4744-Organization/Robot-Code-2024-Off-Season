@@ -137,7 +137,7 @@ public class NinjasSimulatedController extends NinjasController {
 													new TrapezoidProfile.State(getPosition(), getVelocity()),
 													new TrapezoidProfile.State(getGoal(), 0))
 											.velocity
-									/ _constants.PIDFConstants.kMaxVelocity);
+								* _constants.PIDFConstants.kV);
 					break;
 
 				case FF_VELOCITY:
@@ -148,7 +148,7 @@ public class NinjasSimulatedController extends NinjasController {
 													new TrapezoidProfile.State(getVelocity(), 0),
 													new TrapezoidProfile.State(getGoal(), 0))
 											.velocity
-									/ _constants.PIDFConstants.kMaxVelocity);
+								* _constants.PIDFConstants.kV);
 					break;
 
 				default:

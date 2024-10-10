@@ -11,10 +11,8 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.NinjasLib.DataClasses.MainControllerConstants;
-import frc.robot.NinjasLib.DataClasses.PIDFConstants;
-import frc.robot.NinjasLib.DataClasses.SimulatedControllerConstants;
-import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
+import frc.robot.NinjasLib.DataClasses.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +21,7 @@ import java.util.Map;
 public final class Constants {
 	public static final int kDriverJoystickPort = 0;
 	public static final int kOperatorJoystickPort = 1;
+	public static final int kIndexerBeamBreakerId = 0;
 
 	public static class ShooterAngleConstants {
 		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
@@ -30,10 +29,11 @@ public final class Constants {
 				new SimulatedControllerConstants();
 
 		static {
-			kControllerConstants.main.id = 22;
+			kControllerConstants.main.id = 32;
 			kControllerConstants.currentLimit = 40;
 			kControllerConstants.subsystemName = "ShooterAngle";
-			kControllerConstants.PIDFConstants = new PIDFConstants(0.018, 0, 0, 0);
+			kControllerConstants.PIDFConstants = new PIDFConstants();
+			kControllerConstants.PIDFConstants.kP = 0.018;
 			kControllerConstants.positionGoalTolerance = 1;
 			kControllerConstants.encoderConversionFactor = 7.2;
 
@@ -56,19 +56,28 @@ public final class Constants {
 				new SimulatedControllerConstants();
 
 		static {
-			kControllerConstants.main.id = 23;
+			kControllerConstants.main.id = 30;
+			kControllerConstants.main.inverted = true;
 			kControllerConstants.currentLimit = 40;
 			kControllerConstants.subsystemName = "Shooter";
-			kControllerConstants.PIDFConstants = new PIDFConstants(1, 0, 0, 20, 40);
-			kControllerConstants.positionGoalTolerance = 3;
+			kControllerConstants.PIDFConstants = new PIDFConstants();
+			kControllerConstants.PIDFConstants.kS = 0.185;
+			kControllerConstants.PIDFConstants.kV = 0.117;
+			kControllerConstants.PIDFConstants.kCruiseVelocity = 50;
+			kControllerConstants.PIDFConstants.kAcceleration = 100;
+			kControllerConstants.velocityGoalTolerance = 2;
+
+			kControllerConstants.followers = new ControllerConstants[]{new ControllerConstants()};
+			kControllerConstants.followers[0].id = 31;
+			kControllerConstants.followers[0].inverted = true;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
 		public class States {
-			public static final double kSpeaker = 67;
-			public static final double kAmp = 13;
+			public static final double kSpeaker = 87;
+			public static final double kAmp = 30;
 		}
 	}
 
@@ -82,7 +91,7 @@ public final class Constants {
 			kControllerConstants.main.inverted = true;
 			kControllerConstants.currentLimit = 40;
 			kControllerConstants.subsystemName = "Climber";
-			kControllerConstants.PIDFConstants = new PIDFConstants(5, 0, 0, 8, 8);
+			kControllerConstants.PIDFConstants = new PIDFConstants();
 			kControllerConstants.positionGoalTolerance = 0.01;
 			kControllerConstants.encoderConversionFactor = 0.0098174;
 			kControllerConstants.encoderHomePosition = 0;
@@ -106,8 +115,7 @@ public final class Constants {
 				new SimulatedControllerConstants();
 
 		static {
-			kControllerConstants.main.id = 24;
-			kControllerConstants.main.inverted = true;
+			kControllerConstants.main.id = 20;
 			kControllerConstants.currentLimit = 40;
 			kControllerConstants.subsystemName = "Indexer";
 			kControllerConstants.positionGoalTolerance = 0.01;
@@ -118,9 +126,10 @@ public final class Constants {
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
-		public static final int kLimitSwitchID = 7;
-
 		public class States {
+			public static final double kIntake = -1;
+			public static final double kIndex = -0.6;
+			public static final double kShoot = -1;
 			public static final double kRoll = 1;
 		}
 	}
@@ -138,9 +147,9 @@ public final class Constants {
 		public static final boolean kFieldRelative = true;
 
 		/** Drivetrain Constants */
-		public static final double kTrackWidth = Units.inchesToMeters(30);
+		public static final double kTrackWidth = 0.62;
 
-		public static final double kWheelBase = Units.inchesToMeters(30);
+		public static final double kWheelBase = 0.62;
 		public static final double kWheelDiameter = Units.inchesToMeters(4);
 		public static final double kWheelCircumference = kWheelDiameter * Math.PI;
 
@@ -229,7 +238,7 @@ public final class Constants {
 		public static final class Mod0 {
 			public static final int driveMotorID = 10;
 			public static final int angleMotorID = 11;
-			public static final int canCoderID = 30;
+			public static final int canCoderID = 40;
 			public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0);
 			public static final boolean isDriverEncoderInverted = false;
 			public static final SwerveModuleConstants constants =
@@ -240,7 +249,7 @@ public final class Constants {
 		public static final class Mod1 {
 			public static final int driveMotorID = 12;
 			public static final int angleMotorID = 13;
-			public static final int canCoderID = 31;
+			public static final int canCoderID = 41;
 			public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0);
 			public static final boolean isDriverEncoderInverted = false;
 			public static final SwerveModuleConstants constants =
@@ -251,7 +260,7 @@ public final class Constants {
 		public static final class Mod2 {
 			public static final int driveMotorID = 14;
 			public static final int angleMotorID = 15;
-			public static final int canCoderID = 32;
+			public static final int canCoderID = 42;
 			public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0);
 			public static final boolean isDriverEncoderInverted = true;
 
@@ -263,7 +272,7 @@ public final class Constants {
 		public static final class Mod3 {
 			public static final int driveMotorID = 16;
 			public static final int angleMotorID = 17;
-			public static final int canCoderID = 33;
+			public static final int canCoderID = 43;
 			public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0);
 			public static final boolean isDriverEncoderInverted = false;
 

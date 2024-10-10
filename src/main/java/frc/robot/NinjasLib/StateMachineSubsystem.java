@@ -3,24 +3,34 @@ package frc.robot.NinjasLib;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class StateMachineSubsystem extends SubsystemBase {
-	private final Map<RobotStates, Runnable> _periodicFunctionMap;
-	private final Map<RobotStates, Runnable> _onChangeFunctionMap;
+	private Map<RobotStates, Runnable> _periodicFunctionMap;
+	private Map<RobotStates, Runnable> _onChangeFunctionMap;
 	private RobotStates previousRobotState;
+	protected boolean disabled;
 
-	public StateMachineSubsystem() {
-		_periodicFunctionMap = new HashMap<>();
-		_onChangeFunctionMap = new HashMap<>();
+	public StateMachineSubsystem(boolean disabled) {
+		this.disabled = disabled;
 
-		previousRobotState = RobotState.getRobotState();
+		if (!disabled) {
+			_periodicFunctionMap = new HashMap<>();
+			_onChangeFunctionMap = new HashMap<>();
 
-		for (RobotStates state : RobotStates.values()) _periodicFunctionMap.put(state, () -> {});
-		for (RobotStates state : RobotStates.values()) _onChangeFunctionMap.put(state, () -> {});
+			previousRobotState = RobotState.getRobotState();
 
-		setFunctionMaps();
+			for (RobotStates state : RobotStates.values())
+				_periodicFunctionMap.put(state, () -> {
+				});
+			for (RobotStates state : RobotStates.values())
+				_onChangeFunctionMap.put(state, () -> {
+				});
+
+			setFunctionMaps();
+		}
 	}
 
 	/**
@@ -78,6 +88,9 @@ public abstract class StateMachineSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
+		if (disabled)
+			return;
+
 		if (RobotState.getRobotState() != previousRobotState)
 			_onChangeFunctionMap.get(RobotState.getRobotState()).run();
 		previousRobotState = RobotState.getRobotState();

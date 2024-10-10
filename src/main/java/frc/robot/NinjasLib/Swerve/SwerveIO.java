@@ -49,6 +49,8 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	}
 
 	public SwerveIO() {
+		super(false);
+
 		_state = SwerveState.DEFAULT;
 		_previousState = SwerveState.DEFAULT;
 		_demand = new SwerveDemand();
@@ -125,14 +127,14 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		return 0;
 	}
 
-	public double lookAtTarget(Pose2d target) {
+	public double lookAtTarget(Pose2d target, boolean invert) {
 		Translation2d lookAtTranslation =
 				target.getTranslation().minus(RobotState.getRobotPose().getTranslation());
 		lookAtTranslation = RobotState.isSimulated()
 				? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY())
 				: lookAtTranslation;
 
-		return lookAt(lookAtTranslation, 1);
+		return lookAt(invert ? lookAtTranslation.rotateBy(Rotation2d.fromDegrees(180)) : lookAtTranslation, 1);
 	}
 
 	public ChassisSpeeds fromPercent(ChassisSpeeds percent) {
@@ -241,17 +243,17 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	 * @param state the wanted state
 	 */
 	public void setState(SwerveState state) {
-		if (RobotState.isAutonomous()) {
-			_state = SwerveState.VELOCITY;
-			return;
-		}
-
-		_previousState = _state;
-		_state = state;
-
-		if (_state != SwerveState.FOLLOW_PATH) _pathFollower.stop();
-
-		SmartDashboard.putString("Swerve State", _state.toString());
+//		if (RobotState.isAutonomous()) {
+//			_state = SwerveState.VELOCITY;
+//			return;
+//		}
+//
+//		_previousState = _state;
+//		_state = state;
+//
+//		if (_state != SwerveState.FOLLOW_PATH) _pathFollower.stop();
+//
+//		SmartDashboard.putString("Swerve State", _state.toString());
 	}
 
 	/**
@@ -349,7 +351,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 						new ChassisSpeeds(
 								_demand.driverInput.vxMetersPerSecond,
 								_demand.driverInput.vyMetersPerSecond,
-								lookAtTarget(_demand.targetPose)),
+							lookAtTarget(_demand.targetPose, RobotState.getRobotState() == RobotStates.NOTE_SEARCH)),
 						SwerveConstants.kFieldRelative);
 				break;
 
@@ -368,7 +370,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 			case DRIVE_ASSIST:
 				if (NoteDetection.hasTarget()) {
 					Translation2d pid = pidTo(NoteDetection.getNotePose().getTranslation());
-					double rotation = lookAtTarget(NoteDetection.getNotePose());
+					double rotation = lookAtTarget(NoteDetection.getNotePose(), true);
 
 					drive(new ChassisSpeeds(pid.getX(), pid.getY(), rotation), true);
 				} else drive(fromPercent(_demand.driverInput), SwerveConstants.kFieldRelative);

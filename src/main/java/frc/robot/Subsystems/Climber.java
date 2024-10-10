@@ -9,8 +9,17 @@ import frc.robot.RobotState.RobotStates;
 public class Climber extends StateMachineMotoredSubsystem {
 	private static Climber _instance;
 
+  public Climber(boolean disabled) {
+    super(disabled);
+  }
+
+  public static void disable() {
+    if (_instance == null)
+      _instance = new Climber(true);
+  }
+
 	public static Climber getInstance() {
-		if (_instance == null) _instance = new Climber();
+    if (_instance == null) _instance = new Climber(false);
 
 		return _instance;
 	}

@@ -2,20 +2,26 @@ package frc.robot.Subsystems;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import frc.robot.Constants.ShooterAngleConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
 import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
 import frc.robot.RobotState;
-import frc.robot.RobotState.RobotStates;
 
 public class ShooterAngle extends StateMachineMotoredSubsystem {
 	private static ShooterAngle _instance;
 
+	public ShooterAngle(boolean disabled) {
+		super(disabled);
+	}
+
+	public static void disable() {
+		if (_instance == null)
+			_instance = new ShooterAngle(true);
+	}
+
 	public static ShooterAngle getInstance() {
-		if (_instance == null) _instance = new ShooterAngle();
+		if (_instance == null) _instance = new ShooterAngle(false);
 
 		return _instance;
 	}
@@ -48,30 +54,35 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 
 	@Override
 	protected void setFunctionMaps() {
-		addFunctionToPeriodicMap(
-				() -> controller()
-						.setPosition(calculateAngle(new Pose3d(
-										VisionConstants.getAmpTag().pose.getX()
-												+ ShooterAngleConstants.kAmpOffset.getX(),
-										VisionConstants.getAmpTag().pose.getY()
-												+ ShooterAngleConstants.kAmpOffset.getY(),
-										VisionConstants.getAmpTag().pose.getZ()
-												+ ShooterAngleConstants.kAmpOffset.getZ(),
-										new Rotation3d()))
-								.getDegrees()),
-				RobotStates.SHOOT_AMP_PREPARE);
+//		addFunctionToPeriodicMap(
+//				() -> controller()
+//						.setPosition(calculateAngle(new Pose3d(
+//										VisionConstants.getAmpTag().pose.getX()
+//												+ ShooterAngleConstants.kAmpOffset.getX(),
+//										VisionConstants.getAmpTag().pose.getY()
+//												+ ShooterAngleConstants.kAmpOffset.getY(),
+//										VisionConstants.getAmpTag().pose.getZ()
+//												+ ShooterAngleConstants.kAmpOffset.getZ(),
+//										new Rotation3d()))
+//								.getDegrees()),
+//				RobotStates.SHOOT_AMP_PREPARE);
+//
+//		addFunctionToPeriodicMap(
+//				() -> controller()
+//						.setPosition(calculateAngle(new Pose3d(
+//										VisionConstants.getSpeakerTag().pose.getX()
+//												+ ShooterAngleConstants.kSpeakerOffset.getX(),
+//										VisionConstants.getSpeakerTag().pose.getY()
+//												+ ShooterAngleConstants.kSpeakerOffset.getY(),
+//										VisionConstants.getSpeakerTag().pose.getZ()
+//												+ ShooterAngleConstants.kSpeakerOffset.getZ(),
+//										new Rotation3d()))
+//								.getDegrees()),
+//				RobotStates.SHOOT_SPEAKER_PREPARE);
+	}
 
-		addFunctionToPeriodicMap(
-				() -> controller()
-						.setPosition(calculateAngle(new Pose3d(
-										VisionConstants.getSpeakerTag().pose.getX()
-												+ ShooterAngleConstants.kSpeakerOffset.getX(),
-										VisionConstants.getSpeakerTag().pose.getY()
-												+ ShooterAngleConstants.kSpeakerOffset.getY(),
-										VisionConstants.getSpeakerTag().pose.getZ()
-												+ ShooterAngleConstants.kSpeakerOffset.getZ(),
-										new Rotation3d()))
-								.getDegrees()),
-				RobotStates.SHOOT_SPEAKER_PREPARE);
+	@Override
+	public boolean atGoal() {
+		return true;
 	}
 }

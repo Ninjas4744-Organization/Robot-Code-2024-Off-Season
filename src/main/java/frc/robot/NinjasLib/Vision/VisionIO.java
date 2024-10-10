@@ -8,6 +8,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.DataClasses.VisionOutput;
 import frc.robot.RobotState;
+
 import java.util.HashMap;
 
 public abstract class VisionIO extends SubsystemBase {
@@ -17,6 +18,8 @@ public abstract class VisionIO extends SubsystemBase {
 	protected VisionCamera[] _cameras;
 
 	public static VisionIO getInstance() {
+		System.out.println("Vision");
+
 		if (_instance == null) {
 			if (RobotState.isSimulated()) _instance = new VisionSimulated();
 			else _instance = new Vision();

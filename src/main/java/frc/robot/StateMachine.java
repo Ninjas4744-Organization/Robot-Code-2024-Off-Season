@@ -11,6 +11,7 @@ import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,8 @@ public class StateMachine extends StateMachineSubsystem {
 	private Map<RobotStates, StateEndCondition> _endConditionMap;
 
 	private StateMachine() {
+		super(false);
+
 		_endConditionMap = new HashMap<>();
 
 		for (RobotStates state : RobotStates.values())
@@ -79,7 +82,8 @@ public class StateMachine extends StateMachineSubsystem {
 			case INTAKE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.NOTE_IN_INDEXER) RobotState.setRobotState(wantedState);
+					|| wantedState == RobotStates.NOTE_IN_INDEXER
+					|| wantedState == RobotStates.INDEX) RobotState.setRobotState(wantedState);
 				break;
 
 			case CLIMB:
@@ -122,13 +126,19 @@ public class StateMachine extends StateMachineSubsystem {
 			case DRIVE_TO_AMP:
 				if (wantedState == RobotStates.SHOOT_AMP_PREPARE
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == wantedState.RESET) RobotState.setRobotState(wantedState);
+					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
 			case DRIVE_TO_SOURCE:
 				if (wantedState == RobotStates.INTAKE
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == wantedState.RESET) RobotState.setRobotState(wantedState);
+					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+				break;
+
+			case INDEX:
+				if (wantedState == RobotStates.NOTE_IN_INDEXER
+					|| wantedState == RobotStates.CLOSE
+					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 		}
 
@@ -159,8 +169,9 @@ public class StateMachine extends StateMachineSubsystem {
 								&& Climber.getInstance().atGoal(),
 						RobotStates.IDLE));
 
-		_endConditionMap.put(
-				RobotStates.INTAKE, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
+		_endConditionMap.put(RobotStates.INTAKE, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.INDEX));
+
+		_endConditionMap.put(RobotStates.INDEX, new StateEndCondition(() -> !RobotState.getNoteInIndexer(), RobotStates.NOTE_IN_INDEXER));
 
 		_endConditionMap.put(
 				RobotStates.SHOOT_AMP_PREPARE,
