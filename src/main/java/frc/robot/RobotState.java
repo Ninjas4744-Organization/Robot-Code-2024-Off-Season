@@ -170,7 +170,9 @@ public class RobotState {
 
 	public static DriverStation.Alliance getAlliance() {
 		return isSimulated()
-			? (DriverStationSim.getAllianceStationId().ordinal() > 3 ? DriverStation.Alliance.Blue : DriverStation.Alliance.Red)
-			: DriverStation.getAlliance().get();
+				? (DriverStationSim.getAllianceStationId().ordinal() > 3
+						? DriverStation.Alliance.Blue
+						: DriverStation.Alliance.Red)
+				: DriverStation.getAlliance().get();
 	}
 }

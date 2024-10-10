@@ -32,8 +32,8 @@ public class AutoCommandBuilder {
 
 	/** Registers all auto commands to pathplanner */
 	public static void registerCommands() {
-		 NamedCommands.registerCommand("Shoot", Shoot());
-		 NamedCommands.registerCommand("Intake", Intake());
+		NamedCommands.registerCommand("Shoot", Shoot());
+		NamedCommands.registerCommand("Intake", Intake());
 	}
 
 	/**
@@ -41,25 +41,23 @@ public class AutoCommandBuilder {
 	 */
 	public static Command autoCommand(String auto) {
 		SwerveIO.getInstance().setState(SwerveDemand.SwerveState.VELOCITY);
-//		RobotState.setRobotState(RobotState.RobotStates.RESET);
+		//		RobotState.setRobotState(RobotState.RobotStates.RESET);
 		RobotState.setRobotState(RobotState.RobotStates.NOTE_IN_INDEXER);
 
 		return AutoBuilder.buildAuto(auto);
 	}
 
-	 public static Command Shoot() {
-	   return Commands.sequence(
-		   TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE),
-		   Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_READY),
-		   TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT),
-		   Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_SEARCH)
-	   );
-	 }
+	public static Command Shoot() {
+		return Commands.sequence(
+				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE),
+				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_READY),
+				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT),
+				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_SEARCH));
+	}
 
 	public static Command Intake() {
 		return Commands.sequence(
-			TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.INTAKE),
-			Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_IN_INDEXER)
-		);
+				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.INTAKE),
+				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_IN_INDEXER));
 	}
 }
