@@ -33,7 +33,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void autonomousInit() {
-		_autoCommand = AutoCommandBuilder.autoCommand("");
+		_autoCommand = AutoCommandBuilder.autoCommand("Left shoot note 1 shoot end right");
 
 		if (_autoCommand != null) _autoCommand.schedule();
 	}

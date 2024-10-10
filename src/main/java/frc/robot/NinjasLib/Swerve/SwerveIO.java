@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -242,7 +241,10 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	 * @param state the wanted state
 	 */
 	public void setState(SwerveState state) {
-		if (DriverStation.isAutonomous()) _state = SwerveState.VELOCITY;
+		if (RobotState.isAutonomous()) {
+			_state = SwerveState.VELOCITY;
+			return;
+		}
 
 		_previousState = _state;
 		_state = state;

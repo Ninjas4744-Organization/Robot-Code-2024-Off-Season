@@ -8,6 +8,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
@@ -160,5 +162,17 @@ public class RobotState {
 	 */
 	public static boolean isSimulated() {
 		return Robot.isSimulation();
+	}
+
+	public static boolean isAutonomous() {
+		return isSimulated() ? DriverStationSim.getAutonomous() : DriverStation.isAutonomous();
+	}
+
+	public static DriverStation.Alliance getAlliance() {
+		return isSimulated()
+				? (DriverStationSim.getAllianceStationId().ordinal() > 3
+						? DriverStation.Alliance.Blue
+						: DriverStation.Alliance.Red)
+				: DriverStation.getAlliance().get();
 	}
 }

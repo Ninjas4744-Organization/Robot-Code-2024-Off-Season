@@ -1,10 +1,12 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand;
 import frc.robot.NinjasLib.Swerve.PathFollowing.LocalADStarAK;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
@@ -30,9 +32,8 @@ public class AutoCommandBuilder {
 
 	/** Registers all auto commands to pathplanner */
 	public static void registerCommands() {
-		// NamedCommands.registerCommand(, );
-		// NamedCommands.registerCommand(, );
-		// NamedCommands.registerCommand(, );
+		NamedCommands.registerCommand("Shoot", Shoot());
+		NamedCommands.registerCommand("Intake", Intake());
 	}
 
 	/**
@@ -40,16 +41,23 @@ public class AutoCommandBuilder {
 	 */
 	public static Command autoCommand(String auto) {
 		SwerveIO.getInstance().setState(SwerveDemand.SwerveState.VELOCITY);
-		RobotState.setRobotState(RobotState.RobotStates.RESET);
+		//		RobotState.setRobotState(RobotState.RobotStates.RESET);
+		RobotState.setRobotState(RobotState.RobotStates.NOTE_IN_INDEXER);
 
 		return AutoBuilder.buildAuto(auto);
 	}
 
-	// public static Command EXAMPLE() {
-	//   return Commands.either(
-	//     System1.runCommand1(),
-	//     System2.runCommand3(),
-	//     () -> { return !System3.isNote(); }
-	//   );
-	// }
+	public static Command Shoot() {
+		return Commands.sequence(
+				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE),
+				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_READY),
+				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT),
+				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_SEARCH));
+	}
+
+	public static Command Intake() {
+		return Commands.sequence(
+				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.INTAKE),
+				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_IN_INDEXER));
+	}
 }
