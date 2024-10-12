@@ -2,6 +2,8 @@ package frc.robot.Subsystems;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ShooterAngleConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
@@ -10,9 +12,12 @@ import frc.robot.RobotState;
 
 public class ShooterAngle extends StateMachineMotoredSubsystem {
 	private static ShooterAngle _instance;
+	private DigitalInput _limit;
 
 	public ShooterAngle(boolean disabled) {
 		super(disabled);
+
+		_limit = new DigitalInput(ShooterAngleConstants.kLimitSwitchId);
 	}
 
 	public static void disable() {
@@ -36,6 +41,17 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 		_simulatedController = new NinjasSimulatedController(ShooterAngleConstants.kSimulatedControllerConstants);
 	}
 
+	@Override
+	public void resetSubsystem() {
+		controller().stop();
+	}
+
+	@Override
+	public boolean isResetted() {
+//		return controller().isHomed();
+		return true;
+	}
+
 	private Rotation2d calculateAngle(Pose3d target) {
 		double dist = RobotState.getRobotPose()
 				.getTranslation()
@@ -47,7 +63,7 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 
 		angle = angle.rotateBy(ShooterAngleConstants.getTrendAngleFixer(dist));
 
-		double angleClamped = Math.min(Math.max(angle.getDegrees(), 30), 80);
+		double angleClamped = Math.min(Math.max(angle.getDegrees(), 40), 80);
 
 		return Rotation2d.fromDegrees(angleClamped);
 	}
@@ -79,10 +95,26 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 //										new Rotation3d()))
 //								.getDegrees()),
 //				RobotStates.SHOOT_SPEAKER_PREPARE);
+
+//		addFunctionToPeriodicMap(
+//				() -> controller().setPosition(65),
+//				RobotStates.SHOOT_SPEAKER_PREPARE);
 	}
 
 	@Override
 	public boolean atGoal() {
 		return true;
+	}
+
+	@Override
+	public void periodic() {
+		super.periodic();
+
+		SmartDashboard.putBoolean("Shooter Angle Limit", !_limit.get());
+		if (!_limit.get()) {
+			_controller.resetEncoder();
+			if (_controller.getOutput() < 0)
+				_controller.stop();
+		}
 	}
 }

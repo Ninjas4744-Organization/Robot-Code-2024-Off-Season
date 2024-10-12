@@ -14,6 +14,7 @@ public class NinjasSparkMaxController extends NinjasController {
 
 	private final TrapezoidProfile _profile;
 	private final Timer _profileTimer = new Timer();
+	private State _initialProfileState;
 
 	public NinjasSparkMaxController(MainControllerConstants constants) {
 		super(constants);
@@ -36,7 +37,7 @@ public class NinjasSparkMaxController extends NinjasController {
 		_main.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, constants.isMaxSoftLimit);
 		_main.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, constants.isMinSoftLimit);
 		_main.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, (float) constants.maxSoftLimit);
-		_main.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, (float) constants.minSoftLimit);
+		_main.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, (float) constants.minSoftLimit);
 
 		_main.burnFlash();
 
@@ -67,6 +68,7 @@ public class NinjasSparkMaxController extends NinjasController {
 			_main.getPIDController().setReference(getGoal(), ControlType.kPosition);
 
 		_profileTimer.restart();
+		_initialProfileState = new State(getPosition(), getVelocity());
 	}
 
 	@Override
@@ -77,6 +79,7 @@ public class NinjasSparkMaxController extends NinjasController {
 			_main.getPIDController().setReference(getGoal(), ControlType.kVelocity);
 
 		_profileTimer.restart();
+		_initialProfileState = new State(getPosition(), getVelocity());
 	}
 
 	@Override
@@ -110,8 +113,8 @@ public class NinjasSparkMaxController extends NinjasController {
 				_main.getPIDController()
 						.setReference(
 								_profile.calculate(
-												_profileTimer.get(),
-												new State(getPosition(), getVelocity()),
+									_profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0),
+									_initialProfileState,
 												new State(getGoal(), 0))
 										.position,
 								ControlType.kPosition);
@@ -121,24 +124,27 @@ public class NinjasSparkMaxController extends NinjasController {
 				_main.getPIDController()
 						.setReference(
 								_profile.calculate(
-												_profileTimer.get(),
-												new State(getVelocity(), 0),
-												new State(getGoal(), 0))
-										.position,
+									_profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0),
+									_initialProfileState,
+									new State(getPosition(), getGoal()))
+									.velocity,
 								ControlType.kVelocity);
 				break;
 
 			case FF_POSITION:
 				_main.set(_profile.calculate(
 										_profileTimer.get(),
-										new State(getPosition(), getVelocity()),
+					_initialProfileState,
 										new State(getGoal(), 0))
 								.velocity
 					* _constants.PIDFConstants.kV);
 				break;
 
 			case FF_VELOCITY:
-				_main.set(_profile.calculate(_profileTimer.get(), new State(getVelocity(), 0), new State(getGoal(), 0))
+				_main.set(_profile.calculate(
+					_profileTimer.get(),
+					_initialProfileState,
+					new State(getPosition(), getGoal()))
 								.velocity
 					* _constants.PIDFConstants.kV);
 				break;

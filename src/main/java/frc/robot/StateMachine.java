@@ -136,6 +136,12 @@ public class StateMachine extends StateMachineSubsystem {
 				break;
 
 			case INDEX:
+				if (wantedState == RobotStates.INDEX_BACK
+					|| wantedState == RobotStates.CLOSE
+					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+				break;
+
+			case INDEX_BACK:
 				if (wantedState == RobotStates.NOTE_IN_INDEXER
 					|| wantedState == RobotStates.CLOSE
 					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
@@ -156,22 +162,22 @@ public class StateMachine extends StateMachineSubsystem {
 		_endConditionMap.put(
 				RobotStates.RESET,
 				new StateEndCondition(
-						() -> ShooterAngle.getInstance().isHomed()
-								&& Indexer.getInstance().isHomed()
-								&& Climber.getInstance().isHomed(),
+					() -> ShooterAngle.getInstance().isResetted()
+						&& Indexer.getInstance().isResetted()
+						&& Climber.getInstance().isResetted()
+						&& Shooter.getInstance().isResetted(),
 						RobotStates.IDLE));
 
 		_endConditionMap.put(
 				RobotStates.CLOSE,
 				new StateEndCondition(
 						() -> ShooterAngle.getInstance().atGoal()
-								&& Indexer.getInstance().atGoal()
 								&& Climber.getInstance().atGoal(),
 						RobotStates.IDLE));
 
 		_endConditionMap.put(RobotStates.INTAKE, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.INDEX));
-
-		_endConditionMap.put(RobotStates.INDEX, new StateEndCondition(() -> !RobotState.getNoteInIndexer(), RobotStates.NOTE_IN_INDEXER));
+		_endConditionMap.put(RobotStates.INDEX, new StateEndCondition(() -> !RobotState.getNoteInIndexer(), RobotStates.INDEX_BACK));
+		_endConditionMap.put(RobotStates.INDEX_BACK, new StateEndCondition(() -> RobotState.getNoteInIndexer(), RobotStates.NOTE_IN_INDEXER));
 
 		_endConditionMap.put(
 				RobotStates.SHOOT_AMP_PREPARE,
@@ -213,6 +219,9 @@ public class StateMachine extends StateMachineSubsystem {
 
 		if (_endConditionMap.get(RobotState.getRobotState()).condition.getAsBoolean() && !RobotState.isSimulated())
 			changeRobotState(_endConditionMap.get(RobotState.getRobotState()).nextState);
+
+		if (RobotState.getRobotState() == RobotStates.NOTE_IN_INDEXER && !RobotState.getNoteInIndexer())
+			RobotState.setRobotState(RobotStates.NOTE_SEARCH);
 	}
 
 	@Override

@@ -30,16 +30,24 @@ public final class Constants {
 
 		static {
 			kControllerConstants.main.id = 32;
-			kControllerConstants.currentLimit = 40;
+			kControllerConstants.currentLimit = 50;
 			kControllerConstants.subsystemName = "ShooterAngle";
 			kControllerConstants.PIDFConstants = new PIDFConstants();
-			kControllerConstants.PIDFConstants.kP = 0.018;
-			kControllerConstants.positionGoalTolerance = 1;
-			kControllerConstants.encoderConversionFactor = 7.2;
+			kControllerConstants.PIDFConstants.kCruiseVelocity = 10;
+			kControllerConstants.PIDFConstants.kAcceleration = 20;
+			kControllerConstants.PIDFConstants.kP = 0.001;
+			kControllerConstants.positionGoalTolerance = 5;
+			kControllerConstants.encoderConversionFactor = 1.0 / 300.0 * 360.0;
+			kControllerConstants.isMaxSoftLimit = true;
+			kControllerConstants.maxSoftLimit = 78;
+			kControllerConstants.encoderHomePosition = 40;
+			kControllerConstants.dynamicProfiling = true;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
+
+		public static final int kLimitSwitchId = 2;
 
 		public static final Translation3d kAmpOffset = new Translation3d(0, 0, 0.88);
 		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 1.97);
@@ -101,8 +109,6 @@ public final class Constants {
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
-		public static final int kLimitSwitchID = 7;
-
 		public class States {
 			public static final double kUp = 0.4;
 			public static final double kClose = 0;
@@ -128,7 +134,8 @@ public final class Constants {
 
 		public class States {
 			public static final double kIntake = -1;
-			public static final double kIndex = -0.6;
+			public static final double kIndex = -1;
+			public static final double kIndexBack = 1;
 			public static final double kShoot = -1;
 			public static final double kRoll = 1;
 		}

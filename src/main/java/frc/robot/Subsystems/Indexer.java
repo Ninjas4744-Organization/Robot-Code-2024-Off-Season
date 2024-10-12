@@ -35,6 +35,16 @@ public class Indexer extends StateMachineMotoredSubsystem {
 	}
 
 	@Override
+	public void resetSubsystem() {
+		controller().stop();
+	}
+
+	@Override
+	public boolean isResetted() {
+		return controller().getOutput() == 0;
+	}
+
+	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
 			() -> controller().setPercent(IndexerConstants.States.kShoot), RobotState.RobotStates.SHOOT);
@@ -43,7 +53,8 @@ public class Indexer extends StateMachineMotoredSubsystem {
 
 		addFunctionToOnChangeMap(() -> controller().setPercent(IndexerConstants.States.kIntake), RobotState.RobotStates.INTAKE);
 		addFunctionToOnChangeMap(() -> controller().setPercent(IndexerConstants.States.kIndex), RobotState.RobotStates.INDEX);
+		addFunctionToOnChangeMap(() -> controller().setPercent(IndexerConstants.States.kIndexBack), RobotState.RobotStates.INDEX_BACK);
 
-		addFunctionToOnChangeMap(() -> resetSubsystem().schedule(), RobotState.RobotStates.RESET);
+		addFunctionToOnChangeMap(this::resetSubsystem, RobotState.RobotStates.RESET);
 	}
 }

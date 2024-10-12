@@ -21,6 +21,7 @@ public class RobotState {
 		IDLE,
 		INTAKE,
 		INDEX,
+		INDEX_BACK,
 		CLOSE,
 		RESET,
 		SHOOT_SPEAKER_PREPARE,

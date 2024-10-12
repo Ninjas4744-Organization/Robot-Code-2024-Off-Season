@@ -3,7 +3,6 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.RobotState.RobotStates;
@@ -30,11 +29,9 @@ public class RobotContainer {
 		AutoCommandBuilder.registerCommands();
 
 		Climber.disable();
-//		Indexer.disable();
 		Indexer.getInstance();
-//		Shooter.disable();
 		Shooter.getInstance();
-		ShooterAngle.disable();
+		ShooterAngle.getInstance();
 		Constants.VisionConstants.getFieldLayout();
 
 		StateMachine.getInstance().setTriggerForSimulationTesting(_driverJoystick.R2());
@@ -43,12 +40,6 @@ public class RobotContainer {
 	}
 
 	private void configureBindings() {
-		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(() -> StateMachine.getInstance()
-				.changeRobotState(RobotStates.SHOOT)));
-		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(() -> StateMachine.getInstance()
-				.changeRobotState(RobotStates.CLIMB)));
-		_driverJoystick.circle().toggleOnTrue(Commands.runOnce(() -> StateMachine.getInstance()
-				.changeRobotState(RobotStates.NOTE_SEARCH)));
 		configureDriverBindings();
 		configureOperatorBindings();
 	}
@@ -79,6 +70,8 @@ public class RobotContainer {
 		_driverJoystick.circle().toggleOnTrue(Indexer.getInstance().runMotor(Constants.IndexerConstants.States.kRoll));
 		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
+		_driverJoystick.povDown().whileTrue(ShooterAngle.getInstance().runMotor(-0.5));
+		_driverJoystick.povUp().whileTrue(ShooterAngle.getInstance().runMotor(0.5));
 	}
 
 	public void periodic() {
@@ -90,7 +83,13 @@ public class RobotContainer {
 
 	public void resetSubsystems() {
 		RobotState.setRobotPose(new Pose2d());
-		RobotState.setRobotState(RobotStates.NOTE_SEARCH);
+
+		RobotState.setRobotState(RobotStates.RESET);
+		Shooter.getInstance().resetSubsystem();
+		Indexer.getInstance().resetSubsystem();
+		ShooterAngle.getInstance().resetSubsystem();
+		Climber.getInstance().resetSubsystem();
+
 		TeleopCommandBuilder.resetGyro(false).schedule();
 	}
 }
