@@ -110,8 +110,8 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 	public void periodic() {
 		super.periodic();
 
-		SmartDashboard.putBoolean("Shooter Angle Limit", !_limit.get());
-		if (!_limit.get()) {
+		SmartDashboard.putBoolean("Shooter Angle Limit", _limit.get());
+		if (_limit.get()) {
 			_controller.resetEncoder();
 			if (_controller.getOutput() < 0)
 				_controller.stop();
