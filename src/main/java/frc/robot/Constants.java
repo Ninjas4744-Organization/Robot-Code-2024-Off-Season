@@ -33,15 +33,18 @@ public final class Constants {
 			kControllerConstants.currentLimit = 50;
 			kControllerConstants.subsystemName = "ShooterAngle";
 			kControllerConstants.PIDFConstants = new PIDFConstants();
-			kControllerConstants.PIDFConstants.kCruiseVelocity = 10;
-			kControllerConstants.PIDFConstants.kAcceleration = 20;
-			kControllerConstants.PIDFConstants.kP = 0.001;
-			kControllerConstants.positionGoalTolerance = 5;
+			kControllerConstants.PIDFConstants.kCruiseVelocity = 20;
+			kControllerConstants.PIDFConstants.kAcceleration = 50;
+			kControllerConstants.PIDFConstants.kP = 0.3;
+//			kControllerConstants.PIDFConstants.kV = 0.3;
+			kControllerConstants.positionGoalTolerance = 1;
 			kControllerConstants.encoderConversionFactor = 1.0 / 300.0 * 360.0;
 			kControllerConstants.isMaxSoftLimit = true;
 			kControllerConstants.maxSoftLimit = 78;
+			kControllerConstants.isMinSoftLimit = true;
+			kControllerConstants.minSoftLimit = 42;
 			kControllerConstants.encoderHomePosition = 40;
-			kControllerConstants.dynamicProfiling = true;
+			kControllerConstants.dynamicProfiling = false;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
@@ -176,9 +179,9 @@ public final class Constants {
 		public static final double kVoltageComp = 12.0;
 
 		/** Swerve Current limiting */
-		public static final int kAngleContinuousCurrentLimit = 20;
+		public static final int kAngleContinuousCurrentLimit = 50;
 
-		public static final int kDriveContinuousCurrentLimit = 35;
+		public static final int kDriveContinuousCurrentLimit = 50;
 
 		/* Modules angle PID values */
 		public static final double kAngleP = 0.01;
@@ -211,13 +214,13 @@ public final class Constants {
 		/**
 		 * Max speed the swerve could possibly drive
 		 */
-		public static final double maxSpeed = 6; // meters per second
+		public static final double maxSpeed = 4; // meters per second
 		/** Max speed the swerve could possibly rotate */
-		public static final double maxAngularVelocity = 12;
+		public static final double maxAngularVelocity = 10.7;
 		/**
 		 * Max speed a swerve module could possibly drive on ground
 		 */
-		public static final double maxModuleSpeed = 6;
+		public static final double maxModuleSpeed = 4.7;
 
 		/** Neutral Modes */
 		public static final com.revrobotics.CANSparkBase.IdleMode angleNeutralMode =

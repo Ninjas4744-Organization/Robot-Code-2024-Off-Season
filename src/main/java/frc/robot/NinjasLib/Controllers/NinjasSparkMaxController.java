@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.NinjasLib.DataClasses.MainControllerConstants;
 
 public class NinjasSparkMaxController extends NinjasController {
@@ -32,7 +33,7 @@ public class NinjasSparkMaxController extends NinjasController {
 		_main.getPIDController().setIZone(constants.PIDFConstants.kIZone);
 
 		_main.getEncoder().setPositionConversionFactor(constants.encoderConversionFactor);
-		_main.getEncoder().setVelocityConversionFactor(constants.encoderConversionFactor);
+		_main.getEncoder().setVelocityConversionFactor(constants.encoderConversionFactor / 60);
 
 		_main.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, constants.isMaxSoftLimit);
 		_main.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, constants.isMinSoftLimit);
@@ -51,6 +52,8 @@ public class NinjasSparkMaxController extends NinjasController {
 
 		_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
 				constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
+
+		_initialProfileState = new State(getPosition(), getVelocity());
 	}
 
 	@Override
@@ -106,6 +109,16 @@ public class NinjasSparkMaxController extends NinjasController {
 	public void periodic() {
 		super.periodic();
 
+		SmartDashboard.putNumber("Timer", _profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0));
+		SmartDashboard.putNumber("Initial Profile State Pos", _initialProfileState.position);
+		SmartDashboard.putNumber("Initial Profile State Vel", _initialProfileState.velocity);
+		SmartDashboard.putNumber("Goal State Pos", getGoal());
+		SmartDashboard.putNumber("Profile Wanted Pos", _profile.calculate(
+			_profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0),
+			_initialProfileState,
+			new State(getGoal(), 0))
+			.position);
+
 		if (atGoal() || _profileTimer.get() > _profile.totalTime()) return;
 
 		switch (_controlState) {
@@ -133,20 +146,20 @@ public class NinjasSparkMaxController extends NinjasController {
 
 			case FF_POSITION:
 				_main.set(_profile.calculate(
-										_profileTimer.get(),
+					_profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0),
 					_initialProfileState,
 										new State(getGoal(), 0))
 								.velocity
-					* _constants.PIDFConstants.kV);
+					* _constants.PIDFConstants.kV / 12);
 				break;
 
 			case FF_VELOCITY:
 				_main.set(_profile.calculate(
-					_profileTimer.get(),
+					_profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0),
 					_initialProfileState,
 					new State(getPosition(), getGoal()))
 								.velocity
-					* _constants.PIDFConstants.kV);
+					* _constants.PIDFConstants.kV / 12);
 				break;
 
 			default:

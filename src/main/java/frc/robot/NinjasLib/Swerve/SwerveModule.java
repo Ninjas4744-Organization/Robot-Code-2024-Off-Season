@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
 import frc.robot.NinjasLib.Swerve.Extras.CANCoderUtil;
@@ -95,7 +94,6 @@ public class SwerveModule {
 
 		if (isOpenLoop) {
 			double percentOutput = desiredState.speedMetersPerSecond / SwerveConstants.maxSpeed;
-			SmartDashboard.putNumber("driveWheels", percentOutput);
 			driveMotor.set(percentOutput);
 		} else {
 			driveController.setReference(

@@ -109,6 +109,8 @@ public class StateMachine extends StateMachineSubsystem {
 			case NOTE_SEARCH:
 				if (wantedState == RobotStates.INTAKE
 						|| wantedState == RobotStates.CLIMB_PREPARE
+          || wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
+          || wantedState == RobotStates.SHOOT_AMP_PREPARE
 						|| wantedState == RobotStates.CLOSE
 						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
@@ -177,7 +179,7 @@ public class StateMachine extends StateMachineSubsystem {
 
 		_endConditionMap.put(RobotStates.INTAKE, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.INDEX));
 		_endConditionMap.put(RobotStates.INDEX, new StateEndCondition(() -> !RobotState.getNoteInIndexer(), RobotStates.INDEX_BACK));
-		_endConditionMap.put(RobotStates.INDEX_BACK, new StateEndCondition(() -> RobotState.getNoteInIndexer(), RobotStates.NOTE_IN_INDEXER));
+    _endConditionMap.put(RobotStates.INDEX_BACK, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
 
 		_endConditionMap.put(
 				RobotStates.SHOOT_AMP_PREPARE,

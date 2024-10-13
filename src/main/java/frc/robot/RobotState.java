@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -123,6 +124,14 @@ public class RobotState {
 					? getRobotPose().getRotation().unaryMinus()
 					: getRobotPose().getRotation();
 	}
+
+  public static Translation3d getRobotVelocity() {
+    return new Translation3d(
+      navX.getVelocityX(),
+      navX.getVelocityY(),
+      navX.getVelocityZ()
+    );
+  }
 
 	/**
 	 * Resets the gyro angle, sets it to the given angle

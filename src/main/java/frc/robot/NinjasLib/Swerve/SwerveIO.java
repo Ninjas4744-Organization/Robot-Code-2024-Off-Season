@@ -153,7 +153,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	}
 
 	/** Logs info about the modules and swerve */
-	private void log() {
+  protected void log() {
 		// TODO: make this work
 	}
 

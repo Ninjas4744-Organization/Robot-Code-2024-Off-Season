@@ -9,6 +9,7 @@ import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
 import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
 import frc.robot.RobotState;
+import frc.robot.RobotState.RobotStates;
 
 public class ShooterAngle extends StateMachineMotoredSubsystem {
 	private static ShooterAngle _instance;
@@ -96,9 +97,9 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 //								.getDegrees()),
 //				RobotStates.SHOOT_SPEAKER_PREPARE);
 
-//		addFunctionToPeriodicMap(
-//				() -> controller().setPosition(65),
-//				RobotStates.SHOOT_SPEAKER_PREPARE);
+		addFunctionToOnChangeMap(
+			() -> controller().setPosition(65),
+			RobotStates.SHOOT_SPEAKER_PREPARE);
 	}
 
 	@Override
@@ -111,10 +112,14 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 		super.periodic();
 
 		SmartDashboard.putBoolean("Shooter Angle Limit", _limit.get());
-		if (_limit.get()) {
-			_controller.resetEncoder();
-			if (_controller.getOutput() < 0)
-				_controller.stop();
-		}
+//		if (_limit.get()) {
+//			_controller.resetEncoder();
+//			if (_controller.getOutput() < 0)
+//				_controller.stop();
+//		}
+	}
+
+	public void resetLikeLimit() {
+		_controller.resetEncoder();
 	}
 }

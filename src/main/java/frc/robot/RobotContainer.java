@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.RobotState.RobotStates;
@@ -72,10 +73,12 @@ public class RobotContainer {
 		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
 		_driverJoystick.povDown().whileTrue(ShooterAngle.getInstance().runMotor(-0.5));
 		_driverJoystick.povUp().whileTrue(ShooterAngle.getInstance().runMotor(0.5));
+		_driverJoystick.povLeft().onTrue(Commands.runOnce(() -> ShooterAngle.getInstance().resetLikeLimit()));
 	}
 
 	public void periodic() {
 		SmartDashboard.putBoolean("Indexer Beam Breaker", RobotState.getNoteInIndexer());
+		SmartDashboard.putNumber("Robot Velocity", RobotState.getRobotVelocity().getNorm());
 //		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
 //
 //		for (VisionEstimation estimation : estimations) if (estimation != null) RobotState.updateRobotPose(estimation);
