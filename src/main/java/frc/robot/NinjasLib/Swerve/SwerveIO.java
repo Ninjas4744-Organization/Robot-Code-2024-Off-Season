@@ -17,7 +17,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand.SwerveState;
-import frc.robot.NinjasLib.StateMachineSubsystem;
+import frc.robot.NinjasLib.Subsystems.StateMachineSubsystem;
 import frc.robot.NinjasLib.Swerve.PathFollowing.PathFollower;
 import frc.robot.NinjasLib.Vision.NoteDetection;
 import frc.robot.RobotState;

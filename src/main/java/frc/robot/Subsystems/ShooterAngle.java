@@ -2,12 +2,14 @@ package frc.robot.Subsystems;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Ballistics;
 import frc.robot.Constants.ShooterAngleConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
-import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
+import frc.robot.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
 
@@ -53,18 +55,23 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 		return true;
 	}
 
-	private Rotation2d calculateAngle(Pose3d target) {
+	private Rotation2d calculateAngle(Pose3d target, double shootSpeed) {
 		double dist = RobotState.getRobotPose()
 				.getTranslation()
 				.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
 				.getDistance(target.toPose2d().getTranslation());
 
-		Rotation2d angle =
-				Rotation2d.fromRadians(Math.atan2(target.getZ() - ShooterAngleConstants.kShooterPose.getZ(), dist));
-
-		angle = angle.rotateBy(ShooterAngleConstants.getTrendAngleFixer(dist));
-
-		double angleClamped = Math.min(Math.max(angle.getDegrees(), 40), 80);
+		double angle = Ballistics.calculateShootingAngle(
+			ShooterAngleConstants.kShooterPose.getZ(),
+			dist,
+			target.getZ(),
+			shootSpeed,
+			ShooterAngleConstants.getEnterAngle(new Translation3d(
+				target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
+				target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
+				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
+			)));
+		double angleClamped = Math.min(Math.max(angle, 40), 80);
 
 		return Rotation2d.fromDegrees(angleClamped);
 	}
@@ -80,7 +87,7 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 //												+ ShooterAngleConstants.kAmpOffset.getY(),
 //										VisionConstants.getAmpTag().pose.getZ()
 //												+ ShooterAngleConstants.kAmpOffset.getZ(),
-//										new Rotation3d()))
+//										new Rotation3d()), ShooterConstants.States.kAmp)
 //								.getDegrees()),
 //				RobotStates.SHOOT_AMP_PREPARE);
 //
@@ -93,7 +100,7 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 //												+ ShooterAngleConstants.kSpeakerOffset.getY(),
 //										VisionConstants.getSpeakerTag().pose.getZ()
 //												+ ShooterAngleConstants.kSpeakerOffset.getZ(),
-//										new Rotation3d()))
+//										new Rotation3d()), ShooterConstants.States.kSpeaker)
 //								.getDegrees()),
 //				RobotStates.SHOOT_SPEAKER_PREPARE);
 

@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib;
+package frc.robot.NinjasLib.Subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;

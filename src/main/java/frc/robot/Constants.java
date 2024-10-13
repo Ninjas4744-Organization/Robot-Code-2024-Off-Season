@@ -56,8 +56,8 @@ public final class Constants {
 		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 1.97);
 		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.5);
 
-		public static Rotation2d getTrendAngleFixer(double dist) {
-			return Rotation2d.fromDegrees(0);
+		public static double getEnterAngle(Translation3d translation) {
+			return Units.radiansToDegrees(Math.atan2(translation.getZ(), translation.toTranslation2d().getNorm()));
 		}
 	}
 

@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.NinjasLib.DataClasses.StateEndCondition;
-import frc.robot.NinjasLib.StateMachineSubsystem;
+import frc.robot.NinjasLib.Subsystems.StateMachineSubsystem;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;

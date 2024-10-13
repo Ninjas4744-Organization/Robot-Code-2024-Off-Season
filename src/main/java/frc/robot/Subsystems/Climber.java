@@ -3,7 +3,7 @@ package frc.robot.Subsystems;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
-import frc.robot.NinjasLib.StateMachineMotoredSubsystem;
+import frc.robot.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
 import frc.robot.RobotState.RobotStates;
 
 public class Climber extends StateMachineMotoredSubsystem {
