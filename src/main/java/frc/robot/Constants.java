@@ -36,12 +36,11 @@ public final class Constants {
 			kControllerConstants.PIDFConstants.kCruiseVelocity = 20;
 			kControllerConstants.PIDFConstants.kAcceleration = 50;
 			kControllerConstants.PIDFConstants.kP = 0.3;
-//			kControllerConstants.PIDFConstants.kV = 0.3;
 			kControllerConstants.positionGoalTolerance = 1;
 			kControllerConstants.encoderConversionFactor = 1.0 / 300.0 * 360.0;
 			kControllerConstants.isMaxSoftLimit = true;
 			kControllerConstants.maxSoftLimit = 78;
-			kControllerConstants.isMinSoftLimit = true;
+			kControllerConstants.isMinSoftLimit = false;
 			kControllerConstants.minSoftLimit = 42;
 			kControllerConstants.encoderHomePosition = 40;
 			kControllerConstants.dynamicProfiling = false;
@@ -52,12 +51,41 @@ public final class Constants {
 
 		public static final int kLimitSwitchId = 2;
 
-		public static final Translation3d kAmpOffset = new Translation3d(0, 0, 0.88);
-		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 1.97);
-		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.5);
+		public static final Translation3d kAmpOffset = new Translation3d(0, -0.1, -0.35);
+		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 0.74);
+		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.135);
 
 		public static double getEnterAngle(Translation3d translation) {
 			return Units.radiansToDegrees(Math.atan2(translation.getZ(), translation.toTranslation2d().getNorm()));
+		}
+
+		public static double shooterSpeedToNoteSpeed(double rps) {
+//			double wheelRadius = Units.inchesToMeters(2);
+//			return (rps * 2 * Math.PI) * wheelRadius;
+
+			// Constants
+			double g = 9.81; // Acceleration due to gravity (m/s^2)
+			double wheelRadius = Units.inchesToMeters(2);
+			double noteMass = 0.233;
+			double frictionCoefficient = 1.5;
+			double interactionTime = 1 / 15.0;
+
+			// Calculate angular velocity for both wheels (in radians per second)
+			double angularVelocity = 2 * Math.PI * rps;
+
+			// Calculate maximum linear speeds at the edge of the wheels
+			double maxSpeed = angularVelocity * wheelRadius;
+
+			// Calculate the frictional force (assuming normal force = weight of the game piece)
+			double normalForce = noteMass * g;
+			double frictionForce = frictionCoefficient * normalForce;
+
+			// Calculate the effective speed considering the friction over the interaction time
+			double distanceTraveled = (maxSpeed * interactionTime) - (0.5 * frictionForce * interactionTime);
+
+			// Calculate the final speed of the game piece
+
+			return distanceTraveled / interactionTime;
 		}
 	}
 
@@ -149,7 +177,7 @@ public final class Constants {
 		public static final double kRotationSpeedFactor = 0.25;
 		public static final double kJoystickDeadband = 0.3;
 
-		public static final boolean kInvertGyro = true; // Always ensure Gyro is CCW+ CW-
+		public static final boolean kInvertGyro = false; // Always ensure Gyro is CCW+ CW-
 
 		/** Whether to drive without velocity PID control */
 		public static final boolean kOpenLoop = true;

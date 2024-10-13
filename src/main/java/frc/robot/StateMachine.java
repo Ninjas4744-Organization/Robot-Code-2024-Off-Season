@@ -148,6 +148,10 @@ public class StateMachine extends StateMachineSubsystem {
 					|| wantedState == RobotStates.CLOSE
 					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
+
+			case TESTING:
+				if (wantedState == RobotStates.RESET)
+					RobotState.setRobotState(wantedState);
 		}
 
 		if (RobotState.getRobotState() == RobotStates.IDLE)

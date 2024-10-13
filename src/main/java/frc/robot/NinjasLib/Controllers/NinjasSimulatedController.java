@@ -13,6 +13,7 @@ public class NinjasSimulatedController extends NinjasController {
 	private final TrapezoidProfile _profile;
 	private final Timer _trapozoidTimer = new Timer();
 	private final PIDController _pid;
+  private TrapezoidProfile.State _initialProfileState;
 
 	public NinjasSimulatedController(SimulatedControllerConstants constants) {
 		super(constants.mainControllerConstants);
@@ -20,28 +21,28 @@ public class NinjasSimulatedController extends NinjasController {
 		switch (constants.motorType) {
 			case KRAKEN:
 				_main = new DCMotorSim(
-						DCMotor.getKrakenX60(constants.mainControllerConstants.followers.length + 1),
+          DCMotor.getKrakenX60(/*constants.mainControllerConstants.followers.length*/ +1),
 						constants.gearRatio,
 						constants.motorTorque);
 				break;
 			case FALCON:
 				_main = new DCMotorSim(
-						DCMotor.getFalcon500(constants.mainControllerConstants.followers.length + 1),
+          DCMotor.getFalcon500(/*constants.mainControllerConstants.followers.length*/ +1),
 						constants.gearRatio,
 						constants.motorTorque);
 			case NEO:
 				_main = new DCMotorSim(
-						DCMotor.getNEO(constants.mainControllerConstants.followers.length + 1),
+          DCMotor.getNEO(/*constants.mainControllerConstants.followers.length*/ +1),
 						constants.gearRatio,
 						constants.motorTorque);
 			case VORTEX:
 				_main = new DCMotorSim(
-						DCMotor.getNeoVortex(constants.mainControllerConstants.followers.length + 1),
+          DCMotor.getNeoVortex(/*constants.mainControllerConstants.followers.length*/ +1),
 						constants.gearRatio,
 						constants.motorTorque);
 			case NEO550:
 				_main = new DCMotorSim(
-						DCMotor.getNeo550(constants.mainControllerConstants.followers.length + 1),
+          DCMotor.getNeo550(/*constants.mainControllerConstants.followers.length*/ +1),
 						constants.gearRatio,
 						constants.motorTorque);
 		}
@@ -54,13 +55,16 @@ public class NinjasSimulatedController extends NinjasController {
 		_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
 				constants.mainControllerConstants.PIDFConstants.kCruiseVelocity,
 				constants.mainControllerConstants.PIDFConstants.kAcceleration));
+
+    _initialProfileState = new TrapezoidProfile.State(getPosition(), getVelocity());
 	}
 
 	@Override
 	public void setPercent(double percent) {
 		super.setPercent(percent);
 
-		for (int i = 0; i < _constants.followers.length; i++) _main.setInput(percent, i);
+    for (int i = 0; i < /*_constants.followers.length*/1; i++)
+      _main.setInput(i, percent);
 	}
 
 	@Override
@@ -68,6 +72,7 @@ public class NinjasSimulatedController extends NinjasController {
 		super.setPosition(position);
 
 		_trapozoidTimer.restart();
+    _initialProfileState = new TrapezoidProfile.State(getPosition(), getVelocity());
 	}
 
 	@Override
@@ -75,6 +80,7 @@ public class NinjasSimulatedController extends NinjasController {
 		super.setVelocity(velocity);
 
 		_trapozoidTimer.restart();
+    _initialProfileState = new TrapezoidProfile.State(getPosition(), getVelocity());
 	}
 
 	@Override
@@ -103,7 +109,7 @@ public class NinjasSimulatedController extends NinjasController {
 
 		if (atGoal()) return;
 
-		for (int i = 0; i < _constants.followers.length + 1; i++)
+    for (int i = 0; i < /*_constants.followers.length*/ +1; i++)
 			switch (_controlState) {
 				case PIDF_POSITION:
 					_main.setInput(
@@ -145,8 +151,8 @@ public class NinjasSimulatedController extends NinjasController {
 							i,
 							_profile.calculate(
 													_trapozoidTimer.get(),
-													new TrapezoidProfile.State(getVelocity(), 0),
-													new TrapezoidProfile.State(getGoal(), 0))
+                new TrapezoidProfile.State(getPosition(), getVelocity()),
+                new TrapezoidProfile.State(getPosition(), getGoal()))
 											.velocity
 								* _constants.PIDFConstants.kV);
 					break;

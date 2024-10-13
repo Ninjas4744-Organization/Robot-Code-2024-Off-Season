@@ -36,7 +36,8 @@ public class RobotState {
 		CLIMB,
 		CLIMBED,
 		DRIVE_TO_AMP,
-		DRIVE_TO_SOURCE
+		DRIVE_TO_SOURCE,
+		TESTING
 	}
 
 	private static RobotStates robotState = RobotStates.IDLE;

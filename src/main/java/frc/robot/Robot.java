@@ -49,6 +49,7 @@ public class Robot extends TimedRobot {
 		if (_autoCommand != null) _autoCommand.cancel();
 
 		_robotContainer.resetSubsystems();
+		_robotContainer.teleopInit();
 	}
 
 	@Override
@@ -60,6 +61,8 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testInit() {
 		CommandScheduler.getInstance().cancelAll();
+		RobotState.setRobotState(RobotState.RobotStates.TESTING);
+		_robotContainer.testInit();
 	}
 
 	@Override

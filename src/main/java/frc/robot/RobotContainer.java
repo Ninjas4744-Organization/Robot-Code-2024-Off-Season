@@ -3,7 +3,6 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.RobotState.RobotStates;
@@ -13,17 +12,13 @@ import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
 
 public class RobotContainer {
-	private final CommandPS5Controller _driverJoystick;
-	private final CommandPS5Controller _operatorJoystick;
+	private CommandPS5Controller _driverJoystick;
+	private CommandPS5Controller _operatorJoystick;
 
 	private boolean isSwerveLookAt = false;
 	private boolean isSwerveBayblade = false;
 
 	public RobotContainer() {
-		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
-
-		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
-
 		RobotState.initPoseEstimator();
 
 		AutoCommandBuilder.configureAutoBuilder();
@@ -35,12 +30,15 @@ public class RobotContainer {
 		ShooterAngle.getInstance();
 		Constants.VisionConstants.getFieldLayout();
 
-		StateMachine.getInstance().setTriggerForSimulationTesting(_driverJoystick.R2());
+		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
+		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
 		configureBindings();
 	}
 
 	private void configureBindings() {
+		StateMachine.getInstance().setTriggerForSimulationTesting(_driverJoystick.R2());
+
 		configureDriverBindings();
 		configureOperatorBindings();
 	}
@@ -66,14 +64,19 @@ public class RobotContainer {
 
 	private void configureOperatorBindings() {
 		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
-//		_driverJoystick.cross().toggleOnTrue(Indexer.getInstance().runMotor(0.5));
-//		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE));
-		_driverJoystick.circle().toggleOnTrue(Indexer.getInstance().runMotor(Constants.IndexerConstants.States.kRoll));
 		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
+	}
+
+	private void configureTestBindings() {
+		_driverJoystick.triangle().whileTrue(Indexer.getInstance().runMotor(-1));
+		_driverJoystick.cross().whileTrue(Indexer.getInstance().runMotor(1));
+
 		_driverJoystick.povDown().whileTrue(ShooterAngle.getInstance().runMotor(-0.5));
 		_driverJoystick.povUp().whileTrue(ShooterAngle.getInstance().runMotor(0.5));
-		_driverJoystick.povLeft().onTrue(Commands.runOnce(() -> ShooterAngle.getInstance().resetLikeLimit()));
+
+		_driverJoystick.square().whileTrue(Shooter.getInstance().runMotor(1));
+		_driverJoystick.circle().whileTrue(Shooter.getInstance().runMotor(1));
 	}
 
 	public void periodic() {
@@ -94,5 +97,19 @@ public class RobotContainer {
 		Climber.getInstance().resetSubsystem();
 
 		TeleopCommandBuilder.resetGyro(false).schedule();
+	}
+
+	public void teleopInit() {
+//		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
+//		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
+//
+//		configureBindings();
+	}
+
+	public void testInit() {
+//		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
+//		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
+//
+//		configureTestBindings();
 	}
 }
