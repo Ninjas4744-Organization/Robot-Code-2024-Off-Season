@@ -126,13 +126,9 @@ public class RobotState {
 					: getRobotPose().getRotation();
 	}
 
-  public static Translation3d getRobotVelocity() {
-    return new Translation3d(
-      navX.getVelocityX(),
-      navX.getVelocityY(),
-      navX.getVelocityZ()
-    );
-  }
+	public static Translation3d getRobotVelocity() {
+		return new Translation3d(navX.getVelocityX(), navX.getVelocityY(), navX.getVelocityZ());
+	}
 
 	/**
 	 * Resets the gyro angle, sets it to the given angle

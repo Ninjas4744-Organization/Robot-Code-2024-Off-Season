@@ -4,7 +4,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
+import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
@@ -24,7 +26,6 @@ public class RobotContainer {
 		AutoCommandBuilder.configureAutoBuilder();
 		AutoCommandBuilder.registerCommands();
 
-		Climber.disable();
 		Indexer.getInstance();
 		Shooter.getInstance();
 		ShooterAngle.getInstance();
@@ -51,21 +52,22 @@ public class RobotContainer {
 						() -> isSwerveLookAt,
 						() -> isSwerveBayblade));
 
-//		_driverJoystick.square().onTrue(Commands.runOnce(() -> isSwerveBayblade = !isSwerveBayblade));
-//		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
-//
-//		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
+		//		_driverJoystick.square().onTrue(Commands.runOnce(() -> isSwerveBayblade = !isSwerveBayblade));
+		//		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
+		//
+		//		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
-//
-//		_driverJoystick.povLeft().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_AMP));
-//		_driverJoystick.povUp().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_SOURCE));
-//		_driverJoystick.povDown().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
+		//
+		//		_driverJoystick.povLeft().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_AMP));
+		//		_driverJoystick.povUp().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_SOURCE));
+		//		_driverJoystick.povDown().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 	}
 
 	private void configureOperatorBindings() {
 		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
 		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
+		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
 	}
 
 	private void configureTestBindings() {
@@ -81,10 +83,10 @@ public class RobotContainer {
 
 	public void periodic() {
 		SmartDashboard.putBoolean("Indexer Beam Breaker", RobotState.getNoteInIndexer());
-		SmartDashboard.putNumber("Robot Velocity", RobotState.getRobotVelocity().getNorm());
-//		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
-//
-//		for (VisionEstimation estimation : estimations) if (estimation != null) RobotState.updateRobotPose(estimation);
+
+		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
+
+		for (VisionEstimation estimation : estimations) if (estimation != null) RobotState.updateRobotPose(estimation);
 	}
 
 	public void resetSubsystems() {
@@ -100,16 +102,16 @@ public class RobotContainer {
 	}
 
 	public void teleopInit() {
-//		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
-//		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
-//
-//		configureBindings();
+		//		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
+		//		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
+		//
+		//		configureBindings();
 	}
 
 	public void testInit() {
-//		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
-//		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
-//
-//		configureTestBindings();
+		//		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
+		//		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
+		//
+		//		configureTestBindings();
 	}
 }

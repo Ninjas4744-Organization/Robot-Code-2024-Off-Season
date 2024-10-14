@@ -167,7 +167,7 @@ public abstract class NinjasController {
 	 * @see #resetEncoder
 	 */
 	public boolean isHomed() {
-		return getPosition() == _constants.encoderHomePosition;
+		return Math.abs(_constants.encoderHomePosition - getPosition()) < _constants.positionGoalTolerance;
 	}
 
 	/**

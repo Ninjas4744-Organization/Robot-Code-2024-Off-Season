@@ -3,7 +3,6 @@ package frc.robot.NinjasLib.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionOutput;
@@ -53,7 +52,6 @@ public class VisionCamera {
 		Optional<EstimatedRobotPose> currentPose = _estimator.update(result);
 
 		_output.hasTargets = result.hasTargets();
-		SmartDashboard.putBoolean("Vision Has Targets", _output.hasTargets);
 		if (currentPose.isEmpty()) return _output;
 
 		_targets = currentPose.get().targetsUsed;

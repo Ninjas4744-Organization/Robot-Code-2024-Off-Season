@@ -11,7 +11,6 @@ import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +26,6 @@ public class StateMachine extends StateMachineSubsystem {
 	private Map<RobotStates, StateEndCondition> _endConditionMap;
 
 	private StateMachine() {
-		super(false);
-
 		_endConditionMap = new HashMap<>();
 
 		for (RobotStates state : RobotStates.values())
@@ -82,8 +79,8 @@ public class StateMachine extends StateMachineSubsystem {
 			case INTAKE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
-					|| wantedState == RobotStates.NOTE_IN_INDEXER
-					|| wantedState == RobotStates.INDEX) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.NOTE_IN_INDEXER
+						|| wantedState == RobotStates.INDEX) RobotState.setRobotState(wantedState);
 				break;
 
 			case CLIMB:
@@ -103,14 +100,15 @@ public class StateMachine extends StateMachineSubsystem {
 			case SHOOT_SPEAKER_PREPARE, SHOOT_AMP_PREPARE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
+						|| wantedState == RobotStates.SHOOT
 						|| wantedState == RobotStates.SHOOT_READY) RobotState.setRobotState(wantedState);
 				break;
 
 			case NOTE_SEARCH:
 				if (wantedState == RobotStates.INTAKE
 						|| wantedState == RobotStates.CLIMB_PREPARE
-          || wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
-          || wantedState == RobotStates.SHOOT_AMP_PREPARE
+						|| wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
+						|| wantedState == RobotStates.SHOOT_AMP_PREPARE
 						|| wantedState == RobotStates.CLOSE
 						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
@@ -128,30 +126,29 @@ public class StateMachine extends StateMachineSubsystem {
 			case DRIVE_TO_AMP:
 				if (wantedState == RobotStates.SHOOT_AMP_PREPARE
 						|| wantedState == RobotStates.CLOSE
-					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
 			case DRIVE_TO_SOURCE:
 				if (wantedState == RobotStates.INTAKE
 						|| wantedState == RobotStates.CLOSE
-					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
 			case INDEX:
 				if (wantedState == RobotStates.INDEX_BACK
-					|| wantedState == RobotStates.CLOSE
-					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
 			case INDEX_BACK:
 				if (wantedState == RobotStates.NOTE_IN_INDEXER
-					|| wantedState == RobotStates.CLOSE
-					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+						|| wantedState == RobotStates.CLOSE
+						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
 			case TESTING:
-				if (wantedState == RobotStates.RESET)
-					RobotState.setRobotState(wantedState);
+				if (wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 		}
 
 		if (RobotState.getRobotState() == RobotStates.IDLE)
@@ -168,10 +165,10 @@ public class StateMachine extends StateMachineSubsystem {
 		_endConditionMap.put(
 				RobotStates.RESET,
 				new StateEndCondition(
-					() -> ShooterAngle.getInstance().isResetted()
-						&& Indexer.getInstance().isResetted()
-						&& Climber.getInstance().isResetted()
-						&& Shooter.getInstance().isResetted(),
+						() -> ShooterAngle.getInstance().isResetted()
+								&& Indexer.getInstance().isResetted()
+								&& Climber.getInstance().isResetted()
+								&& Shooter.getInstance().isResetted(),
 						RobotStates.IDLE));
 
 		_endConditionMap.put(
@@ -181,23 +178,27 @@ public class StateMachine extends StateMachineSubsystem {
 								&& Climber.getInstance().atGoal(),
 						RobotStates.IDLE));
 
-		_endConditionMap.put(RobotStates.INTAKE, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.INDEX));
-		_endConditionMap.put(RobotStates.INDEX, new StateEndCondition(() -> !RobotState.getNoteInIndexer(), RobotStates.INDEX_BACK));
-    _endConditionMap.put(RobotStates.INDEX_BACK, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
-
 		_endConditionMap.put(
-				RobotStates.SHOOT_AMP_PREPARE,
-				new StateEndCondition(
-						() -> ShooterAngle.getInstance().atGoal()
-								&& Shooter.getInstance().atGoal(),
-						RobotStates.SHOOT_READY));
-
+				RobotStates.INTAKE, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.INDEX));
 		_endConditionMap.put(
-				RobotStates.SHOOT_SPEAKER_PREPARE,
-				new StateEndCondition(
-						() -> ShooterAngle.getInstance().atGoal()
-								&& Shooter.getInstance().atGoal(),
-						RobotStates.SHOOT_READY));
+				RobotStates.INDEX, new StateEndCondition(() -> !RobotState.getNoteInIndexer(), RobotStates.INDEX_BACK));
+		_endConditionMap.put(
+				RobotStates.INDEX_BACK,
+				new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
+
+		//		_endConditionMap.put(
+		//				RobotStates.SHOOT_AMP_PREPARE,
+		//				new StateEndCondition(
+		//						() -> ShooterAngle.getInstance().atGoal()
+		//								&& Shooter.getInstance().atGoal(),
+		//						RobotStates.SHOOT_READY));
+		//
+		//		_endConditionMap.put(
+		//				RobotStates.SHOOT_SPEAKER_PREPARE,
+		//				new StateEndCondition(
+		//						() -> ShooterAngle.getInstance().atGoal()
+		//								&& Shooter.getInstance().atGoal(),
+		//						RobotStates.SHOOT_READY));
 
 		_endConditionMap.put(RobotStates.SHOOT, new StateEndCondition(() -> _shootTimer.get() > 1, RobotStates.CLOSE));
 

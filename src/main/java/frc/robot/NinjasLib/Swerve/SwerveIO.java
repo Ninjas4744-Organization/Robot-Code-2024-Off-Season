@@ -49,8 +49,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	}
 
 	public SwerveIO() {
-		super(false);
-
 		_state = SwerveState.DEFAULT;
 		_previousState = SwerveState.DEFAULT;
 		_demand = new SwerveDemand();
@@ -153,7 +151,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	}
 
 	/** Logs info about the modules and swerve */
-  protected void log() {
+	protected void log() {
 		// TODO: make this work
 	}
 
@@ -243,17 +241,17 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	 * @param state the wanted state
 	 */
 	public void setState(SwerveState state) {
-//		if (RobotState.isAutonomous()) {
-//			_state = SwerveState.VELOCITY;
-//			return;
-//		}
-//
-//		_previousState = _state;
-//		_state = state;
-//
-//		if (_state != SwerveState.FOLLOW_PATH) _pathFollower.stop();
-//
-//		SmartDashboard.putString("Swerve State", _state.toString());
+		if (RobotState.isAutonomous()) {
+			_state = SwerveState.VELOCITY;
+			return;
+		}
+
+		_previousState = _state;
+		_state = state;
+
+		if (_state != SwerveState.FOLLOW_PATH) _pathFollower.stop();
+
+		SmartDashboard.putString("Swerve State", _state.toString());
 	}
 
 	/**
@@ -351,7 +349,8 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 						new ChassisSpeeds(
 								_demand.driverInput.vxMetersPerSecond,
 								_demand.driverInput.vyMetersPerSecond,
-							lookAtTarget(_demand.targetPose, RobotState.getRobotState() == RobotStates.NOTE_SEARCH)),
+								lookAtTarget(
+										_demand.targetPose, RobotState.getRobotState() == RobotStates.NOTE_SEARCH)),
 						SwerveConstants.kFieldRelative);
 				break;
 

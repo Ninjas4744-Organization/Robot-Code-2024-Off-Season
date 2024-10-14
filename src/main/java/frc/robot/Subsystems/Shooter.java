@@ -1,5 +1,6 @@
 package frc.robot.Subsystems;
 
+import frc.robot.Constants.ShooterAngleConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasTalonFXController;
@@ -9,17 +10,8 @@ import frc.robot.RobotState.RobotStates;
 public class Shooter extends StateMachineMotoredSubsystem {
 	private static Shooter _instance;
 
-	public Shooter(boolean disabled) {
-		super(disabled);
-	}
-
-	public static void disable() {
-		if (_instance == null)
-			_instance = new Shooter(true);
-	}
-
 	public static Shooter getInstance() {
-		if (_instance == null) _instance = new Shooter(false);
+		if (_instance == null) _instance = new Shooter();
 
 		return _instance;
 	}
@@ -46,12 +38,20 @@ public class Shooter extends StateMachineMotoredSubsystem {
 
 	@Override
 	protected void setFunctionMaps() {
-		addFunctionToOnChangeMap(
-      () -> controller().setVelocity(ShooterConstants.States.kSpeaker), RobotStates.SHOOT_SPEAKER_PREPARE);
+		addFunctionToPeriodicMap(
+				() -> controller()
+						.setVelocity(
+								/*ShooterConstants.calculateLaunchSpeed(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getSpeakerHolePose()).getDegrees(), ShooterAngleConstants.getSpeakerHolePose())*/ 90),
+				RobotStates.SHOOT_SPEAKER_PREPARE);
 
-		addFunctionToOnChangeMap(
-				() -> controller().setVelocity(ShooterConstants.States.kAmp), RobotStates.SHOOT_AMP_PREPARE);
+		addFunctionToPeriodicMap(
+				() -> controller()
+						.setVelocity(ShooterConstants.calculateLaunchSpeed(
+								ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getAmpHolePose())
+										.getDegrees(),
+								ShooterAngleConstants.getAmpHolePose())),
+				RobotStates.SHOOT_AMP_PREPARE);
 
-		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.CLOSE);
+		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET);
 	}
 }

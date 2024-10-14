@@ -3,7 +3,6 @@ package frc.robot.NinjasLib.Swerve;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
@@ -109,15 +108,15 @@ public class Swerve extends SwerveIO {
 		System.out.println("---------------Reseting modules to absolute---------------");
 	}
 
-  @Override
-  protected void log() {
-    super.log();
+	@Override
+	protected void log() {
+		super.log();
 
-    for (int i = 0; i < 4; i++)
-      SmartDashboard.putNumber("Module " + i + " Speed", getModuleStates()[i].speedMetersPerSecond);
-
-    SmartDashboard.putNumber("Robot Angular Velocity", getChassisSpeeds().omegaRadiansPerSecond);
-  }
+		//    for (int i = 0; i < 4; i++)
+		//      SmartDashboard.putNumber("Module " + i + " Speed", getModuleStates()[i].speedMetersPerSecond);
+		//
+		//    SmartDashboard.putNumber("Robot Angular Velocity", getChassisSpeeds().omegaRadiansPerSecond);
+	}
 
 	@Override
 	public void periodic() {
