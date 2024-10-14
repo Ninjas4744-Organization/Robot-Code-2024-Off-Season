@@ -11,8 +11,7 @@ public class Shooter extends StateMachineMotoredSubsystem {
 	private static Shooter _instance;
 
 	public static Shooter getInstance() {
-		if (_instance == null)
-			_instance = new Shooter();
+		if (_instance == null) _instance = new Shooter();
 
 		return _instance;
 	}
@@ -40,10 +39,18 @@ public class Shooter extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToPeriodicMap(
-			() -> controller().setVelocity(/*ShooterConstants.calculateLaunchSpeed(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getSpeakerHolePose()).getDegrees(), ShooterAngleConstants.getSpeakerHolePose())*/90), RobotStates.SHOOT_SPEAKER_PREPARE);
+				() -> controller()
+						.setVelocity(
+								/*ShooterConstants.calculateLaunchSpeed(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getSpeakerHolePose()).getDegrees(), ShooterAngleConstants.getSpeakerHolePose())*/ 90),
+				RobotStates.SHOOT_SPEAKER_PREPARE);
 
 		addFunctionToPeriodicMap(
-			() -> controller().setVelocity(ShooterConstants.calculateLaunchSpeed(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getAmpHolePose()).getDegrees(), ShooterAngleConstants.getAmpHolePose())), RobotStates.SHOOT_AMP_PREPARE);
+				() -> controller()
+						.setVelocity(ShooterConstants.calculateLaunchSpeed(
+								ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getAmpHolePose())
+										.getDegrees(),
+								ShooterAngleConstants.getAmpHolePose())),
+				RobotStates.SHOOT_AMP_PREPARE);
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET);
 	}

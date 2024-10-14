@@ -14,7 +14,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.NinjasLib.DataClasses.*;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,55 +58,65 @@ public final class Constants {
 
 		public static Pose3d getAmpHolePose() {
 			return new Pose3d(
-				VisionConstants.getAmpTag().pose.getX() + kAmpOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-				VisionConstants.getAmpTag().pose.getY() + kAmpOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-				VisionConstants.getAmpTag().pose.getZ() + kAmpOffset.getZ(),
-				new Rotation3d()
-			);
+					VisionConstants.getAmpTag().pose.getX()
+							+ kAmpOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+					VisionConstants.getAmpTag().pose.getY()
+							+ kAmpOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+					VisionConstants.getAmpTag().pose.getZ() + kAmpOffset.getZ(),
+					new Rotation3d());
 		}
 
 		public static Pose3d getSpeakerHolePose() {
 			return new Pose3d(
-				VisionConstants.getSpeakerTag().pose.getX() + kSpeakerOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-				VisionConstants.getSpeakerTag().pose.getY() + kSpeakerOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-				VisionConstants.getSpeakerTag().pose.getZ() + kSpeakerOffset.getZ(),
-				new Rotation3d()
-			);
+					VisionConstants.getSpeakerTag().pose.getX()
+							+ kSpeakerOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+					VisionConstants.getSpeakerTag().pose.getY()
+							+ kSpeakerOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+					VisionConstants.getSpeakerTag().pose.getZ() + kSpeakerOffset.getZ(),
+					new Rotation3d());
 		}
 
 		public static double getEnterAngle(Translation3d translation) {
-			return Units.radiansToDegrees(Math.atan(translation.getZ() / translation.toTranslation2d().getNorm()));
+			return Units.radiansToDegrees(
+					Math.atan(translation.getZ() / translation.toTranslation2d().getNorm()));
 		}
 
 		public static Rotation2d calculateLaunchAngle(Pose3d target) {
 			double dist = RobotState.getRobotPose()
-				.getTranslation()
-				.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
-				.getDistance(target.toPose2d().getTranslation());
+					.getTranslation()
+					.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
+					.getDistance(target.toPose2d().getTranslation());
 
 			SmartDashboard.putNumber("Dist", dist);
-			SmartDashboard.putNumber("Trigo Angle", ShooterAngleConstants.getEnterAngle(new Translation3d(
-				target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
-				target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
-				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
-			)));
-			NetworkTableInstance.getDefault().getTable("Speaker Hole").getEntry("Speaker Hole").setDoubleArray(new double[] { target.getX(), target.getY(), target.getZ() });
+			SmartDashboard.putNumber(
+					"Trigo Angle",
+					ShooterAngleConstants.getEnterAngle(new Translation3d(
+							target.getX()
+									- (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
+							target.getY()
+									- (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
+							target.getZ() - ShooterAngleConstants.kShooterPose.getZ())));
+			NetworkTableInstance.getDefault()
+					.getTable("Speaker Hole")
+					.getEntry("Speaker Hole")
+					.setDoubleArray(new double[] {target.getX(), target.getY(), target.getZ()});
 
 			double angle = Ballistics.findLaunchAngle(
-				target.getZ(),
-				ShooterAngleConstants.kShooterPose.getZ(),
-				dist,
-				ShooterAngleConstants.getEnterAngle(new Translation3d(
-					target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
-					target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
-					target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
-				)));
+					target.getZ(),
+					ShooterAngleConstants.kShooterPose.getZ(),
+					dist,
+					ShooterAngleConstants.getEnterAngle(new Translation3d(
+							target.getX()
+									- (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
+							target.getY()
+									- (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
+							target.getZ() - ShooterAngleConstants.kShooterPose.getZ())));
 
-//			double angle = ShooterAngleConstants.getEnterAngle(new Translation3d(
-//				target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
-//				target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
-//				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
-//			));
+			//			double angle = ShooterAngleConstants.getEnterAngle(new Translation3d(
+			//				target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
+			//				target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
+			//				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
+			//			));
 
 			double angleClamped = Math.min(Math.max(angle, 40), 80);
 			return Rotation2d.fromDegrees(angleClamped);
@@ -131,7 +140,7 @@ public final class Constants {
 			kControllerConstants.PIDFConstants.kAcceleration = 100;
 			kControllerConstants.velocityGoalTolerance = 2;
 
-			kControllerConstants.followers = new ControllerConstants[]{new ControllerConstants()};
+			kControllerConstants.followers = new ControllerConstants[] {new ControllerConstants()};
 			kControllerConstants.followers[0].id = 31;
 			kControllerConstants.followers[0].inverted = true;
 
@@ -179,23 +188,17 @@ public final class Constants {
 
 		public static double calculateLaunchSpeed(double shootAngle, Pose3d target) {
 			double dist = RobotState.getRobotPose()
-				.getTranslation()
-				.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
-				.getDistance(target.toPose2d().getTranslation());
+					.getTranslation()
+					.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
+					.getDistance(target.toPose2d().getTranslation());
 
-			SmartDashboard.putNumber("Note Shoot Speed", Ballistics.findLaunchSpeed(
-				ShooterAngleConstants.kShooterPose.getZ(),
-				target.getZ(),
-				dist,
-				shootAngle
-			));
+			SmartDashboard.putNumber(
+					"Note Shoot Speed",
+					Ballistics.findLaunchSpeed(
+							ShooterAngleConstants.kShooterPose.getZ(), target.getZ(), dist, shootAngle));
 
 			return noteSpeedToShooterSpeed(Ballistics.findLaunchSpeed(
-				ShooterAngleConstants.kShooterPose.getZ(),
-				target.getZ(),
-				dist,
-				shootAngle
-			));
+					ShooterAngleConstants.kShooterPose.getZ(), target.getZ(), dist, shootAngle));
 		}
 
 		public class States {
@@ -436,9 +439,9 @@ public final class Constants {
 
 	public static class VisionConstants {
 		public static final Map<String, Transform3d> kCameras = Map.of(
-			"Front", new Transform3d(0.28, -0.105, -0.055, new Rotation3d(0, 30, 0)),
-			"Left", new Transform3d(-0.035, 0.285, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(90))),
-			"Right", new Transform3d(-0.03, -0.285, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(-90))));
+				"Front", new Transform3d(0.28, -0.105, -0.055, new Rotation3d(0, 30, 0)),
+				"Left", new Transform3d(-0.035, 0.285, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(90))),
+				"Right", new Transform3d(-0.03, -0.285, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(-90))));
 
 		public static final double kMaxAmbiguity = 0.2;
 
@@ -497,9 +500,9 @@ public final class Constants {
 			else {
 				if (kUseOurField) layout = kOurFieldLayout;
 				else
-//					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
-//							? kBlueFieldLayout
-//							: kRedFieldLayout;
+					//					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
+					//							? kBlueFieldLayout
+					//							: kRedFieldLayout;
 					layout = kBlueFieldLayout;
 			}
 

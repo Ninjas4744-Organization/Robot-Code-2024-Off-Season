@@ -3,7 +3,6 @@ package frc.robot.NinjasLib.Subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,12 +17,8 @@ public abstract class StateMachineSubsystem extends SubsystemBase {
 
 		previousRobotState = RobotState.getRobotState();
 
-		for (RobotStates state : RobotStates.values())
-			_periodicFunctionMap.put(state, () -> {
-			});
-		for (RobotStates state : RobotStates.values())
-			_onChangeFunctionMap.put(state, () -> {
-			});
+		for (RobotStates state : RobotStates.values()) _periodicFunctionMap.put(state, () -> {});
+		for (RobotStates state : RobotStates.values()) _onChangeFunctionMap.put(state, () -> {});
 
 		setFunctionMaps();
 	}

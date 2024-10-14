@@ -108,15 +108,15 @@ public class Swerve extends SwerveIO {
 		System.out.println("---------------Reseting modules to absolute---------------");
 	}
 
-  @Override
-  protected void log() {
-    super.log();
+	@Override
+	protected void log() {
+		super.log();
 
-//    for (int i = 0; i < 4; i++)
-//      SmartDashboard.putNumber("Module " + i + " Speed", getModuleStates()[i].speedMetersPerSecond);
-//
-//    SmartDashboard.putNumber("Robot Angular Velocity", getChassisSpeeds().omegaRadiansPerSecond);
-  }
+		//    for (int i = 0; i < 4; i++)
+		//      SmartDashboard.putNumber("Module " + i + " Speed", getModuleStates()[i].speedMetersPerSecond);
+		//
+		//    SmartDashboard.putNumber("Robot Angular Velocity", getChassisSpeeds().omegaRadiansPerSecond);
+	}
 
 	@Override
 	public void periodic() {

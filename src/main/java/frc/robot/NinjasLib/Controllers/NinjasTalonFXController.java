@@ -38,9 +38,9 @@ public class NinjasTalonFXController extends NinjasController {
 						.withSlot0(new Slot0Configs()
 								.withKP(constants.PIDFConstants.kP)
 								.withKI(constants.PIDFConstants.kI)
-							.withKD(constants.PIDFConstants.kD)
-							.withKS(constants.PIDFConstants.kS)
-							.withKV(constants.PIDFConstants.kV)));
+								.withKD(constants.PIDFConstants.kD)
+								.withKS(constants.PIDFConstants.kS)
+								.withKV(constants.PIDFConstants.kV)));
 
 		_followers = new TalonFX[constants.followers.length];
 		for (int i = 0; i < _followers.length; i++) {

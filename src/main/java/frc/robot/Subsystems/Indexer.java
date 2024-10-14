@@ -10,8 +10,7 @@ public class Indexer extends StateMachineMotoredSubsystem {
 	private static Indexer _instance;
 
 	public static Indexer getInstance() {
-		if (_instance == null)
-			_instance = new Indexer();
+		if (_instance == null) _instance = new Indexer();
 
 		return _instance;
 	}
@@ -39,13 +38,17 @@ public class Indexer extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-			() -> controller().setPercent(IndexerConstants.States.kShoot), RobotState.RobotStates.SHOOT);
+				() -> controller().setPercent(IndexerConstants.States.kShoot), RobotState.RobotStates.SHOOT);
 
-		addFunctionToOnChangeMap(() -> controller().stop(), RobotState.RobotStates.CLOSE, RobotState.RobotStates.NOTE_IN_INDEXER);
+		addFunctionToOnChangeMap(
+				() -> controller().stop(), RobotState.RobotStates.CLOSE, RobotState.RobotStates.NOTE_IN_INDEXER);
 
-		addFunctionToOnChangeMap(() -> controller().setPercent(IndexerConstants.States.kIntake), RobotState.RobotStates.INTAKE);
-		addFunctionToOnChangeMap(() -> controller().setPercent(IndexerConstants.States.kIndex), RobotState.RobotStates.INDEX);
-		addFunctionToOnChangeMap(() -> controller().setPercent(IndexerConstants.States.kIndexBack), RobotState.RobotStates.INDEX_BACK);
+		addFunctionToOnChangeMap(
+				() -> controller().setPercent(IndexerConstants.States.kIntake), RobotState.RobotStates.INTAKE);
+		addFunctionToOnChangeMap(
+				() -> controller().setPercent(IndexerConstants.States.kIndex), RobotState.RobotStates.INDEX);
+		addFunctionToOnChangeMap(
+				() -> controller().setPercent(IndexerConstants.States.kIndexBack), RobotState.RobotStates.INDEX_BACK);
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotState.RobotStates.RESET);
 	}

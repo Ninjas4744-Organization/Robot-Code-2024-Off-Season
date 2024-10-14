@@ -18,8 +18,7 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 	}
 
 	public static ShooterAngle getInstance() {
-		if (_instance == null)
-			_instance = new ShooterAngle();
+		if (_instance == null) _instance = new ShooterAngle();
 
 		return _instance;
 	}
@@ -46,17 +45,21 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 
 	@Override
 	protected void setFunctionMaps() {
-//		addFunctionToPeriodicMap(
-//				() -> controller().setPosition(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getAmpHolePose()).getDegrees()),
-//				RobotStates.SHOOT_AMP_PREPARE);
-//
+		//		addFunctionToPeriodicMap(
+		//				() ->
+		// controller().setPosition(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getAmpHolePose()).getDegrees()),
+		//				RobotStates.SHOOT_AMP_PREPARE);
+		//
 		addFunctionToPeriodicMap(
-			() -> controller().setPosition(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getSpeakerHolePose()).getDegrees()),
-			RobotStates.SHOOT_SPEAKER_PREPARE);
+				() -> controller()
+						.setPosition(
+								ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getSpeakerHolePose())
+										.getDegrees()),
+				RobotStates.SHOOT_SPEAKER_PREPARE);
 
-//		addFunctionToOnChangeMap(
-//			() -> controller().setPosition(65),
-//			RobotStates.SHOOT_SPEAKER_PREPARE);
+		//		addFunctionToOnChangeMap(
+		//			() -> controller().setPosition(65),
+		//			RobotStates.SHOOT_SPEAKER_PREPARE);
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET);
 	}
@@ -68,8 +71,7 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 		SmartDashboard.putBoolean("Shooter Angle Limit", _limit.get());
 		if (_limit.get()) {
 			controller().resetEncoder();
-			if (controller().getOutput() < 0)
-				controller().stop();
+			if (controller().getOutput() < 0) controller().stop();
 		}
 	}
 }
