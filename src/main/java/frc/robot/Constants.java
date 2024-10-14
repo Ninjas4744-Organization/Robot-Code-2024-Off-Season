@@ -62,7 +62,7 @@ public final class Constants {
 			return new Pose3d(
 				VisionConstants.getAmpTag().pose.getX() + kAmpOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
 				VisionConstants.getAmpTag().pose.getY() + kAmpOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-				VisionConstants.getAmpTag().pose.getZ() + kAmpOffset.getZ() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+				VisionConstants.getAmpTag().pose.getZ() + kAmpOffset.getZ(),
 				new Rotation3d()
 			);
 		}
@@ -71,13 +71,13 @@ public final class Constants {
 			return new Pose3d(
 				VisionConstants.getSpeakerTag().pose.getX() + kSpeakerOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
 				VisionConstants.getSpeakerTag().pose.getY() + kSpeakerOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-				VisionConstants.getSpeakerTag().pose.getZ() + kSpeakerOffset.getZ() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+				VisionConstants.getSpeakerTag().pose.getZ() + kSpeakerOffset.getZ(),
 				new Rotation3d()
 			);
 		}
 
 		public static double getEnterAngle(Translation3d translation) {
-			return Units.radiansToDegrees(Math.atan2(translation.getZ(), translation.toTranslation2d().getNorm())) - 1;
+			return Units.radiansToDegrees(Math.atan(translation.getZ() / translation.toTranslation2d().getNorm()));
 		}
 
 		public static Rotation2d calculateLaunchAngle(Pose3d target) {
@@ -85,6 +85,14 @@ public final class Constants {
 				.getTranslation()
 				.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
 				.getDistance(target.toPose2d().getTranslation());
+
+			SmartDashboard.putNumber("Dist", dist);
+			SmartDashboard.putNumber("Trigo Angle", ShooterAngleConstants.getEnterAngle(new Translation3d(
+				target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
+				target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
+				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
+			)));
+			NetworkTableInstance.getDefault().getTable("Speaker Hole").getEntry("Speaker Hole").setDoubleArray(new double[] { target.getX(), target.getY(), target.getZ() });
 
 			double angle = Ballistics.findLaunchAngle(
 				target.getZ(),
@@ -169,6 +177,13 @@ public final class Constants {
 				.getTranslation()
 				.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
 				.getDistance(target.toPose2d().getTranslation());
+
+			SmartDashboard.putNumber("Note Shoot Speed", Ballistics.findLaunchSpeed(
+				ShooterAngleConstants.kShooterPose.getZ(),
+				target.getZ(),
+				dist,
+				shootAngle
+			));
 
 			return noteSpeedToShooterSpeed(Ballistics.findLaunchSpeed(
 				ShooterAngleConstants.kShooterPose.getZ(),

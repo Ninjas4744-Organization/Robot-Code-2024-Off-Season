@@ -87,14 +87,6 @@ public class RobotContainer {
 		SmartDashboard.putBoolean("Indexer Beam Breaker", RobotState.getNoteInIndexer());
 		SmartDashboard.putNumber("Robot Velocity", RobotState.getRobotVelocity().getNorm());
 
-//		ArrayList<Trajectory.State> positions = new ArrayList<>();
-//		for (double t = 0; t < 5; t += 0.1) {
-//			positions.add(new Trajectory.State());
-//		}
-//
-//		Field2d shootingTraj = new Field3d();
-//		shootingTraj.getObject("shootingTraj").setTrajectory(new Trajectory());
-
 //		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
 //
 //		for (VisionEstimation estimation : estimations) if (estimation != null) RobotState.updateRobotPose(estimation);
