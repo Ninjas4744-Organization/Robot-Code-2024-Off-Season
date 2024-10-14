@@ -9,17 +9,9 @@ import frc.robot.RobotState;
 public class Indexer extends StateMachineMotoredSubsystem {
 	private static Indexer _instance;
 
-	public Indexer(boolean disabled) {
-		super(disabled);
-	}
-
-	public static void disable() {
-		if (_instance == null)
-			_instance = new Indexer(true);
-	}
-
 	public static Indexer getInstance() {
-		if (_instance == null) _instance = new Indexer(false);
+		if (_instance == null)
+			_instance = new Indexer();
 
 		return _instance;
 	}

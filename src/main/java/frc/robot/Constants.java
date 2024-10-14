@@ -7,10 +7,13 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.NinjasLib.DataClasses.*;
 
 import java.io.IOException;
@@ -55,37 +58,46 @@ public final class Constants {
 		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 0.74);
 		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.135);
 
-		public static double getEnterAngle(Translation3d translation) {
-			return Units.radiansToDegrees(Math.atan2(translation.getZ(), translation.toTranslation2d().getNorm()));
+		public static Pose3d getAmpHolePose() {
+			return new Pose3d(
+				VisionConstants.getAmpTag().pose.getX() + kAmpOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+				VisionConstants.getAmpTag().pose.getY() + kAmpOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+				VisionConstants.getAmpTag().pose.getZ() + kAmpOffset.getZ() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+				new Rotation3d()
+			);
 		}
 
-		public static double shooterSpeedToNoteSpeed(double rps) {
-//			double wheelRadius = Units.inchesToMeters(2);
-//			return (rps * 2 * Math.PI) * wheelRadius;
+		public static Pose3d getSpeakerHolePose() {
+			return new Pose3d(
+				VisionConstants.getSpeakerTag().pose.getX() + kSpeakerOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+				VisionConstants.getSpeakerTag().pose.getY() + kSpeakerOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+				VisionConstants.getSpeakerTag().pose.getZ() + kSpeakerOffset.getZ() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
+				new Rotation3d()
+			);
+		}
 
-			// Constants
-			double g = 9.81; // Acceleration due to gravity (m/s^2)
-			double wheelRadius = Units.inchesToMeters(2);
-			double noteMass = 0.233;
-			double frictionCoefficient = 1.5;
-			double interactionTime = 1 / 15.0;
+		public static double getEnterAngle(Translation3d translation) {
+			return Units.radiansToDegrees(Math.atan2(translation.getZ(), translation.toTranslation2d().getNorm())) - 1;
+		}
 
-			// Calculate angular velocity for both wheels (in radians per second)
-			double angularVelocity = 2 * Math.PI * rps;
+		public static Rotation2d calculateLaunchAngle(Pose3d target) {
+			double dist = RobotState.getRobotPose()
+				.getTranslation()
+				.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
+				.getDistance(target.toPose2d().getTranslation());
 
-			// Calculate maximum linear speeds at the edge of the wheels
-			double maxSpeed = angularVelocity * wheelRadius;
+			double angle = Ballistics.findLaunchAngle(
+				target.getZ(),
+				ShooterAngleConstants.kShooterPose.getZ(),
+				dist,
+				ShooterAngleConstants.getEnterAngle(new Translation3d(
+					target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
+					target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
+					target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
+				)));
 
-			// Calculate the frictional force (assuming normal force = weight of the game piece)
-			double normalForce = noteMass * g;
-			double frictionForce = frictionCoefficient * normalForce;
-
-			// Calculate the effective speed considering the friction over the interaction time
-			double distanceTraveled = (maxSpeed * interactionTime) - (0.5 * frictionForce * interactionTime);
-
-			// Calculate the final speed of the game piece
-
-			return distanceTraveled / interactionTime;
+			double angleClamped = Math.min(Math.max(angle, 40), 80);
+			return Rotation2d.fromDegrees(angleClamped);
 		}
 	}
 
@@ -112,6 +124,58 @@ public final class Constants {
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
+		}
+
+		public static double shooterSpeedToNoteSpeed(double rps) {
+			// Constants
+			double g = 9.81; // Acceleration due to gravity (m/s^2)
+			double wheelRadius = Units.inchesToMeters(2);
+			double noteMass = 0.233;
+			double frictionCoefficient = 1.5;
+			double interactionTime = 1 / 15.0;
+
+			// Calculate angular velocity for both wheels (in radians per second)
+			double angularVelocity = 2 * Math.PI * rps;
+
+			// Calculate maximum linear speeds at the edge of the wheels
+			double maxSpeed = angularVelocity * wheelRadius;
+
+			// Calculate the frictional force (assuming normal force = weight of the game piece)
+			double normalForce = noteMass * g;
+			double frictionForce = frictionCoefficient * normalForce;
+
+			// Calculate the effective speed considering the friction over the interaction time
+			double distanceTraveled = (maxSpeed * interactionTime) - (0.5 * frictionForce * interactionTime);
+
+			// Calculate the final speed of the game piece
+
+			return distanceTraveled / interactionTime;
+		}
+
+		public static double noteSpeedToShooterSpeed(double noteSpeed) {
+			// Constants
+			double g = 9.81; // Acceleration due to gravity (m/s^2)
+			double wheelRadius = Units.inchesToMeters(2);
+			double noteMass = 0.233;
+			double frictionCoefficient = 1.5;
+			double frictionForce = frictionCoefficient * noteMass * g;
+
+			// Solve for rps based on the final speed
+			return (noteSpeed + 0.5 * frictionForce) / (2 * Math.PI * wheelRadius);
+		}
+
+		public static double calculateLaunchSpeed(double shootAngle, Pose3d target) {
+			double dist = RobotState.getRobotPose()
+				.getTranslation()
+				.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
+				.getDistance(target.toPose2d().getTranslation());
+
+			return noteSpeedToShooterSpeed(Ballistics.findLaunchSpeed(
+				ShooterAngleConstants.kShooterPose.getZ(),
+				target.getZ(),
+				dist,
+				shootAngle
+			));
 		}
 
 		public class States {

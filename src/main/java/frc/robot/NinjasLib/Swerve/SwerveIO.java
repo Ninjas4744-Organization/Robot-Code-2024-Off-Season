@@ -49,8 +49,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	}
 
 	public SwerveIO() {
-		super(false);
-
 		_state = SwerveState.DEFAULT;
 		_previousState = SwerveState.DEFAULT;
 		_demand = new SwerveDemand();
