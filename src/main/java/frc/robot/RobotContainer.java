@@ -2,19 +2,16 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
+import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class RobotContainer {
 	private CommandPS5Controller _driverJoystick;
@@ -70,6 +67,7 @@ public class RobotContainer {
 		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
 		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
+		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
 	}
 
 	private void configureTestBindings() {
@@ -85,11 +83,10 @@ public class RobotContainer {
 
 	public void periodic() {
 		SmartDashboard.putBoolean("Indexer Beam Breaker", RobotState.getNoteInIndexer());
-		SmartDashboard.putNumber("Robot Velocity", RobotState.getRobotVelocity().getNorm());
 
-//		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
-//
-//		for (VisionEstimation estimation : estimations) if (estimation != null) RobotState.updateRobotPose(estimation);
+		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
+
+		for (VisionEstimation estimation : estimations) if (estimation != null) RobotState.updateRobotPose(estimation);
 	}
 
 	public void resetSubsystems() {

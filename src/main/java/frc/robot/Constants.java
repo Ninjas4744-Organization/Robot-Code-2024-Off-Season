@@ -7,7 +7,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -36,7 +35,7 @@ public final class Constants {
 			kControllerConstants.currentLimit = 50;
 			kControllerConstants.subsystemName = "ShooterAngle";
 			kControllerConstants.PIDFConstants = new PIDFConstants();
-			kControllerConstants.PIDFConstants.kCruiseVelocity = 20;
+			kControllerConstants.PIDFConstants.kCruiseVelocity = 50;
 			kControllerConstants.PIDFConstants.kAcceleration = 50;
 			kControllerConstants.PIDFConstants.kP = 0.3;
 			kControllerConstants.positionGoalTolerance = 1;
@@ -46,7 +45,7 @@ public final class Constants {
 			kControllerConstants.isMinSoftLimit = false;
 			kControllerConstants.minSoftLimit = 42;
 			kControllerConstants.encoderHomePosition = 40;
-			kControllerConstants.dynamicProfiling = false;
+			kControllerConstants.dynamicProfiling = true;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
@@ -55,8 +54,8 @@ public final class Constants {
 		public static final int kLimitSwitchId = 2;
 
 		public static final Translation3d kAmpOffset = new Translation3d(0, -0.1, -0.35);
-		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 0.74);
-		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.135);
+		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 1.5);
+		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.12);
 
 		public static Pose3d getAmpHolePose() {
 			return new Pose3d(
@@ -103,6 +102,12 @@ public final class Constants {
 					target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
 					target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
 				)));
+
+//			double angle = ShooterAngleConstants.getEnterAngle(new Translation3d(
+//				target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
+//				target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
+//				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
+//			));
 
 			double angleClamped = Math.min(Math.max(angle, 40), 80);
 			return Rotation2d.fromDegrees(angleClamped);
@@ -431,10 +436,9 @@ public final class Constants {
 
 	public static class VisionConstants {
 		public static final Map<String, Transform3d> kCameras = Map.of(
-				"Front", new Transform3d(-0.35, 0, 0.2775, new Rotation3d(0, 0, 0)),
-				"BackLeft", new Transform3d(-0.325, 0.175, 0.2075, new Rotation3d(0, 0, Units.degreesToRadians(120))),
-				"BackRight",
-						new Transform3d(-0.325, -0.175, 0.1875, new Rotation3d(0, 0, Units.degreesToRadians(-120))));
+			"Front", new Transform3d(0.28, -0.105, -0.055, new Rotation3d(0, 30, 0)),
+			"Left", new Transform3d(-0.035, 0.285, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(90))),
+			"Right", new Transform3d(-0.03, -0.285, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(-90))));
 
 		public static final double kMaxAmbiguity = 0.2;
 
@@ -493,9 +497,10 @@ public final class Constants {
 			else {
 				if (kUseOurField) layout = kOurFieldLayout;
 				else
-					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
-							? kBlueFieldLayout
-							: kRedFieldLayout;
+//					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
+//							? kBlueFieldLayout
+//							: kRedFieldLayout;
+					layout = kBlueFieldLayout;
 			}
 
 			if (!ignoredTags.isEmpty()) layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));

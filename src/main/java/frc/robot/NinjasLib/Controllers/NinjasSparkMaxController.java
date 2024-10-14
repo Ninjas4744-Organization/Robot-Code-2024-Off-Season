@@ -109,12 +109,12 @@ public class NinjasSparkMaxController extends NinjasController {
 	public void periodic() {
 		super.periodic();
 
-		SmartDashboard.putNumber("Timer", _profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0));
+		SmartDashboard.putNumber("Timer", _profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0));
 		SmartDashboard.putNumber("Initial Profile State Pos", _initialProfileState.position);
 		SmartDashboard.putNumber("Initial Profile State Vel", _initialProfileState.velocity);
 		SmartDashboard.putNumber("Goal State Pos", getGoal());
 		SmartDashboard.putNumber("Profile Wanted Pos", _profile.calculate(
-			_profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0),
+			_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
 			_initialProfileState,
 			new State(getGoal(), 0))
 			.position);
@@ -126,7 +126,7 @@ public class NinjasSparkMaxController extends NinjasController {
 				_main.getPIDController()
 						.setReference(
 								_profile.calculate(
-									_profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0),
+									_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
 									_initialProfileState,
 												new State(getGoal(), 0))
 										.position,
@@ -137,7 +137,7 @@ public class NinjasSparkMaxController extends NinjasController {
 				_main.getPIDController()
 						.setReference(
 								_profile.calculate(
-									_profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0),
+									_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
 									_initialProfileState,
 									new State(getPosition(), getGoal()))
 									.velocity,
@@ -146,7 +146,7 @@ public class NinjasSparkMaxController extends NinjasController {
 
 			case FF_POSITION:
 				_main.set(_profile.calculate(
-					_profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0),
+					_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
 					_initialProfileState,
 										new State(getGoal(), 0))
 								.velocity
@@ -155,7 +155,7 @@ public class NinjasSparkMaxController extends NinjasController {
 
 			case FF_VELOCITY:
 				_main.set(_profile.calculate(
-					_profileTimer.get() + (_constants.dynamicProfiling ? 0.02 : 0),
+					_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
 					_initialProfileState,
 					new State(getPosition(), getGoal()))
 								.velocity

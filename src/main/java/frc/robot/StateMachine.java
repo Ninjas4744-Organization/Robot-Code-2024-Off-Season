@@ -101,6 +101,7 @@ public class StateMachine extends StateMachineSubsystem {
 			case SHOOT_SPEAKER_PREPARE, SHOOT_AMP_PREPARE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
+					|| wantedState == RobotStates.SHOOT
 						|| wantedState == RobotStates.SHOOT_READY) RobotState.setRobotState(wantedState);
 				break;
 
@@ -183,19 +184,19 @@ public class StateMachine extends StateMachineSubsystem {
 		_endConditionMap.put(RobotStates.INDEX, new StateEndCondition(() -> !RobotState.getNoteInIndexer(), RobotStates.INDEX_BACK));
     _endConditionMap.put(RobotStates.INDEX_BACK, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
 
-		_endConditionMap.put(
-				RobotStates.SHOOT_AMP_PREPARE,
-				new StateEndCondition(
-						() -> ShooterAngle.getInstance().atGoal()
-								&& Shooter.getInstance().atGoal(),
-						RobotStates.SHOOT_READY));
-
-		_endConditionMap.put(
-				RobotStates.SHOOT_SPEAKER_PREPARE,
-				new StateEndCondition(
-						() -> ShooterAngle.getInstance().atGoal()
-								&& Shooter.getInstance().atGoal(),
-						RobotStates.SHOOT_READY));
+//		_endConditionMap.put(
+//				RobotStates.SHOOT_AMP_PREPARE,
+//				new StateEndCondition(
+//						() -> ShooterAngle.getInstance().atGoal()
+//								&& Shooter.getInstance().atGoal(),
+//						RobotStates.SHOOT_READY));
+//
+//		_endConditionMap.put(
+//				RobotStates.SHOOT_SPEAKER_PREPARE,
+//				new StateEndCondition(
+//						() -> ShooterAngle.getInstance().atGoal()
+//								&& Shooter.getInstance().atGoal(),
+//						RobotStates.SHOOT_READY));
 
 		_endConditionMap.put(RobotStates.SHOOT, new StateEndCondition(() -> _shootTimer.get() > 1, RobotStates.CLOSE));
 

@@ -1,22 +1,11 @@
 package frc.robot.Subsystems;
 
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Ballistics;
 import frc.robot.Constants.ShooterAngleConstants;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
 import frc.robot.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
-import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
 
 public class ShooterAngle extends StateMachineMotoredSubsystem {
@@ -52,22 +41,24 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 
 	@Override
 	public boolean isResetted() {
-		return isHomed();
+		return _limit.get();
 	}
 
 	@Override
 	protected void setFunctionMaps() {
-		addFunctionToPeriodicMap(
-				() -> controller().setPosition(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getAmpHolePose()).getDegrees()),
-				RobotStates.SHOOT_AMP_PREPARE);
-
+//		addFunctionToPeriodicMap(
+//				() -> controller().setPosition(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getAmpHolePose()).getDegrees()),
+//				RobotStates.SHOOT_AMP_PREPARE);
+//
 		addFunctionToPeriodicMap(
 			() -> controller().setPosition(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getSpeakerHolePose()).getDegrees()),
 			RobotStates.SHOOT_SPEAKER_PREPARE);
 
 //		addFunctionToOnChangeMap(
-//			() -> controller().setPosition(40),
+//			() -> controller().setPosition(65),
 //			RobotStates.SHOOT_SPEAKER_PREPARE);
+
+		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET);
 	}
 
 	@Override
