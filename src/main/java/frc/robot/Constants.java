@@ -14,6 +14,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.NinjasLib.DataClasses.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public final class Constants {
 			kControllerConstants.maxSoftLimit = 78;
 			kControllerConstants.isMinSoftLimit = false;
 			kControllerConstants.minSoftLimit = 42;
-			kControllerConstants.encoderHomePosition = 40;
+			kControllerConstants.encoderHomePosition = 37.7;
 			kControllerConstants.dynamicProfiling = true;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
@@ -118,7 +119,7 @@ public final class Constants {
 			//				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
 			//			));
 
-			double angleClamped = Math.min(Math.max(angle, 40), 80);
+			double angleClamped = Math.min(Math.max(angle, 37.7), 80);
 			return Rotation2d.fromDegrees(angleClamped);
 		}
 	}
