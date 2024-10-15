@@ -38,7 +38,7 @@ public class Indexer extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-				() -> controller().setPercent(IndexerConstants.States.kShoot), RobotState.RobotStates.SHOOT);
+      () -> controller().setPercent(IndexerConstants.States.kShoot), RobotState.RobotStates.SHOOT, RobotState.RobotStates.OUTTAKE);
 
 		addFunctionToOnChangeMap(
 				() -> controller().stop(), RobotState.RobotStates.CLOSE, RobotState.RobotStates.NOTE_IN_INDEXER);
@@ -50,6 +50,6 @@ public class Indexer extends StateMachineMotoredSubsystem {
 		addFunctionToOnChangeMap(
 				() -> controller().setPercent(IndexerConstants.States.kIndexBack), RobotState.RobotStates.INDEX_BACK);
 
-		addFunctionToOnChangeMap(this::resetSubsystem, RobotState.RobotStates.RESET);
+    addFunctionToOnChangeMap(this::resetSubsystem, RobotState.RobotStates.RESET, RobotState.RobotStates.CLOSE);
 	}
 }

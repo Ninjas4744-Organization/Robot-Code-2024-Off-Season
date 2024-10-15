@@ -11,6 +11,7 @@ import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,10 +49,18 @@ public class StateMachine extends StateMachineSubsystem {
 	 */
 	public void changeRobotState(RobotStates wantedState) {
 		switch (RobotState.getRobotState()) {
-			case SHOOT_READY:
+			case SHOOT_SPEAKER_READY:
 				if (wantedState == RobotStates.SHOOT
-						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+					|| wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
+					|| wantedState == RobotStates.CLOSE
+					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+				break;
+
+			case SHOOT_AMP_READY:
+				if (wantedState == RobotStates.SHOOT
+					|| wantedState == RobotStates.SHOOT_AMP_PREPARE
+					|| wantedState == RobotStates.CLOSE
+					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
 			case CLIMB_READY:
@@ -80,7 +89,8 @@ public class StateMachine extends StateMachineSubsystem {
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
 						|| wantedState == RobotStates.NOTE_IN_INDEXER
-						|| wantedState == RobotStates.INDEX) RobotState.setRobotState(wantedState);
+					|| wantedState == RobotStates.INDEX
+					|| wantedState == RobotStates.OUTTAKE) RobotState.setRobotState(wantedState);
 				break;
 
 			case CLIMB:
@@ -97,11 +107,16 @@ public class StateMachine extends StateMachineSubsystem {
 						|| wantedState == RobotStates.CLIMB_READY) RobotState.setRobotState(wantedState);
 				break;
 
-			case SHOOT_SPEAKER_PREPARE, SHOOT_AMP_PREPARE:
+			case SHOOT_SPEAKER_PREPARE:
 				if (wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.SHOOT
-						|| wantedState == RobotStates.SHOOT_READY) RobotState.setRobotState(wantedState);
+					|| wantedState == RobotStates.SHOOT_SPEAKER_READY) RobotState.setRobotState(wantedState);
+				break;
+
+			case SHOOT_AMP_PREPARE:
+				if (wantedState == RobotStates.RESET
+					|| wantedState == RobotStates.CLOSE
+					|| wantedState == RobotStates.SHOOT_AMP_READY) RobotState.setRobotState(wantedState);
 				break;
 
 			case NOTE_SEARCH:
@@ -120,7 +135,8 @@ public class StateMachine extends StateMachineSubsystem {
 						|| wantedState == RobotStates.SHOOT_AMP_PREPARE
 						|| wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+					|| wantedState == RobotStates.RESET
+					|| wantedState == RobotStates.OUTTAKE) RobotState.setRobotState(wantedState);
 				break;
 
 			case DRIVE_TO_AMP:
@@ -138,17 +154,24 @@ public class StateMachine extends StateMachineSubsystem {
 			case INDEX:
 				if (wantedState == RobotStates.INDEX_BACK
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+					|| wantedState == RobotStates.RESET
+					|| wantedState == RobotStates.OUTTAKE) RobotState.setRobotState(wantedState);
 				break;
 
 			case INDEX_BACK:
 				if (wantedState == RobotStates.NOTE_IN_INDEXER
 						|| wantedState == RobotStates.CLOSE
-						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+					|| wantedState == RobotStates.RESET
+					|| wantedState == RobotStates.OUTTAKE) RobotState.setRobotState(wantedState);
 				break;
 
 			case TESTING:
 				if (wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+
+			case OUTTAKE:
+				if (wantedState == RobotStates.CLOSE ||
+					wantedState == RobotStates.RESET)
+					RobotState.setRobotState(wantedState);
 		}
 
 		if (RobotState.getRobotState() == RobotStates.IDLE)
@@ -157,6 +180,7 @@ public class StateMachine extends StateMachineSubsystem {
 	}
 
 	private Timer _shootTimer = new Timer();
+	private Timer _outtakeTimer = new Timer();
 
 	/**
 	 * Set in this function the end condition for each state with _endConditionMap
@@ -174,33 +198,49 @@ public class StateMachine extends StateMachineSubsystem {
 		_endConditionMap.put(
 				RobotStates.CLOSE,
 				new StateEndCondition(
-						() -> ShooterAngle.getInstance().atGoal()
-								&& Climber.getInstance().atGoal(),
+					() -> ShooterAngle.getInstance().isHomed()
+						&& Indexer.getInstance().isResetted()
+						&& Shooter.getInstance().isResetted(),
 						RobotStates.IDLE));
 
 		_endConditionMap.put(
 				RobotStates.INTAKE, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.INDEX));
+
 		_endConditionMap.put(
 				RobotStates.INDEX, new StateEndCondition(() -> !RobotState.getNoteInIndexer(), RobotStates.INDEX_BACK));
+
 		_endConditionMap.put(
-				RobotStates.INDEX_BACK,
-				new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
+			RobotStates.INDEX_BACK, new StateEndCondition(RobotState::getNoteInIndexer, RobotStates.NOTE_IN_INDEXER));
 
-		//		_endConditionMap.put(
-		//				RobotStates.SHOOT_AMP_PREPARE,
-		//				new StateEndCondition(
-		//						() -> ShooterAngle.getInstance().atGoal()
-		//								&& Shooter.getInstance().atGoal(),
-		//						RobotStates.SHOOT_READY));
-		//
-		//		_endConditionMap.put(
-		//				RobotStates.SHOOT_SPEAKER_PREPARE,
-		//				new StateEndCondition(
-		//						() -> ShooterAngle.getInstance().atGoal()
-		//								&& Shooter.getInstance().atGoal(),
-		//						RobotStates.SHOOT_READY));
+		_endConditionMap.put(
+			RobotStates.OUTTAKE, new StateEndCondition(() -> _outtakeTimer.get() > 1, RobotStates.CLOSE));
 
-		_endConditionMap.put(RobotStates.SHOOT, new StateEndCondition(() -> _shootTimer.get() > 1, RobotStates.CLOSE));
+		_endConditionMap.put(
+			RobotStates.SHOOT_AMP_PREPARE,
+			new StateEndCondition(
+				() -> ShooterAngle.getInstance().atGoal()
+					&& Shooter.getInstance().atGoal(),
+				RobotStates.SHOOT_AMP_READY));
+
+		_endConditionMap.put(
+			RobotStates.SHOOT_SPEAKER_PREPARE,
+			new StateEndCondition(
+				() -> ShooterAngle.getInstance().atGoal()
+					&& Shooter.getInstance().atGoal(),
+				RobotStates.SHOOT_SPEAKER_READY));
+
+		_endConditionMap.put(
+			RobotStates.SHOOT_AMP_READY,
+			new StateEndCondition(() -> true, RobotStates.SHOOT));
+
+		_endConditionMap.put(
+			RobotStates.SHOOT_SPEAKER_READY,
+			new StateEndCondition(
+				() -> !ShooterAngle.getInstance().atGoal()
+					|| !Shooter.getInstance().atGoal(),
+				RobotStates.SHOOT_SPEAKER_PREPARE));
+
+		_endConditionMap.put(RobotStates.SHOOT, new StateEndCondition(() -> _shootTimer.get() > 2, RobotStates.CLOSE));
 
 		_endConditionMap.put(
 				RobotStates.CLIMB_PREPARE,
@@ -229,10 +269,14 @@ public class StateMachine extends StateMachineSubsystem {
 
 		if (RobotState.getRobotState() == RobotStates.NOTE_IN_INDEXER && !RobotState.getNoteInIndexer())
 			RobotState.setRobotState(RobotStates.NOTE_SEARCH);
+
+		if (RobotState.getRobotState() == RobotStates.NOTE_SEARCH && RobotState.getNoteInIndexer())
+			RobotState.setRobotState(RobotStates.NOTE_IN_INDEXER);
 	}
 
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(() -> _shootTimer.restart(), RobotStates.SHOOT);
+		addFunctionToOnChangeMap(() -> _outtakeTimer.restart(), RobotStates.OUTTAKE);
 	}
 }

@@ -38,7 +38,7 @@ public final class Constants {
 			kControllerConstants.PIDFConstants.kCruiseVelocity = 50;
 			kControllerConstants.PIDFConstants.kAcceleration = 50;
 			kControllerConstants.PIDFConstants.kP = 0.3;
-			kControllerConstants.positionGoalTolerance = 1;
+			kControllerConstants.positionGoalTolerance = 2;
 			kControllerConstants.encoderConversionFactor = 1.0 / 300.0 * 360.0;
 			kControllerConstants.isMaxSoftLimit = true;
 			kControllerConstants.maxSoftLimit = 78;
@@ -77,9 +77,17 @@ public final class Constants {
 					new Rotation3d());
 		}
 
-		public static double getEnterAngle(Translation3d translation) {
+		public static double calculateTrigoAngle(Translation3d translation) {
 			return Units.radiansToDegrees(
 					Math.atan(translation.getZ() / translation.toTranslation2d().getNorm()));
+		}
+
+		public static double getEnterAngle(double dist) {
+			return 80 - 24 * dist + 2.26 * dist * dist;
+		}
+
+		public static double getAngleFixer(double dist) {
+			return 10;
 		}
 
 		public static Rotation2d calculateLaunchAngle(Pose3d target) {
@@ -91,7 +99,7 @@ public final class Constants {
 			SmartDashboard.putNumber("Dist", dist);
 			SmartDashboard.putNumber(
 					"Trigo Angle",
-					ShooterAngleConstants.getEnterAngle(new Translation3d(
+				ShooterAngleConstants.calculateTrigoAngle(new Translation3d(
 							target.getX()
 									- (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
 							target.getY()
@@ -102,22 +110,17 @@ public final class Constants {
 					.getEntry("Speaker Hole")
 					.setDoubleArray(new double[] {target.getX(), target.getY(), target.getZ()});
 
-			double angle = Ballistics.findLaunchAngle(
-					target.getZ(),
-					ShooterAngleConstants.kShooterPose.getZ(),
-					dist,
-					ShooterAngleConstants.getEnterAngle(new Translation3d(
-							target.getX()
-									- (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
-							target.getY()
-									- (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
-							target.getZ() - ShooterAngleConstants.kShooterPose.getZ())));
+//			double angle = Ballistics.findLaunchAngle(
+//					target.getZ(),
+//					ShooterAngleConstants.kShooterPose.getZ(),
+//					dist,
+//					ShooterAngleConstants.getEnterAngle(dist));
 
-			//			double angle = ShooterAngleConstants.getEnterAngle(new Translation3d(
-			//				target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
-			//				target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
-			//				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
-			//			));
+			double angle = ShooterAngleConstants.calculateTrigoAngle(new Translation3d(
+				target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
+				target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
+				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
+			)) + getAngleFixer(dist);
 
 			double angleClamped = Math.min(Math.max(angle, 37.7), 80);
 			return Rotation2d.fromDegrees(angleClamped);
@@ -137,9 +140,10 @@ public final class Constants {
 			kControllerConstants.PIDFConstants = new PIDFConstants();
 			kControllerConstants.PIDFConstants.kS = 0.185;
 			kControllerConstants.PIDFConstants.kV = 0.117;
+//			kControllerConstants.PIDFConstants.kP = 0.01;
 			kControllerConstants.PIDFConstants.kCruiseVelocity = 50;
 			kControllerConstants.PIDFConstants.kAcceleration = 100;
-			kControllerConstants.velocityGoalTolerance = 2;
+			kControllerConstants.velocityGoalTolerance = 4;
 
 			kControllerConstants.followers = new ControllerConstants[] {new ControllerConstants()};
 			kControllerConstants.followers[0].id = 31;
@@ -199,7 +203,7 @@ public final class Constants {
 							ShooterAngleConstants.kShooterPose.getZ(), target.getZ(), dist, shootAngle));
 
 			return noteSpeedToShooterSpeed(Ballistics.findLaunchSpeed(
-					ShooterAngleConstants.kShooterPose.getZ(), target.getZ(), dist, shootAngle));
+				ShooterAngleConstants.kShooterPose.getZ(), target.getZ(), dist, shootAngle) * 1.5);
 		}
 
 		public class States {

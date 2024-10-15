@@ -27,7 +27,8 @@ public class RobotState {
 		RESET,
 		SHOOT_SPEAKER_PREPARE,
 		SHOOT_AMP_PREPARE,
-		SHOOT_READY,
+    SHOOT_SPEAKER_READY,
+    SHOOT_AMP_READY,
 		SHOOT,
 		NOTE_SEARCH,
 		NOTE_IN_INDEXER,
@@ -37,7 +38,8 @@ public class RobotState {
 		CLIMBED,
 		DRIVE_TO_AMP,
 		DRIVE_TO_SOURCE,
-		TESTING
+    TESTING,
+    OUTTAKE
 	}
 
 	private static RobotStates robotState = RobotStates.IDLE;

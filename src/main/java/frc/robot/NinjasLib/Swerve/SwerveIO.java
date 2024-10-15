@@ -427,12 +427,12 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 				},
 				RobotStates.DRIVE_TO_SOURCE);
 
-		addFunctionToOnChangeMap(
-				() -> {
-					setState(SwerveState.LOCKED_AXIS);
-					updateDemand(Rotation2d.fromDegrees(90), 1.84, false);
-				},
-				RobotStates.SHOOT_AMP_PREPARE);
+//		addFunctionToOnChangeMap(
+//				() -> {
+//					setState(SwerveState.LOCKED_AXIS);
+//					updateDemand(Rotation2d.fromDegrees(90), 1.84, false);
+//				},
+//				RobotStates.SHOOT_AMP_PREPARE);
 
 		addFunctionToOnChangeMap(() -> setState(SwerveState.DRIVE_ASSIST), RobotStates.NOTE_SEARCH);
 	}

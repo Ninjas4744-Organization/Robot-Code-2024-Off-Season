@@ -50,7 +50,7 @@ public class AutoCommandBuilder {
 	public static Command Shoot() {
 		return Commands.sequence(
 				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE),
-				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_READY),
+      Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_SPEAKER_READY),
 				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT),
 				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_SEARCH));
 	}

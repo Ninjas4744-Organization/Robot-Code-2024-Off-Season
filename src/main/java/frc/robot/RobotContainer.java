@@ -18,7 +18,7 @@ public class RobotContainer {
 	private CommandPS5Controller _driverJoystick;
 	private CommandPS5Controller _operatorJoystick;
 
-	private boolean isSwerveLookAt = false;
+	private boolean isSwerveLookAt = true;
 	private boolean isSwerveBayblade = false;
 
 	public RobotContainer() {
@@ -54,25 +54,22 @@ public class RobotContainer {
 						() -> isSwerveBayblade));
 
 //				_driverJoystick.square().onTrue(Commands.runOnce(() -> isSwerveBayblade = !isSwerveBayblade));
-		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
-		//
-		//		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
+		_driverJoystick.R1().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
+		_driverJoystick.R2().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
+
+		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
-		//
-		//		_driverJoystick.povLeft().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_AMP));
-		//		_driverJoystick.povUp().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_SOURCE));
-		//		_driverJoystick.povDown().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 	}
 
 	private void configureOperatorBindings() {
-		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
-
-		_driverJoystick.cross().onTrue(Commands.runOnce(() -> {
+		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
+		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
+		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_AMP_PREPARE));
+		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE));
+		_driverJoystick.R2().onTrue(Commands.runOnce(() -> {
 			StateMachine.getInstance().changeRobotState(RobotStates.SHOOT);
-			StateMachine.getInstance().changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE);
+			StateMachine.getInstance().changeRobotState(RobotStates.OUTTAKE);
 		}, StateMachine.getInstance()));
-
-		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
 	}
 
 	private void configureTestBindings() {
