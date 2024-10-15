@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
@@ -52,8 +53,8 @@ public class RobotContainer {
 						() -> isSwerveLookAt,
 						() -> isSwerveBayblade));
 
-		//		_driverJoystick.square().onTrue(Commands.runOnce(() -> isSwerveBayblade = !isSwerveBayblade));
-		//		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
+//				_driverJoystick.square().onTrue(Commands.runOnce(() -> isSwerveBayblade = !isSwerveBayblade));
+		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
 		//
 		//		_driverJoystick.L1().onTrue(TeleopCommandBuilder.resetGyro(false));
 		_driverJoystick.L2().onTrue(TeleopCommandBuilder.resetGyro(true));
@@ -64,9 +65,13 @@ public class RobotContainer {
 	}
 
 	private void configureOperatorBindings() {
-		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
-		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
-		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
+		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
+
+		_driverJoystick.cross().onTrue(Commands.runOnce(() -> {
+			StateMachine.getInstance().changeRobotState(RobotStates.SHOOT);
+			StateMachine.getInstance().changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE);
+		}, StateMachine.getInstance()));
+
 		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.RESET));
 	}
 

@@ -59,21 +59,21 @@ public final class Constants {
 
 		public static Pose3d getAmpHolePose() {
 			return new Pose3d(
-					VisionConstants.getAmpTag().pose.getX()
+				VisionConstants.getTagPose(VisionConstants.getAmpTag().ID).getX()
 							+ kAmpOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-					VisionConstants.getAmpTag().pose.getY()
+				VisionConstants.getTagPose(VisionConstants.getAmpTag().ID).getY()
 							+ kAmpOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-					VisionConstants.getAmpTag().pose.getZ() + kAmpOffset.getZ(),
+				VisionConstants.getTagPose(VisionConstants.getAmpTag().ID).getZ() + kAmpOffset.getZ(),
 					new Rotation3d());
 		}
 
 		public static Pose3d getSpeakerHolePose() {
 			return new Pose3d(
-					VisionConstants.getSpeakerTag().pose.getX()
+				VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID).getX()
 							+ kSpeakerOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-					VisionConstants.getSpeakerTag().pose.getY()
+				VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID).getY()
 							+ kSpeakerOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-					VisionConstants.getSpeakerTag().pose.getZ() + kSpeakerOffset.getZ(),
+				VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID).getZ() + kSpeakerOffset.getZ(),
 					new Rotation3d());
 		}
 
@@ -414,11 +414,12 @@ public final class Constants {
 		public static final class AutoConstants {
 			public static final double kP = 2.3;
 			public static final double kI = 0;
+			public static final double kIZone = 0;
 			public static final double kD = 1;
-			public static final double kPTheta = 0.1;
-			//		public static final double kPTheta = 0.025;
-			public static final double kITheta = 0;
-			public static final double kDTheta = 0;
+			public static final double kPTheta = 0.02;
+			public static final double kITheta = 0.1;
+			public static final double kIZoneTheta = 4;
+			public static final double kDTheta = 0.001;
 
 			public static final double kMaxSpeed = 2;
 			public static final double kAcceleration = 1;
@@ -440,7 +441,7 @@ public final class Constants {
 
 	public static class VisionConstants {
 		public static final Map<String, Transform3d> kCameras = Map.of(
-				"Front", new Transform3d(0.28, -0.105, -0.055, new Rotation3d(0, 30, 0)),
+			"Front", new Transform3d(0.28, 0.105, -0.055, new Rotation3d(0, 30, 0)),
 				"Left", new Transform3d(-0.035, 0.285, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(90))),
 				"Right", new Transform3d(-0.03, -0.285, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(-90))));
 
@@ -501,10 +502,10 @@ public final class Constants {
 			else {
 				if (kUseOurField) layout = kOurFieldLayout;
 				else
-					//					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
-					//							? kBlueFieldLayout
-					//							: kRedFieldLayout;
-					layout = kBlueFieldLayout;
+					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
+						? kBlueFieldLayout
+						: kRedFieldLayout;
+//					layout = kBlueFieldLayout;
 			}
 
 			if (!ignoredTags.isEmpty()) layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));
@@ -545,8 +546,8 @@ public final class Constants {
 			else return getFieldLayout().getTags().get(4 - 1);
 		}
 
-		public static Pose2d getTagPose(int id) {
-			return getFieldLayout().getTagPose(id).get().toPose2d();
+		public static Pose3d getTagPose(int id) {
+			return getFieldLayout().getTagPose(id).get();
 		}
 
 		/**

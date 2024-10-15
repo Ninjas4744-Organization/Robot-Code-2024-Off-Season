@@ -57,18 +57,19 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 				SwerveConstants.AutoConstants.kPTheta,
 				SwerveConstants.AutoConstants.kITheta,
 				SwerveConstants.AutoConstants.kDTheta);
-
+		_anglePID.setIZone(SwerveConstants.AutoConstants.kIZoneTheta);
 		_anglePID.enableContinuousInput(-180, 180);
 
 		_axisPID = new PIDController(
 				SwerveConstants.AutoConstants.kP * 1.5,
 				SwerveConstants.AutoConstants.kI,
 				SwerveConstants.AutoConstants.kD);
+		_axisPID.setIZone(SwerveConstants.AutoConstants.kIZone);
 
-		_xPID = new PIDController(
-				SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
-		_yPID = new PIDController(
-				SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+		_xPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+		_xPID.setIZone(SwerveConstants.AutoConstants.kIZone);
+		_yPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+		_yPID.setIZone(SwerveConstants.AutoConstants.kIZone);
 
 		_pathFollower = new PathFollower();
 	}
@@ -105,6 +106,10 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	public double lookAt(double angle, double roundToAngle) {
 		double roundedAngle = Math.round(angle / roundToAngle) * roundToAngle;
 		angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundedAngle : angle;
+
+		SmartDashboard.putNumber("Current Angle", RobotState.getGyroYaw().getDegrees());
+		SmartDashboard.putNumber("Target Angle", angle);
+
 		return _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle);
 	}
 
@@ -396,7 +401,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		addFunctionToPeriodicMap(
 				() -> {
 					_demand.targetPose = VisionConstants.getOffsetTagPose(
-							VisionConstants.getAmpTag().pose.toPose2d(), 1.25);
+						VisionConstants.getTagPose(VisionConstants.getAmpTag().ID).toPose2d(), 1.25);
 
 					double dist =
 							RobotState.getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());
@@ -407,14 +412,14 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		addFunctionToOnChangeMap(
 				() -> {
 					setState(SwerveState.LOOK_AT_TARGET);
-					updateDemand(VisionConstants.getSpeakerTag().pose.toPose2d());
+					updateDemand(VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID).toPose2d());
 				},
 				RobotStates.SHOOT_SPEAKER_PREPARE);
 
 		addFunctionToPeriodicMap(
 				() -> {
 					_demand.targetPose = VisionConstants.getOffsetTagPose(
-							VisionConstants.getSourceTag().pose.toPose2d(), 1.25);
+						VisionConstants.getTagPose(VisionConstants.getSourceTag().ID).toPose2d(), 1.25);
 
 					double dist =
 							RobotState.getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());
