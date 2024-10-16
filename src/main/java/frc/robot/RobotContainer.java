@@ -18,7 +18,7 @@ public class RobotContainer {
 	private CommandPS5Controller _driverJoystick;
 	private CommandPS5Controller _operatorJoystick;
 
-	private boolean isSwerveLookAt = true;
+	private boolean isSwerveLookAt = false;
 	private boolean isSwerveBayblade = false;
 
 	public RobotContainer() {
@@ -85,10 +85,10 @@ public class RobotContainer {
 
 	public void periodic() {
 		SmartDashboard.putBoolean("Indexer Beam Breaker", RobotState.getNoteInIndexer());
+		SmartDashboard.putNumber("Robot Velocity", RobotState.getRobotVelocity().getNorm());
 
 		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
-
-		for (VisionEstimation estimation : estimations) if (estimation != null) RobotState.updateRobotPose(estimation);
+		RobotState.updateRobotPose(estimations);
 	}
 
 	public void resetSubsystems() {

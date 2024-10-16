@@ -54,7 +54,7 @@ public final class Constants {
 		public static final int kLimitSwitchId = 2;
 
 		public static final Translation3d kAmpOffset = new Translation3d(0, -0.1, -0.35);
-		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 1.5);
+		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 0.74);
 		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.12);
 
 		public static Pose3d getAmpHolePose() {
@@ -143,7 +143,7 @@ public final class Constants {
 //			kControllerConstants.PIDFConstants.kP = 0.01;
 			kControllerConstants.PIDFConstants.kCruiseVelocity = 50;
 			kControllerConstants.PIDFConstants.kAcceleration = 100;
-			kControllerConstants.velocityGoalTolerance = 4;
+			kControllerConstants.velocityGoalTolerance = 10;
 
 			kControllerConstants.followers = new ControllerConstants[] {new ControllerConstants()};
 			kControllerConstants.followers[0].id = 31;
@@ -152,6 +152,8 @@ public final class Constants {
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
+
+		public static final double kMinimumShootTolerance = 2;
 
 		public static double shooterSpeedToNoteSpeed(double rps) {
 			// Constants
@@ -265,8 +267,8 @@ public final class Constants {
 	}
 
 	public static final class SwerveConstants {
-		public static final double kSpeedFactor = 0.5;
-		public static final double kRotationSpeedFactor = 0.25;
+		public static final double kSpeedFactor = 1;
+		public static final double kRotationSpeedFactor = 1;
 		public static final double kJoystickDeadband = 0.3;
 
 		public static final boolean kInvertGyro = false; // Always ensure Gyro is CCW+ CW-
@@ -334,7 +336,7 @@ public final class Constants {
 		/**
 		 * Max speed the swerve could possibly drive
 		 */
-		public static final double maxSpeed = 4; // meters per second
+		public static final double maxSpeed = 5; // meters per second
 		/** Max speed the swerve could possibly rotate */
 		public static final double maxAngularVelocity = 10.7;
 		/**
@@ -420,9 +422,11 @@ public final class Constants {
 			public static final double kI = 0;
 			public static final double kIZone = 0;
 			public static final double kD = 1;
-			public static final double kPTheta = 0.02;
-			public static final double kITheta = 0.1;
-			public static final double kIZoneTheta = 4;
+			public static final double kPTheta = 0.05;
+			//			public static final double kITheta = 0.1;
+			public static final double kITheta = 0;
+			//			public static final double kIZoneTheta = 4;
+			public static final double kIZoneTheta = 0;
 			public static final double kDTheta = 0.001;
 
 			public static final double kMaxSpeed = 2;
@@ -445,9 +449,9 @@ public final class Constants {
 
 	public static class VisionConstants {
 		public static final Map<String, Transform3d> kCameras = Map.of(
-			"Front", new Transform3d(0.28, 0.105, -0.055, new Rotation3d(0, 30, 0)),
-				"Left", new Transform3d(-0.035, 0.285, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(90))),
-				"Right", new Transform3d(-0.03, -0.285, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(-90))));
+			"Front", new Transform3d(0.28 - 0.11 - 0.2, 0.105, -0.055, new Rotation3d(0, 30, 0)),
+			"Left", new Transform3d(-0.035 + 0.1, 0.285 - 0.33, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(90 + 3))),
+			"Right", new Transform3d(-0.03 - 0.1, -0.285 + 0.33, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(-90 + 3))));
 
 		public static final double kMaxAmbiguity = 0.2;
 

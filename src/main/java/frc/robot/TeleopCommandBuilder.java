@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
+import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.RobotState.RobotStates;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -42,9 +44,10 @@ public class TeleopCommandBuilder {
 		return Commands.runOnce(() -> {
 			if (forceZero) RobotState.resetGyro(Rotation2d.fromDegrees(0));
 			else {
-				//				if (VisionIO.getInstance().hasTargets())
-				//					RobotState.resetGyro(RobotState.getRobotPose().getRotation().unaryMinus());
-				RobotState.resetGyro(Rotation2d.fromDegrees(0));
+				if (VisionIO.getInstance().hasTargets())
+					RobotState.resetGyro(RobotState.getRobotPose().getRotation().unaryMinus());
+				else
+					RobotState.resetGyro(Rotation2d.fromDegrees(0));
 			}
 		});
 	}

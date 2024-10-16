@@ -54,4 +54,8 @@ public class Shooter extends StateMachineMotoredSubsystem {
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET, RobotStates.CLOSE);
 	}
+
+	public boolean isReady() {
+		return controller().getVelocity() > ShooterConstants.kMinimumShootTolerance && atGoal();
+	}
 }

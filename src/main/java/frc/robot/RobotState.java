@@ -116,6 +116,41 @@ public class RobotState {
 		_robotPosePublisher.set(getRobotPose());
 	}
 
+	public static void updateRobotPose(VisionEstimation[] visionEstimations) {
+		Pose2d averagePose = new Pose2d();
+		double averageTimestamp = 0;
+		double rotationSum = 0;
+		int count = 0;
+
+		for (VisionEstimation estimation : visionEstimations) {
+			if (estimation == null) continue;
+			if (estimation.pose == null) continue;
+
+			if (estimation.hasTargets) {
+				averagePose = new Pose2d(
+					averagePose.getX() + estimation.pose.getX(),
+					averagePose.getY() + estimation.pose.getY(),
+					averagePose.getRotation()
+				);
+				rotationSum += estimation.pose.getRotation().getDegrees();
+				averageTimestamp += estimation.timestamp;
+				count++;
+			}
+		}
+
+		averagePose = new Pose2d(
+			averagePose.getX() / count,
+			averagePose.getY() / count,
+			new Rotation2d(Rotation2d.fromDegrees(rotationSum).getRadians() / count)
+		);
+
+		if (count == 0)
+			return;
+
+		poseEstimator.addVisionMeasurement(averagePose, averageTimestamp / count);
+		_robotPosePublisher.set(getRobotPose());
+	}
+
 	/**
 	 * @return yaw angle of the robot according to gyro
 	 */

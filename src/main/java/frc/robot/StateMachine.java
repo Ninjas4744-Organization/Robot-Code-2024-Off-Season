@@ -219,14 +219,14 @@ public class StateMachine extends StateMachineSubsystem {
 			RobotStates.SHOOT_AMP_PREPARE,
 			new StateEndCondition(
 				() -> ShooterAngle.getInstance().atGoal()
-					&& Shooter.getInstance().atGoal(),
+					&& Shooter.getInstance().isReady(),
 				RobotStates.SHOOT_AMP_READY));
 
 		_endConditionMap.put(
 			RobotStates.SHOOT_SPEAKER_PREPARE,
 			new StateEndCondition(
 				() -> ShooterAngle.getInstance().atGoal()
-					&& Shooter.getInstance().atGoal(),
+					&& Shooter.getInstance().isReady(),
 				RobotStates.SHOOT_SPEAKER_READY));
 
 		_endConditionMap.put(
@@ -237,7 +237,7 @@ public class StateMachine extends StateMachineSubsystem {
 			RobotStates.SHOOT_SPEAKER_READY,
 			new StateEndCondition(
 				() -> !ShooterAngle.getInstance().atGoal()
-					|| !Shooter.getInstance().atGoal(),
+					|| !Shooter.getInstance().isReady(),
 				RobotStates.SHOOT_SPEAKER_PREPARE));
 
 		_endConditionMap.put(RobotStates.SHOOT, new StateEndCondition(() -> _shootTimer.get() > 2, RobotStates.CLOSE));
