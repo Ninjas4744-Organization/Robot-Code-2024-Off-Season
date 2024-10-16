@@ -130,9 +130,12 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		return 0;
 	}
 
-	public double lookAtTarget(Pose2d target, boolean invert) {
+  public double lookAtTarget(Pose2d target, boolean invert, Rotation2d sheer) {
 		Translation2d lookAtTranslation =
 				target.getTranslation().minus(RobotState.getRobotPose().getTranslation());
+
+    lookAtTranslation = lookAtTranslation.rotateBy(sheer);
+
 		lookAtTranslation = RobotState.isSimulated()
 				? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY())
 				: lookAtTranslation;
@@ -355,7 +358,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 								_demand.driverInput.vxMetersPerSecond,
 								_demand.driverInput.vyMetersPerSecond,
 								lookAtTarget(
-										_demand.targetPose, RobotState.getRobotState() == RobotStates.NOTE_SEARCH)),
+                  _demand.targetPose, RobotState.getRobotState() == RobotStates.NOTE_SEARCH, SwerveConstants.kShootingAngleError.unaryMinus())),
 						SwerveConstants.kFieldRelative);
 				break;
 
@@ -374,7 +377,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 			case DRIVE_ASSIST:
 				if (NoteDetection.hasTarget()) {
 					Translation2d pid = pidTo(NoteDetection.getNotePose().getTranslation());
-					double rotation = lookAtTarget(NoteDetection.getNotePose(), true);
+          double rotation = lookAtTarget(NoteDetection.getNotePose(), true, new Rotation2d());
 
 					drive(new ChassisSpeeds(pid.getX(), pid.getY(), rotation), true);
 				} else drive(fromPercent(_demand.driverInput), SwerveConstants.kFieldRelative);

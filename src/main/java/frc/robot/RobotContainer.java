@@ -70,6 +70,10 @@ public class RobotContainer {
 			StateMachine.getInstance().changeRobotState(RobotStates.SHOOT);
 			StateMachine.getInstance().changeRobotState(RobotStates.OUTTAKE);
 		}, StateMachine.getInstance()));
+
+		_driverJoystick.povUp().onTrue(Commands.runOnce(() -> ShooterAngle.getInstance().changeAngle(5)));
+		_driverJoystick.povDown().onTrue(Commands.runOnce(() -> ShooterAngle.getInstance().changeAngle(-5)));
+		_driverJoystick.povRight().onTrue(Commands.runOnce(() -> ShooterAngle.getInstance().changeAngle(38)));
 	}
 
 	private void configureTestBindings() {
@@ -86,6 +90,7 @@ public class RobotContainer {
 	public void periodic() {
 		SmartDashboard.putBoolean("Indexer Beam Breaker", RobotState.getNoteInIndexer());
 		SmartDashboard.putNumber("Robot Velocity", RobotState.getRobotVelocity().getNorm());
+		SmartDashboard.putNumber("Distance", RobotState.getRobotPose().getTranslation().getDistance(Constants.ShooterAngleConstants.getSpeakerHolePose().getTranslation().toTranslation2d()));
 
 		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
 		RobotState.updateRobotPose(estimations);

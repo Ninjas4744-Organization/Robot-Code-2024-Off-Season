@@ -8,6 +8,7 @@ import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -57,6 +58,18 @@ public final class Constants {
 		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 0.74);
 		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.12);
 
+		public static final InterpolatingDoubleTreeMap kAngleMap = new InterpolatingDoubleTreeMap();
+
+		static {
+			kAngleMap.put(1.6, 59.0);
+			kAngleMap.put(2.3, 51.0);
+			kAngleMap.put(2.5, 46.5);
+			kAngleMap.put(3.0, 44.4);
+			kAngleMap.put(3.6, 41.6);
+			kAngleMap.put(4.0, 39.4);
+			kAngleMap.put(4.5, 37.7);
+		}
+
 		public static Pose3d getAmpHolePose() {
 			return new Pose3d(
 				VisionConstants.getTagPose(VisionConstants.getAmpTag().ID).getX()
@@ -82,14 +95,6 @@ public final class Constants {
 					Math.atan(translation.getZ() / translation.toTranslation2d().getNorm()));
 		}
 
-		public static double getEnterAngle(double dist) {
-			return 80 - 24 * dist + 2.26 * dist * dist;
-		}
-
-		public static double getAngleFixer(double dist) {
-			return 10;
-		}
-
 		public static Rotation2d calculateLaunchAngle(Pose3d target) {
 			double dist = RobotState.getRobotPose()
 					.getTranslation()
@@ -110,17 +115,14 @@ public final class Constants {
 					.getEntry("Speaker Hole")
 					.setDoubleArray(new double[] {target.getX(), target.getY(), target.getZ()});
 
-//			double angle = Ballistics.findLaunchAngle(
-//					target.getZ(),
-//					ShooterAngleConstants.kShooterPose.getZ(),
-//					dist,
-//					ShooterAngleConstants.getEnterAngle(dist));
+//			double angle = ShooterAngleConstants.calculateTrigoAngle(new Translation3d(
+//				target.getX()
+//					- (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
+//				target.getY()
+//					- (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
+//				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()));
 
-			double angle = ShooterAngleConstants.calculateTrigoAngle(new Translation3d(
-				target.getX() - (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
-				target.getY() - (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
-				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()
-			)) + getAngleFixer(dist);
+			double angle = kAngleMap.get(dist);
 
 			double angleClamped = Math.min(Math.max(angle, 37.7), 80);
 			return Rotation2d.fromDegrees(angleClamped);
@@ -270,6 +272,8 @@ public final class Constants {
 		public static final double kSpeedFactor = 1;
 		public static final double kRotationSpeedFactor = 1;
 		public static final double kJoystickDeadband = 0.3;
+
+		public static final Rotation2d kShootingAngleError = Rotation2d.fromDegrees(-15);
 
 		public static final boolean kInvertGyro = false; // Always ensure Gyro is CCW+ CW-
 

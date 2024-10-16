@@ -45,7 +45,7 @@ public class TeleopCommandBuilder {
 			if (forceZero) RobotState.resetGyro(Rotation2d.fromDegrees(0));
 			else {
 				if (VisionIO.getInstance().hasTargets())
-					RobotState.resetGyro(RobotState.getRobotPose().getRotation().unaryMinus());
+					RobotState.resetGyro(RobotState.getRobotPose().getRotation());
 				else
 					RobotState.resetGyro(Rotation2d.fromDegrees(0));
 			}
