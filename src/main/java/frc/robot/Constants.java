@@ -62,12 +62,12 @@ public final class Constants {
 
 		static {
 			kAngleMap.put(1.6, 59.0);
-			kAngleMap.put(2.3, 51.0);
-			kAngleMap.put(2.5, 46.5);
-			kAngleMap.put(3.0, 44.4);
-			kAngleMap.put(3.6, 41.6);
-			kAngleMap.put(4.0, 39.4);
-			kAngleMap.put(4.5, 37.7);
+			kAngleMap.put(2.3, 53.0 - 0.5);
+			kAngleMap.put(2.5, 48.5 - 0.5);
+			kAngleMap.put(3.0, 45.4 - 0.5);
+			kAngleMap.put(3.6, 41.6 - 0.5);
+			kAngleMap.put(4.0, 39.4 - 0.5);
+			kAngleMap.put(4.5, 37.7 - 0.5);
 		}
 
 		public static Pose3d getAmpHolePose() {
@@ -273,7 +273,7 @@ public final class Constants {
 		public static final double kRotationSpeedFactor = 1;
 		public static final double kJoystickDeadband = 0.3;
 
-		public static final Rotation2d kShootingAngleError = Rotation2d.fromDegrees(-15);
+		public static final Rotation2d kShootingAngleError = Rotation2d.fromDegrees(-5);
 
 		public static final boolean kInvertGyro = false; // Always ensure Gyro is CCW+ CW-
 

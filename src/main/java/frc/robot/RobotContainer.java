@@ -70,10 +70,6 @@ public class RobotContainer {
 			StateMachine.getInstance().changeRobotState(RobotStates.SHOOT);
 			StateMachine.getInstance().changeRobotState(RobotStates.OUTTAKE);
 		}, StateMachine.getInstance()));
-
-		_driverJoystick.povUp().onTrue(Commands.runOnce(() -> ShooterAngle.getInstance().changeAngle(5)));
-		_driverJoystick.povDown().onTrue(Commands.runOnce(() -> ShooterAngle.getInstance().changeAngle(-5)));
-		_driverJoystick.povRight().onTrue(Commands.runOnce(() -> ShooterAngle.getInstance().changeAngle(38)));
 	}
 
 	private void configureTestBindings() {

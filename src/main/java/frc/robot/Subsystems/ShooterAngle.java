@@ -45,17 +45,17 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 
 	@Override
 	protected void setFunctionMaps() {
-//		addFunctionToPeriodicMap(
-//			() -> controller().setPosition(65),
-//			RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
-//
-//		addFunctionToPeriodicMap(
-//				() -> controller()
-//					.setPosition(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getSpeakerHolePose()).getDegrees()),
-//			RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.SHOOT_SPEAKER_READY);
+		addFunctionToPeriodicMap(
+			() -> controller().setPosition(65),
+			RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
+
+		addFunctionToPeriodicMap(
+			() -> controller()
+				.setPosition(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getSpeakerHolePose()).getDegrees()),
+			RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.SHOOT_SPEAKER_READY);
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET);
-//		addFunctionToOnChangeMap(() -> controller().setPosition(37), RobotStates.CLOSE);
+		addFunctionToOnChangeMap(() -> controller().setPosition(37), RobotStates.CLOSE);
 	}
 
 	@Override
@@ -67,10 +67,5 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 			controller().resetEncoder();
 			if (controller().getOutput() < 0) controller().stop();
 		}
-	}
-
-	public void changeAngle(double angle) {
-		controller().setPosition(controller().getGoal() + angle);
-		System.out.println(controller().getGoal());
 	}
 }
