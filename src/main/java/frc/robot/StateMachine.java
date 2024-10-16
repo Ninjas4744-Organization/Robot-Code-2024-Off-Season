@@ -7,7 +7,6 @@ import frc.robot.NinjasLib.DataClasses.StateEndCondition;
 import frc.robot.NinjasLib.Subsystems.StateMachineSubsystem;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.RobotState.RobotStates;
-import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
@@ -191,7 +190,6 @@ public class StateMachine extends StateMachineSubsystem {
 				new StateEndCondition(
 						() -> ShooterAngle.getInstance().isResetted()
 								&& Indexer.getInstance().isResetted()
-								&& Climber.getInstance().isResetted()
 								&& Shooter.getInstance().isResetted(),
 						RobotStates.IDLE));
 
@@ -241,14 +239,6 @@ public class StateMachine extends StateMachineSubsystem {
 				RobotStates.SHOOT_SPEAKER_PREPARE));
 
 		_endConditionMap.put(RobotStates.SHOOT, new StateEndCondition(() -> _shootTimer.get() > 2, RobotStates.CLOSE));
-
-		_endConditionMap.put(
-				RobotStates.CLIMB_PREPARE,
-				new StateEndCondition(() -> Climber.getInstance().atGoal(), RobotStates.CLIMB_READY));
-
-		_endConditionMap.put(
-				RobotStates.CLIMB,
-				new StateEndCondition(() -> Climber.getInstance().atGoal(), RobotStates.CLIMBED));
 
 		_endConditionMap.put(
 				RobotStates.DRIVE_TO_AMP,

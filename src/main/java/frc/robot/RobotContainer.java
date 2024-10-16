@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -9,7 +10,6 @@ import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.RobotState.RobotStates;
-import frc.robot.Subsystems.Climber;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
@@ -85,21 +85,18 @@ public class RobotContainer {
 
 	public void periodic() {
 		SmartDashboard.putBoolean("Indexer Beam Breaker", RobotState.getNoteInIndexer());
-		SmartDashboard.putNumber("Robot Velocity", RobotState.getRobotVelocity().getNorm());
-		SmartDashboard.putNumber("Distance", RobotState.getRobotPose().getTranslation().getDistance(Constants.ShooterAngleConstants.getSpeakerHolePose().getTranslation().toTranslation2d()));
 
 		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
 		RobotState.updateRobotPose(estimations);
 	}
 
 	public void resetSubsystems() {
-		RobotState.setRobotPose(new Pose2d());
+		RobotState.setRobotPose(Constants.VisionConstants.getStartingPose());
 
 		RobotState.setRobotState(RobotStates.RESET);
 		Shooter.getInstance().resetSubsystem();
 		Indexer.getInstance().resetSubsystem();
 		ShooterAngle.getInstance().resetSubsystem();
-		Climber.getInstance().resetSubsystem();
 
 		TeleopCommandBuilder.resetGyro(false).schedule();
 	}

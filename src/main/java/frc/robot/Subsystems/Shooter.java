@@ -38,15 +38,14 @@ public class Shooter extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-				() -> controller()
-					.setVelocity(93),
+				() -> controller().setVelocity(ShooterConstants.States.kSpeaker),
 			RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.SHOOT_SPEAKER_READY);
 
 		addFunctionToOnChangeMap(
-			() -> controller().setVelocity(35),
+			() -> controller().setVelocity(ShooterConstants.States.kAmp),
 			RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
 
-		addFunctionToOnChangeMap(() -> controller().setVelocity(15), RobotStates.OUTTAKE);
+		addFunctionToOnChangeMap(() -> controller().setVelocity(ShooterConstants.States.kOuttake), RobotStates.OUTTAKE);
 //		addFunctionToOnChangeMap(() -> controller().setVelocity(66), RobotStates.NOTE_IN_INDEXER);
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET, RobotStates.CLOSE);

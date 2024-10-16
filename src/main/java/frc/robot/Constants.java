@@ -7,6 +7,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -35,49 +36,37 @@ public final class Constants {
 			kControllerConstants.main.id = 32;
 			kControllerConstants.currentLimit = 50;
 			kControllerConstants.subsystemName = "ShooterAngle";
+
 			kControllerConstants.PIDFConstants = new PIDFConstants();
 			kControllerConstants.PIDFConstants.kCruiseVelocity = 50;
 			kControllerConstants.PIDFConstants.kAcceleration = 50;
 			kControllerConstants.PIDFConstants.kP = 0.3;
+
 			kControllerConstants.positionGoalTolerance = 2;
+			kControllerConstants.dynamicProfiling = true;
+
 			kControllerConstants.encoderConversionFactor = 1.0 / 300.0 * 360.0;
+			kControllerConstants.encoderHomePosition = 37.7;
 			kControllerConstants.isMaxSoftLimit = true;
 			kControllerConstants.maxSoftLimit = 78;
-			kControllerConstants.isMinSoftLimit = false;
-			kControllerConstants.minSoftLimit = 42;
-			kControllerConstants.encoderHomePosition = 37.7;
-			kControllerConstants.dynamicProfiling = true;
+
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
 		public static final int kLimitSwitchId = 2;
-
-		public static final Translation3d kAmpOffset = new Translation3d(0, -0.1, -0.35);
 		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 0.74);
 		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.12);
-
 		public static final InterpolatingDoubleTreeMap kAngleMap = new InterpolatingDoubleTreeMap();
-
 		static {
 			kAngleMap.put(1.6, 59.0);
-			kAngleMap.put(2.3, 53.0 - 0.5);
-			kAngleMap.put(2.5, 48.5 - 0.5);
-			kAngleMap.put(3.0, 45.4 - 0.5);
-			kAngleMap.put(3.6, 41.6 - 0.5);
-			kAngleMap.put(4.0, 39.4 - 0.5);
-			kAngleMap.put(4.5, 37.7 - 0.5);
-		}
-
-		public static Pose3d getAmpHolePose() {
-			return new Pose3d(
-				VisionConstants.getTagPose(VisionConstants.getAmpTag().ID).getX()
-							+ kAmpOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-				VisionConstants.getTagPose(VisionConstants.getAmpTag().ID).getY()
-							+ kAmpOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-				VisionConstants.getTagPose(VisionConstants.getAmpTag().ID).getZ() + kAmpOffset.getZ(),
-					new Rotation3d());
+			kAngleMap.put(2.3, 52.5);
+			kAngleMap.put(2.5, 48.0);
+			kAngleMap.put(3.0, 44.9);
+			kAngleMap.put(3.6, 41.1);
+			kAngleMap.put(4.0, 39.9);
+			kAngleMap.put(4.5, 37.2);
 		}
 
 		public static Pose3d getSpeakerHolePose() {
@@ -90,37 +79,11 @@ public final class Constants {
 					new Rotation3d());
 		}
 
-		public static double calculateTrigoAngle(Translation3d translation) {
-			return Units.radiansToDegrees(
-					Math.atan(translation.getZ() / translation.toTranslation2d().getNorm()));
-		}
-
 		public static Rotation2d calculateLaunchAngle(Pose3d target) {
 			double dist = RobotState.getRobotPose()
 					.getTranslation()
 					.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
 					.getDistance(target.toPose2d().getTranslation());
-
-			SmartDashboard.putNumber("Dist", dist);
-			SmartDashboard.putNumber(
-					"Trigo Angle",
-				ShooterAngleConstants.calculateTrigoAngle(new Translation3d(
-							target.getX()
-									- (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
-							target.getY()
-									- (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
-							target.getZ() - ShooterAngleConstants.kShooterPose.getZ())));
-			NetworkTableInstance.getDefault()
-					.getTable("Speaker Hole")
-					.getEntry("Speaker Hole")
-					.setDoubleArray(new double[] {target.getX(), target.getY(), target.getZ()});
-
-//			double angle = ShooterAngleConstants.calculateTrigoAngle(new Translation3d(
-//				target.getX()
-//					- (RobotState.getRobotPose().getX() + ShooterAngleConstants.kShooterPose.getX()),
-//				target.getY()
-//					- (RobotState.getRobotPose().getY() + ShooterAngleConstants.kShooterPose.getY()),
-//				target.getZ() - ShooterAngleConstants.kShooterPose.getZ()));
 
 			double angle = kAngleMap.get(dist);
 
@@ -139,10 +102,10 @@ public final class Constants {
 			kControllerConstants.main.inverted = true;
 			kControllerConstants.currentLimit = 40;
 			kControllerConstants.subsystemName = "Shooter";
+
 			kControllerConstants.PIDFConstants = new PIDFConstants();
 			kControllerConstants.PIDFConstants.kS = 0.185;
 			kControllerConstants.PIDFConstants.kV = 0.117;
-//			kControllerConstants.PIDFConstants.kP = 0.01;
 			kControllerConstants.PIDFConstants.kCruiseVelocity = 50;
 			kControllerConstants.PIDFConstants.kAcceleration = 100;
 			kControllerConstants.velocityGoalTolerance = 10;
@@ -157,88 +120,10 @@ public final class Constants {
 
 		public static final double kMinimumShootTolerance = 2;
 
-		public static double shooterSpeedToNoteSpeed(double rps) {
-			// Constants
-			double g = 9.81; // Acceleration due to gravity (m/s^2)
-			double wheelRadius = Units.inchesToMeters(2);
-			double noteMass = 0.233;
-			double frictionCoefficient = 1.5;
-			double interactionTime = 1 / 15.0;
-
-			// Calculate angular velocity for both wheels (in radians per second)
-			double angularVelocity = 2 * Math.PI * rps;
-
-			// Calculate maximum linear speeds at the edge of the wheels
-			double maxSpeed = angularVelocity * wheelRadius;
-
-			// Calculate the frictional force (assuming normal force = weight of the game piece)
-			double normalForce = noteMass * g;
-			double frictionForce = frictionCoefficient * normalForce;
-
-			// Calculate the effective speed considering the friction over the interaction time
-			double distanceTraveled = (maxSpeed * interactionTime) - (0.5 * frictionForce * interactionTime);
-
-			// Calculate the final speed of the game piece
-
-			return distanceTraveled / interactionTime;
-		}
-
-		public static double noteSpeedToShooterSpeed(double noteSpeed) {
-			// Constants
-			double g = 9.81; // Acceleration due to gravity (m/s^2)
-			double wheelRadius = Units.inchesToMeters(2);
-			double noteMass = 0.233;
-			double frictionCoefficient = 1.5;
-			double frictionForce = frictionCoefficient * noteMass * g;
-
-			// Solve for rps based on the final speed
-			return (noteSpeed + 0.5 * frictionForce) / (2 * Math.PI * wheelRadius);
-		}
-
-		public static double calculateLaunchSpeed(double shootAngle, Pose3d target) {
-			double dist = RobotState.getRobotPose()
-					.getTranslation()
-					.plus(ShooterAngleConstants.kShooterPose.toTranslation2d())
-					.getDistance(target.toPose2d().getTranslation());
-
-			SmartDashboard.putNumber(
-					"Note Shoot Speed",
-					Ballistics.findLaunchSpeed(
-							ShooterAngleConstants.kShooterPose.getZ(), target.getZ(), dist, shootAngle));
-
-			return noteSpeedToShooterSpeed(Ballistics.findLaunchSpeed(
-				ShooterAngleConstants.kShooterPose.getZ(), target.getZ(), dist, shootAngle) * 1.5);
-		}
-
 		public class States {
-			public static final double kSpeaker = 87;
-			public static final double kAmp = 30;
-		}
-	}
-
-	public static class ClimberConstants {
-		public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
-		public static final SimulatedControllerConstants kSimulatedControllerConstants =
-				new SimulatedControllerConstants();
-
-		static {
-			kControllerConstants.main.id = 24;
-			kControllerConstants.main.inverted = true;
-			kControllerConstants.currentLimit = 40;
-			kControllerConstants.subsystemName = "Climber";
-			kControllerConstants.PIDFConstants = new PIDFConstants();
-			kControllerConstants.positionGoalTolerance = 0.01;
-			kControllerConstants.encoderConversionFactor = 0.0098174;
-			kControllerConstants.encoderHomePosition = 0;
-
-			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
-			kSimulatedControllerConstants.gearRatio = 1;
-			kSimulatedControllerConstants.motorTorque = 1;
-		}
-
-		public class States {
-			public static final double kUp = 0.4;
-			public static final double kClose = 0;
+			public static final double kSpeaker = 93;
+			public static final double kAmp = 35;
+			public static final double kOuttake = 20;
 		}
 	}
 
@@ -264,7 +149,7 @@ public final class Constants {
 			public static final double kIndex = -1;
 			public static final double kIndexBack = 1;
 			public static final double kShoot = -1;
-			public static final double kRoll = 1;
+			public static final double kOuttake = 1;
 		}
 	}
 
@@ -528,6 +413,28 @@ public final class Constants {
 		public static AprilTagFieldLayout getFieldLayout() {
 			return getFieldLayout(List.of());
 		}
+
+		public static Pose2d getStartingPose() {
+			AllianceStationID station = RobotState.getAllianceStation();
+
+			Pose2d blueStation1 = new Pose2d(0.5, 2, new Rotation2d(0));
+			Pose2d blueStation2 = new Pose2d(0.5, 3.75, new Rotation2d(0));
+			Pose2d blueStation3 = new Pose2d(0.5, 7.12, new Rotation2d(0));
+
+			Pose2d redStation1 = new Pose2d(0.5, 6, new Rotation2d(0));
+			Pose2d redStation2 = new Pose2d(0.5, 4.25, new Rotation2d(0));
+			Pose2d redStation3 = new Pose2d(0.5, 0.88, new Rotation2d(0));
+
+            return switch (station) {
+                case Blue1 -> blueStation1;
+                case Blue2 -> blueStation2;
+                case Blue3 -> blueStation3;
+                case Red1 -> redStation1;
+                case Red2 -> redStation2;
+                case Red3 -> redStation3;
+                default -> new Pose2d();
+            };
+        }
 
 		public class Simulation {
 			public static final int kResolutionWidth = 1280;

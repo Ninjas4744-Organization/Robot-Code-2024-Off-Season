@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -220,5 +221,11 @@ public class RobotState {
 						? DriverStation.Alliance.Blue
 						: DriverStation.Alliance.Red)
 				: DriverStation.getAlliance().get();
+	}
+
+	public static AllianceStationID getAllianceStation() {
+		return isSimulated()
+			? DriverStationSim.getAllianceStationId()
+			: DriverStation.getRawAllianceStation();
 	}
 }
