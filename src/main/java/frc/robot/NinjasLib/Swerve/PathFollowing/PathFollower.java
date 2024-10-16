@@ -21,7 +21,6 @@ public class PathFollower {
 	private boolean started = false;
 
 	private PathPlannerTrajectory _trajectory;
-	private Field2d _trajectoryLog = new Field2d();
 
 	public PathFollower() {
 		_profileTimer = new Timer();
@@ -73,9 +72,6 @@ public class PathFollower {
 				_path,
 				SwerveIO.getInstance().getChassisSpeeds(),
 				RobotState.getRobotPose().getRotation());
-
-		_trajectoryLog.getObject("Trajectory").setPoses(_path.getPathPoses());
-		SmartDashboard.putData("PathFollower Trajectory", _trajectoryLog);
 
 		_profileTimer.restart();
 	}

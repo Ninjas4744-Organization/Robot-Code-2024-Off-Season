@@ -2,7 +2,9 @@ package frc.robot;
 
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -33,8 +35,11 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void autonomousInit() {
-		_autoCommand = AutoCommandBuilder.autoCommand("Left shoot note 1 shoot end right");
+		if(!RobotState.isSimulated())
+			if(DriverStation.isFMSAttached())
+				Shuffleboard.startRecording();
 
+		_autoCommand = AutoCommandBuilder.autoCommand("Left shoot note 1 shoot end right");
 		if (_autoCommand != null) _autoCommand.schedule();
 	}
 
@@ -48,21 +53,25 @@ public class Robot extends TimedRobot {
 	public void teleopInit() {
 		if (_autoCommand != null) _autoCommand.cancel();
 
+		if(!RobotState.isSimulated())
+			if(DriverStation.isFMSAttached())
+				Shuffleboard.startRecording();
+
 		_robotContainer.resetSubsystems();
-		_robotContainer.teleopInit();
 	}
 
 	@Override
 	public void teleopPeriodic() {}
 
 	@Override
-	public void teleopExit() {}
+	public void teleopExit() {
+		Shuffleboard.stopRecording();
+	}
 
 	@Override
 	public void testInit() {
 		CommandScheduler.getInstance().cancelAll();
 		RobotState.setRobotState(RobotState.RobotStates.TESTING);
-		_robotContainer.testInit();
 	}
 
 	@Override

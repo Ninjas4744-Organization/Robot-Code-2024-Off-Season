@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -34,6 +35,11 @@ public class RobotContainer {
 
 		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
 		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
+
+		Shuffleboard.getTab("LiveWindow").addBoolean("Note", RobotState::getNoteInIndexer);
+		Shuffleboard.getTab("LiveWindow").addBoolean("Shooter Ready", () -> RobotState.getRobotState() == RobotStates.SHOOT_SPEAKER_READY || RobotState.getRobotState() == RobotStates.SHOOT_AMP_READY);
+		Shuffleboard.getTab("LiveWindow").addString("Robot State", () -> RobotState.getRobotState().toString());
+		Shuffleboard.getTab("LiveWindow").addBoolean("Can Gyro Reset", () -> VisionIO.getInstance().hasTargets());
 
 		configureBindings();
 	}
@@ -84,8 +90,6 @@ public class RobotContainer {
 	}
 
 	public void periodic() {
-		SmartDashboard.putBoolean("Indexer Beam Breaker", RobotState.getNoteInIndexer());
-
 		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
 		RobotState.updateRobotPose(estimations);
 	}
@@ -99,19 +103,5 @@ public class RobotContainer {
 		ShooterAngle.getInstance().resetSubsystem();
 
 		TeleopCommandBuilder.resetGyro(false).schedule();
-	}
-
-	public void teleopInit() {
-		//		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
-		//		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
-		//
-		//		configureBindings();
-	}
-
-	public void testInit() {
-		//		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
-		//		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
-		//
-		//		configureTestBindings();
 	}
 }

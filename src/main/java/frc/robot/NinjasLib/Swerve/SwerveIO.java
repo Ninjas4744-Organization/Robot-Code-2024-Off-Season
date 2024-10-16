@@ -30,7 +30,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	private final PIDController _xPID;
 	private final PIDController _yPID;
 	private final PIDController _axisPID;
-	private final Field2d pathfindingTrajectoryLog = new Field2d();
 	private final Timer pathfindingTimer = new Timer();
 	private PathPlannerTrajectory pathfindingCurrentTraj = null;
 	private PathFollower _pathFollower;
@@ -106,10 +105,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	public double lookAt(double angle, double roundToAngle) {
 		double roundedAngle = Math.round(angle / roundToAngle) * roundToAngle;
 		angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundedAngle : angle;
-
-		SmartDashboard.putNumber("Current Angle", RobotState.getGyroYaw().getDegrees());
-		SmartDashboard.putNumber("Target Angle", angle);
-
 		return _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle);
 	}
 
@@ -202,12 +197,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 						1 * feedforwardY + 0 * pid.getY() + driverInput.vyMetersPerSecond,
 						driverInput.omegaRadiansPerSecond),
 				true);
-
-		pathfindingTrajectoryLog.getObject("Trajectory").setPoses(path.getPathPoses());
-		SmartDashboard.putData("Pathfinding Trajectory", pathfindingTrajectoryLog);
-		SmartDashboard.putNumber("Pathfinding Timer", pathfindingTimer.get());
-		SmartDashboard.putNumber("Pathfinding Time", trajectory.getTotalTimeSeconds());
-		SmartDashboard.putNumber("Pathfinding Speed", trajectory.sample(pathfindingTimer.get()).velocityMps);
 	}
 
 	/**
@@ -228,8 +217,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		double c = -phase * Math.sqrt(a * a + b * b);
 		double error = -(a * robotPose.getX() + b * robotPose.getY() + c) / Math.sqrt(a * a + b * b);
 		Translation2d pid = perpendicularAxis.times(_axisPID.calculate(-error));
-
-		SmartDashboard.putNumber("Axis Lock Error", -error);
 
 		Translation2d driver =
 				axis.times(isXDriverInput ? -driverInput.vyMetersPerSecond : -driverInput.vxMetersPerSecond);
