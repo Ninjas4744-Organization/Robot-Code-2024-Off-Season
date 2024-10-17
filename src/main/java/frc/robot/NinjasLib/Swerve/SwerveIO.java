@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
@@ -71,6 +71,13 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		_yPID.setIZone(SwerveConstants.AutoConstants.kIZone);
 
 		_pathFollower = new PathFollower();
+
+		Shuffleboard.getTab("Swerve").addBoolean("Path Following Finished", this::isPathFollowingFinished);
+		Shuffleboard.getTab("Swerve").addNumber("Driver Input X", () -> _demand.driverInput.vxMetersPerSecond);
+		Shuffleboard.getTab("Swerve").addNumber("Driver Input Y", () -> _demand.driverInput.vyMetersPerSecond);
+		Shuffleboard.getTab("Swerve").addNumber("Driver Input Omega", () -> _demand.driverInput.omegaRadiansPerSecond);
+		Shuffleboard.getTab("Swerve").addString("State", () -> _state.toString());
+		Shuffleboard.getTab("Swerve").addString("Previous State", () -> _previousState.toString());
 	}
 
 	/**
@@ -105,7 +112,12 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	public double lookAt(double angle, double roundToAngle) {
 		double roundedAngle = Math.round(angle / roundToAngle) * roundToAngle;
 		angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundedAngle : angle;
-		return _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle);
+		double result = _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle);
+
+		Shuffleboard.getTab("Swerve").add("Angle PID Target", angle);
+		Shuffleboard.getTab("Swerve").add("Angle PID", result);
+
+		return result;
 	}
 
 	/**
@@ -148,14 +160,16 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	}
 
 	public Translation2d pidTo(Translation2d target) {
-		return new Translation2d(
+		Translation2d result = new Translation2d(
 				_xPID.calculate(RobotState.getRobotPose().getX(), target.getX()),
 				_yPID.calculate(RobotState.getRobotPose().getY(), target.getY()));
-	}
 
-	/** Logs info about the modules and swerve */
-	protected void log() {
-		// TODO: make this work
+		Shuffleboard.getTab("Swerve").add("X PID Target", target.getX());
+		Shuffleboard.getTab("Swerve").add("Y PID Target", target.getY());
+		Shuffleboard.getTab("Swerve").add("X PID", result.getX());
+		Shuffleboard.getTab("Swerve").add("Y PID", result.getY());
+
+		return result;
 	}
 
 	private void pathfindTo(Pose2d pose, ChassisSpeeds driverInput) {
@@ -217,6 +231,12 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		double c = -phase * Math.sqrt(a * a + b * b);
 		double error = -(a * robotPose.getX() + b * robotPose.getY() + c) / Math.sqrt(a * a + b * b);
 		Translation2d pid = perpendicularAxis.times(_axisPID.calculate(-error));
+
+		Shuffleboard.getTab("Swerve").add("Lock Axis Angle", angle);
+		Shuffleboard.getTab("Swerve").add("Lock Axis Phase", phase);
+		Shuffleboard.getTab("Swerve").add("Lock Axis Error", error);
+		Shuffleboard.getTab("Swerve").add("Lock Axis PID X", pid.getX());
+		Shuffleboard.getTab("Swerve").add("Lock Axis PID Y", pid.getY());
 
 		Translation2d driver =
 				axis.times(isXDriverInput ? -driverInput.vyMetersPerSecond : -driverInput.vxMetersPerSecond);
@@ -375,7 +395,6 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		}
 
 		super.periodic();
-		log();
 	}
 
 	@Override

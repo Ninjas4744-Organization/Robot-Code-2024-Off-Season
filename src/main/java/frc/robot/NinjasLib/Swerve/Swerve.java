@@ -1,31 +1,36 @@
 package frc.robot.NinjasLib.Swerve;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
 
 public class Swerve extends SwerveIO {
 	private SwerveModule[] _modules;
-	protected SwerveDriveOdometry _odometry;
 
 	public Swerve() {
+		super();
+
 		_modules = new SwerveModule[] {
 			new SwerveModule(0, SwerveConstants.Mod0.constants),
 			new SwerveModule(1, SwerveConstants.Mod1.constants),
 			new SwerveModule(2, SwerveConstants.Mod2.constants),
 			new SwerveModule(3, SwerveConstants.Mod3.constants)
 		};
-
-		_odometry = new SwerveDriveOdometry(
-				SwerveConstants.kSwerveKinematics, RobotState.getGyroYaw(), getModulePositions());
-		resetOdometry(new Pose2d());
 	}
 
 	@Override
 	public void drive(ChassisSpeeds drive, boolean fieldRelative) {
+		Shuffleboard.getTab("Swerve").add("Drive X", drive.vxMetersPerSecond);
+		Shuffleboard.getTab("Swerve").add("Drive Y", drive.vyMetersPerSecond);
+		Shuffleboard.getTab("Swerve").add("Drive Omega", drive.omegaRadiansPerSecond);
+		Shuffleboard.getTab("Swerve").add("Drive Field Relative", fieldRelative);
+
 		SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.kSwerveKinematics.toSwerveModuleStates(
 			fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()/*.rotateBy(Rotation2d.fromDegrees(-90))*/) : drive);
 		setModuleStates(swerveModuleStates, SwerveConstants.kOpenLoop);
@@ -57,22 +62,6 @@ public class Swerve extends SwerveIO {
 	public ChassisSpeeds getChassisSpeeds() {
 		return ChassisSpeeds.fromRobotRelativeSpeeds(
 				SwerveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates()), RobotState.getGyroYaw());
-	}
-
-	/**
-	 * Resets the swerve odometry to the given pose, so it thinks the robot is at that pose
-	 *
-	 * @param pose - the pose to reset the odometry to
-	 */
-	public void resetOdometry(Pose2d pose) {
-		_odometry.resetPosition(RobotState.getGyroYaw(), getModulePositions(), pose);
-	}
-
-	/**
-	 * @return current pose of the robot according to odometry
-	 */
-	public Pose2d getOdometryPosition() {
-		return _odometry.getPoseMeters();
 	}
 
 	/** Sets the swerve modules rotation, so it makes an X shape and makes the swerve immovable */
@@ -109,19 +98,8 @@ public class Swerve extends SwerveIO {
 	}
 
 	@Override
-	protected void log() {
-		super.log();
-
-		//    for (int i = 0; i < 4; i++)
-		//      SmartDashboard.putNumber("Module " + i + " Speed", getModuleStates()[i].speedMetersPerSecond);
-		//
-		//    SmartDashboard.putNumber("Robot Angular Velocity", getChassisSpeeds().omegaRadiansPerSecond);
-	}
-
-	@Override
 	public void periodic() {
 		super.periodic();
-		_odometry.update(RobotState.getGyroYaw(), getModulePositions());
 		RobotState.updateRobotPose(getModulePositions());
 	}
 }
