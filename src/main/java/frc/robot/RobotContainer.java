@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
@@ -87,6 +88,11 @@ public class RobotContainer {
 	}
 
 	public void periodic() {
+		SmartDashboard.putNumber("Distance", RobotState.getRobotPose()
+			.getTranslation()
+			.plus(Constants.ShooterAngleConstants.kShooterPose.toTranslation2d())
+			.getDistance(Constants.ShooterAngleConstants.getSpeakerHolePose().toPose2d().getTranslation()));
+
 		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
 		RobotState.updateRobotPose(estimations);
 	}
@@ -99,6 +105,6 @@ public class RobotContainer {
 		Indexer.getInstance().resetSubsystem();
 		ShooterAngle.getInstance().resetSubsystem();
 
-		TeleopCommandBuilder.resetGyro(false).schedule();
+		TeleopCommandBuilder.resetGyro(false).beforeStarting(Commands.waitSeconds(0.5)).schedule();
 	}
 }

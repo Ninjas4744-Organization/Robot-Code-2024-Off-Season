@@ -5,7 +5,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
@@ -26,10 +25,10 @@ public class Swerve extends SwerveIO {
 
 	@Override
 	public void drive(ChassisSpeeds drive, boolean fieldRelative) {
-		Shuffleboard.getTab("Swerve").add("Drive X", drive.vxMetersPerSecond);
-		Shuffleboard.getTab("Swerve").add("Drive Y", drive.vyMetersPerSecond);
-		Shuffleboard.getTab("Swerve").add("Drive Omega", drive.omegaRadiansPerSecond);
-		Shuffleboard.getTab("Swerve").add("Drive Field Relative", fieldRelative);
+//		Shuffleboard.getTab("Swerve").add("Drive X", drive.vxMetersPerSecond);
+//		Shuffleboard.getTab("Swerve").add("Drive Y", drive.vyMetersPerSecond);
+//		Shuffleboard.getTab("Swerve").add("Drive Omega", drive.omegaRadiansPerSecond);
+//		Shuffleboard.getTab("Swerve").add("Drive Field Relative", fieldRelative);
 
 		SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.kSwerveKinematics.toSwerveModuleStates(
 			fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()/*.rotateBy(Rotation2d.fromDegrees(-90))*/) : drive);

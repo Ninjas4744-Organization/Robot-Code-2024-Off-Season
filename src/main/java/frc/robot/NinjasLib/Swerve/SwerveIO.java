@@ -72,12 +72,12 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 
 		_pathFollower = new PathFollower();
 
-		Shuffleboard.getTab("Swerve").addBoolean("Path Following Finished", this::isPathFollowingFinished);
-		Shuffleboard.getTab("Swerve").addNumber("Driver Input X", () -> _demand.driverInput.vxMetersPerSecond);
-		Shuffleboard.getTab("Swerve").addNumber("Driver Input Y", () -> _demand.driverInput.vyMetersPerSecond);
-		Shuffleboard.getTab("Swerve").addNumber("Driver Input Omega", () -> _demand.driverInput.omegaRadiansPerSecond);
-		Shuffleboard.getTab("Swerve").addString("State", () -> _state.toString());
-		Shuffleboard.getTab("Swerve").addString("Previous State", () -> _previousState.toString());
+//		Shuffleboard.getTab("Swerve").addBoolean("Path Following Finished", this::isPathFollowingFinished);
+//		Shuffleboard.getTab("Swerve").addNumber("Driver Input X", () -> _demand.driverInput.vxMetersPerSecond);
+//		Shuffleboard.getTab("Swerve").addNumber("Driver Input Y", () -> _demand.driverInput.vyMetersPerSecond);
+//		Shuffleboard.getTab("Swerve").addNumber("Driver Input Omega", () -> _demand.driverInput.omegaRadiansPerSecond);
+//		Shuffleboard.getTab("Swerve").addString("State", () -> _state.toString());
+//		Shuffleboard.getTab("Swerve").addString("Previous State", () -> _previousState.toString());
 	}
 
 	/**
@@ -114,8 +114,8 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundedAngle : angle;
 		double result = _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle);
 
-		Shuffleboard.getTab("Swerve").add("Angle PID Target", angle);
-		Shuffleboard.getTab("Swerve").add("Angle PID", result);
+//		Shuffleboard.getTab("Swerve").add("Angle PID Target", angle);
+//		Shuffleboard.getTab("Swerve").add("Angle PID", result);
 
 		return result;
 	}

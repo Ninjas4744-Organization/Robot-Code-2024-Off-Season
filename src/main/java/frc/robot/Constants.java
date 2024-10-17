@@ -12,9 +12,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.NinjasLib.DataClasses.*;
 
 import java.io.IOException;
@@ -66,7 +64,7 @@ public final class Constants {
 			kAngleMap.put(3.0, 44.9);
 			kAngleMap.put(3.6, 41.1);
 			kAngleMap.put(4.0, 39.9);
-			kAngleMap.put(4.5, 37.2);
+			kAngleMap.put(4.5, 37.2 - 0.5);
 		}
 
 		public static Pose3d getSpeakerHolePose() {
@@ -134,21 +132,18 @@ public final class Constants {
 
 		static {
 			kControllerConstants.main.id = 20;
-			kControllerConstants.currentLimit = 40;
+			kControllerConstants.currentLimit = 50;
 			kControllerConstants.subsystemName = "Indexer";
-			kControllerConstants.positionGoalTolerance = 0.01;
-			kControllerConstants.encoderConversionFactor = 0.0098174;
-			kControllerConstants.encoderHomePosition = 0;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
 		public class States {
-			public static final double kIntake = -1;
-			public static final double kIndex = -1;
-			public static final double kIndexBack = 1;
-			public static final double kShoot = -1;
+			public static final double kIntake = 1;
+			public static final double kIndex = 1;
+			public static final double kIndexBack = -1;
+			public static final double kShoot = 1;
 			public static final double kOuttake = 1;
 		}
 	}
@@ -156,7 +151,7 @@ public final class Constants {
 	public static final class SwerveConstants {
 		public static final double kSpeedFactor = 1;
 		public static final double kRotationSpeedFactor = 1;
-		public static final double kJoystickDeadband = 0.3;
+		public static final double kJoystickDeadband = 0.1;
 
 		public static final Rotation2d kShootingAngleError = Rotation2d.fromDegrees(-5);
 
