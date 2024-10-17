@@ -2,7 +2,7 @@ package frc.robot.Subsystems;
 
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
-import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
+import frc.robot.NinjasLib.Controllers.NinjasTalonFXController;
 import frc.robot.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
 import frc.robot.RobotState;
 
@@ -17,7 +17,7 @@ public class Indexer extends StateMachineMotoredSubsystem {
 
 	@Override
 	protected void setController() {
-		_controller = new NinjasSparkMaxController(IndexerConstants.kControllerConstants);
+		_controller = new NinjasTalonFXController(IndexerConstants.kControllerConstants);
 	}
 
 	@Override
