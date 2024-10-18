@@ -28,7 +28,7 @@ public class TeleopCommandBuilder {
 							* MathUtil.applyDeadband(rotation.get().getX(), SwerveConstants.kJoystickDeadband);
 					double ry = -MathUtil.applyDeadband(rotation.get().getY(), SwerveConstants.kJoystickDeadband);
 
-					double finalRotation = rx;
+					double finalRotation = rx * SwerveConstants.maxAngularVelocity * SwerveConstants.kRotationSpeedFactor;
 
 					if (isLookAt.getAsBoolean())
 						finalRotation = SwerveIO.getInstance().lookAt(new Translation2d(ry, rx), 45);

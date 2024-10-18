@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0,
-        "y": 4.2
+        "x": 3.1,
+        "y": 4.1
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0486293987138655,
-        "y": 4.2
+        "x": 3.1486293987138656,
+        "y": 4.1
       },
       "isLocked": false,
       "linkedName": "OverNote3"
     },
     {
       "anchor": {
-        "x": 1.9,
-        "y": 5.5
+        "x": 2.0,
+        "y": 5.0
       },
       "prevControl": {
-        "x": 1.9037885152693366,
-        "y": 5.5
+        "x": 2.0037885152693367,
+        "y": 5.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": 160.0,
     "rotateFast": false
   },
   "reversed": false,

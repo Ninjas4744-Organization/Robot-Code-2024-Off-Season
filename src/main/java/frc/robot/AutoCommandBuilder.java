@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand;
 import frc.robot.NinjasLib.Swerve.PathFollowing.LocalADStarAK;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
+import frc.robot.Subsystems.Indexer;
+import frc.robot.Subsystems.Shooter;
+import frc.robot.Subsystems.ShooterAngle;
 
 public class AutoCommandBuilder {
 	public static void configureAutoBuilder() {
@@ -32,8 +35,22 @@ public class AutoCommandBuilder {
 
 	/** Registers all auto commands to pathplanner */
 	public static void registerCommands() {
-		NamedCommands.registerCommand("Shoot", Shoot());
-		NamedCommands.registerCommand("Intake", Intake());
+		NamedCommands.registerCommand("Prepare Shoot", TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE));
+		NamedCommands.registerCommand("Wait Shoot Ready", Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_SPEAKER_READY));
+		NamedCommands.registerCommand("Shoot", TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT));
+		NamedCommands.registerCommand("Full Shoot", Commands.sequence(
+			TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE),
+			Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_SPEAKER_READY),
+			TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT),
+			Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_SEARCH)
+		));
+		NamedCommands.registerCommand("Intake", TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.INTAKE));
+		NamedCommands.registerCommand("Reset", Commands.sequence(
+			TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.RESET),
+			Commands.waitUntil(() -> ShooterAngle.getInstance().isResetted()
+				&& Indexer.getInstance().isResetted()
+				&& Shooter.getInstance().isResetted())
+		));
 	}
 
 	/**
@@ -45,19 +62,5 @@ public class AutoCommandBuilder {
 		RobotState.setRobotState(RobotState.RobotStates.NOTE_IN_INDEXER);
 
 		return AutoBuilder.buildAuto(auto);
-	}
-
-	public static Command Shoot() {
-		return Commands.sequence(
-				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE),
-      Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_SPEAKER_READY),
-				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT),
-				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_SEARCH));
-	}
-
-	public static Command Intake() {
-		return Commands.sequence(
-				TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.INTAKE),
-				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_IN_INDEXER));
 	}
 }

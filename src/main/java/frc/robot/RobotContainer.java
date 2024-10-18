@@ -70,7 +70,12 @@ public class RobotContainer {
 
 	private void configureOperatorBindings() {
 		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
-		_driverJoystick.triangle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
+		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> {
+			if (RobotState.getRobotPose().getX() <= 5)
+				StateMachine.getInstance().changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE);
+			else
+				StateMachine.getInstance().changeRobotState(RobotStates.DELIVERY);
+		}));
 		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_AMP_PREPARE));
 		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE));
 		_driverJoystick.R2().onTrue(Commands.runOnce(() -> {

@@ -60,12 +60,12 @@ public final class Constants {
 		public static final InterpolatingDoubleTreeMap kAngleMap = new InterpolatingDoubleTreeMap();
 		static {
 			kAngleMap.put(1.6, 61.5 - 1);
-			kAngleMap.put(2.3, 53.0 - 1);
-			kAngleMap.put(2.5, 51.5 - 1 + 0.5 - 0.5);
-			kAngleMap.put(3.0, 46.9 - 1 + 0.5 + 0.5);
-			kAngleMap.put(3.6, 41.1 - 1 + 0.5 + 0.5 + 1.5 + 0.5 - 1 + 0.5);
-			kAngleMap.put(4.0, 39.9 - 1 + 1 + 0.5 + 0.5 + 1.5);
-			kAngleMap.put(4.5, 37.2 - 0.5 - 1 + 1 + 0.5 + 0.5 + 1.5);
+			kAngleMap.put(2.3, 53.0 - 1 - 1 - 0.5);
+			kAngleMap.put(2.5, 51.5 - 1 + 0.5 - 0.5 - 1 - 0.5);
+			kAngleMap.put(3.0, 46.9 - 1 + 0.5 + 0.5 - 1 - 0.5);
+			kAngleMap.put(3.6, 41.1 - 1 + 0.5 + 0.5 + 1.5 + 0.5 - 1 + 0.5 - 1 - 0.5);
+			kAngleMap.put(4.0, 39.9 - 1 + 1 + 0.5 + 0.5 + 1.5 - 0.5 - 1 - 0.5);
+			kAngleMap.put(4.5, 37.2 - 0.5 - 1 + 1 + 0.5 + 0.5 + 1.5 - 0.5 - 1 - 0.5);
 		}
 
 		public static Pose3d getSpeakerHolePose() {
@@ -122,7 +122,7 @@ public final class Constants {
 
 		public class States {
 			public static final double kSpeaker = 5580;
-			public static final double kAmp = 2100;
+			public static final double kAmp = 1850;
 			public static final double kOuttake = 120;
 		}
 	}
@@ -315,10 +315,10 @@ public final class Constants {
 //			public static final double kIZoneTheta = 10;
 //			public static final double kDTheta = 0.001;
 
-			public static final double kPTheta = 0.007;
-			public static final double kITheta = 0.015;
+			public static final double kPTheta = 0.07;
+			public static final double kITheta = 0.15;
 			public static final double kIZoneTheta = 4;
-			public static final double kDTheta = 0.0003;
+			public static final double kDTheta = 0.003;
 
 			public static final double kMaxSpeed = 2;
 			public static final double kAcceleration = 1;

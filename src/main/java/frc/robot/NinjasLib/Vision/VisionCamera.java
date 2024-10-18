@@ -6,14 +6,15 @@ import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionOutput;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class VisionCamera {
 	private final PhotonCamera _camera;
@@ -65,7 +66,8 @@ public class VisionCamera {
 					currentPose.get().estimatedPose.getY(),
 					Rotation2d.fromRadians(
 							currentPose.get().estimatedPose.getRotation().getZ()));
-		}
+		} else
+      _output.hasTargets = false;
 
 		return _output;
 	}

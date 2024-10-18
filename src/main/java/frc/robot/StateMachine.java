@@ -122,6 +122,7 @@ public class StateMachine extends StateMachineSubsystem {
 				if (wantedState == RobotStates.INTAKE
 						|| wantedState == RobotStates.CLIMB_PREPARE
 						|| wantedState == RobotStates.CLOSE
+          || wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
 						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
@@ -132,6 +133,7 @@ public class StateMachine extends StateMachineSubsystem {
 						|| wantedState == RobotStates.SHOOT_AMP_PREPARE
 						|| wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
 						|| wantedState == RobotStates.CLOSE
+          || wantedState == RobotStates.DELIVERY
 					|| wantedState == RobotStates.RESET
 					|| wantedState == RobotStates.OUTTAKE) RobotState.setRobotState(wantedState);
 				break;
@@ -169,6 +171,12 @@ public class StateMachine extends StateMachineSubsystem {
 				if (wantedState == RobotStates.CLOSE ||
 					wantedState == RobotStates.RESET)
 					RobotState.setRobotState(wantedState);
+
+      case DELIVERY:
+        if (wantedState == RobotStates.CLOSE ||
+          wantedState == RobotStates.RESET ||
+          wantedState == RobotStates.SHOOT)
+          RobotState.setRobotState(wantedState);
 		}
 
 		if (RobotState.getRobotState() == RobotStates.IDLE)
@@ -225,6 +233,14 @@ public class StateMachine extends StateMachineSubsystem {
 					&& Shooter.getInstance().isReady(),
 				RobotStates.SHOOT_SPEAKER_READY));
 
+    _endConditionMap.put(
+      RobotStates.DELIVERY,
+      new StateEndCondition(
+        () -> ShooterAngle.getInstance().atGoal()
+          && Shooter.getInstance().isReady(),
+        RobotStates.SHOOT)
+    );
+
 		_endConditionMap.put(
 			RobotStates.SHOOT_AMP_READY,
 			new StateEndCondition(() -> true, RobotStates.SHOOT));
@@ -236,7 +252,7 @@ public class StateMachine extends StateMachineSubsystem {
 					|| !Shooter.getInstance().isReady(),
 				RobotStates.SHOOT_SPEAKER_PREPARE));
 
-		_endConditionMap.put(RobotStates.SHOOT, new StateEndCondition(() -> _shootTimer.get() > 2, RobotStates.CLOSE));
+    _endConditionMap.put(RobotStates.SHOOT, new StateEndCondition(() -> _shootTimer.get() > 1, RobotStates.CLOSE));
 
 		_endConditionMap.put(
 				RobotStates.DRIVE_TO_AMP,

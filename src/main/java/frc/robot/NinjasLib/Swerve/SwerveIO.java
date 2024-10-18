@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -118,8 +119,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 
 //		Shuffleboard.getTab("Swerve").add("Angle PID Target", angle);
 //		Shuffleboard.getTab("Swerve").add("Angle PID", result);
-		SmartDashboard.putNumber("Angle PID Current", RobotState.getGyroYaw().getDegrees());
-		SmartDashboard.putNumber("Angle PID Error", _anglePID.getPositionError());
+		SmartDashboard.putNumber("Angle PID Current", new Rotation2d(Units.degreesToRadians(RobotState.getGyroYaw().getDegrees())).getDegrees());
 		SmartDashboard.putNumber("Angle PID Target", angle);
 		SmartDashboard.putNumber("Angle PID", result);
 
@@ -352,7 +352,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	public void periodic() {
 		switch (_state) {
 			case DEFAULT:
-				drive(fromPercent(_demand.driverInput), SwerveConstants.kFieldRelative);
+				drive(new ChassisSpeeds(fromPercent(_demand.driverInput).vxMetersPerSecond, fromPercent(_demand.driverInput).vyMetersPerSecond, _demand.driverInput.omegaRadiansPerSecond), SwerveConstants.kFieldRelative);
 				break;
 
 			case FOLLOW_PATH:
@@ -393,7 +393,8 @@ public abstract class SwerveIO extends StateMachineSubsystem {
           double rotation = lookAtTarget(NoteDetection.getNotePose(), true, new Rotation2d());
 
 					drive(new ChassisSpeeds(pid.getX(), pid.getY(), rotation), true);
-				} else drive(fromPercent(_demand.driverInput), SwerveConstants.kFieldRelative);
+				} else
+					drive(new ChassisSpeeds(fromPercent(_demand.driverInput).vxMetersPerSecond, fromPercent(_demand.driverInput).vyMetersPerSecond, _demand.driverInput.omegaRadiansPerSecond), SwerveConstants.kFieldRelative);
 				break;
 
 			default:
@@ -429,7 +430,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 					setState(SwerveState.LOOK_AT_TARGET);
 					updateDemand(VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID).toPose2d());
 				},
-				RobotStates.SHOOT_SPEAKER_PREPARE);
+			RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.DELIVERY);
 
 		addFunctionToPeriodicMap(
 				() -> {

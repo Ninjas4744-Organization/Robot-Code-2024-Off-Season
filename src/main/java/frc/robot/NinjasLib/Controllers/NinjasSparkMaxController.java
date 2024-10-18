@@ -16,6 +16,7 @@ public class NinjasSparkMaxController extends NinjasController {
 	private final TrapezoidProfile _profile;
 	private final Timer _profileTimer = new Timer();
 	private State _initialProfileState;
+	private double pidSetpoint;
 
 	public NinjasSparkMaxController(MainControllerConstants constants) {
 		super(constants);
@@ -125,14 +126,22 @@ public class NinjasSparkMaxController extends NinjasController {
 
 		switch (_controlState) {
 			case PIDF_POSITION:
+//				pidSetpoint = _profile.calculate(
+//					0.02,
+//					new State(pidSetpoint, getVelocity()),
+//					new State(getGoal(), 0))
+//					.position;
+//
+//				_main.getPIDController().setReference(pidSetpoint, ControlType.kPosition);
+
 				_main.getPIDController()
-						.setReference(
-								_profile.calculate(
-												_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
-												_initialProfileState,
-												new State(getGoal(), 0))
-										.position,
-								ControlType.kPosition);
+					.setReference(
+						_profile.calculate(
+							_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
+							_initialProfileState,
+							new State(getGoal(), 0))
+							.position,
+						ControlType.kPosition);
 				break;
 
 			case PIDF_VELOCITY:

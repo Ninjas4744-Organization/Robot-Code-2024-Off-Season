@@ -31,7 +31,7 @@ public class Swerve extends SwerveIO {
 //		Shuffleboard.getTab("Swerve").add("Drive Field Relative", fieldRelative);
 
 		SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.kSwerveKinematics.toSwerveModuleStates(
-			fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()/*.rotateBy(Rotation2d.fromDegrees(-90))*/) : drive);
+			fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive);
 		setModuleStates(swerveModuleStates, SwerveConstants.kOpenLoop);
 	}
 

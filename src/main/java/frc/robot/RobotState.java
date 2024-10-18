@@ -40,7 +40,8 @@ public class RobotState {
 		DRIVE_TO_AMP,
 		DRIVE_TO_SOURCE,
     TESTING,
-    OUTTAKE
+		OUTTAKE,
+		DELIVERY
 	}
 
 	private static RobotStates robotState = RobotStates.IDLE;
