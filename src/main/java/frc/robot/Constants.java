@@ -11,6 +11,7 @@ import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.NinjasLib.DataClasses.*;
@@ -40,7 +41,7 @@ public final class Constants {
 			kControllerConstants.PIDFConstants.kAcceleration = 50;
 			kControllerConstants.PIDFConstants.kP = 0.3;
 
-			kControllerConstants.positionGoalTolerance = 2;
+			kControllerConstants.positionGoalTolerance = 0.5;
 			kControllerConstants.dynamicProfiling = true;
 
 			kControllerConstants.encoderConversionFactor = 1.0 / 300.0 * 360.0;
@@ -58,13 +59,13 @@ public final class Constants {
 		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.12);
 		public static final InterpolatingDoubleTreeMap kAngleMap = new InterpolatingDoubleTreeMap();
 		static {
-			kAngleMap.put(1.6, 59.0);
-			kAngleMap.put(2.3, 52.5);
-			kAngleMap.put(2.5, 48.0);
-			kAngleMap.put(3.0, 44.9);
-			kAngleMap.put(3.6, 41.1);
-			kAngleMap.put(4.0, 39.9);
-			kAngleMap.put(4.5, 37.2 - 0.5);
+			kAngleMap.put(1.6, 61.5 - 1);
+			kAngleMap.put(2.3, 53.0 - 1);
+			kAngleMap.put(2.5, 51.5 - 1 + 0.5 - 0.5);
+			kAngleMap.put(3.0, 46.9 - 1 + 0.5 + 0.5);
+			kAngleMap.put(3.6, 41.1 - 1 + 0.5 + 0.5 + 1.5 + 0.5 - 1 + 0.5);
+			kAngleMap.put(4.0, 39.9 - 1 + 1 + 0.5 + 0.5 + 1.5);
+			kAngleMap.put(4.5, 37.2 - 0.5 - 1 + 1 + 0.5 + 0.5 + 1.5);
 		}
 
 		public static Pose3d getSpeakerHolePose() {
@@ -104,9 +105,10 @@ public final class Constants {
 			kControllerConstants.PIDFConstants = new PIDFConstants();
 			kControllerConstants.PIDFConstants.kS = 0.185;
 			kControllerConstants.PIDFConstants.kV = 0.117;
-			kControllerConstants.PIDFConstants.kCruiseVelocity = 50;
-			kControllerConstants.PIDFConstants.kAcceleration = 100;
-			kControllerConstants.velocityGoalTolerance = 10;
+			kControllerConstants.PIDFConstants.kCruiseVelocity = 3000;
+			kControllerConstants.PIDFConstants.kAcceleration = 6000;
+			kControllerConstants.velocityGoalTolerance = 600;
+			kControllerConstants.encoderConversionFactor = 60;
 
 			kControllerConstants.followers = new ControllerConstants[] {new ControllerConstants()};
 			kControllerConstants.followers[0].id = 31;
@@ -116,12 +118,12 @@ public final class Constants {
 			kSimulatedControllerConstants.motorTorque = 1;
 		}
 
-		public static final double kMinimumShootTolerance = 2;
+		public static final double kMinimumShootTolerance = 200;
 
 		public class States {
-			public static final double kSpeaker = 93;
-			public static final double kAmp = 35;
-			public static final double kOuttake = 20;
+			public static final double kSpeaker = 5580;
+			public static final double kAmp = 2100;
+			public static final double kOuttake = 120;
 		}
 	}
 
@@ -132,6 +134,7 @@ public final class Constants {
 
 		static {
 			kControllerConstants.main.id = 20;
+			kControllerConstants.main.inverted = false;
 			kControllerConstants.currentLimit = 50;
 			kControllerConstants.subsystemName = "Indexer";
 
@@ -153,7 +156,7 @@ public final class Constants {
 		public static final double kRotationSpeedFactor = 1;
 		public static final double kJoystickDeadband = 0.1;
 
-		public static final Rotation2d kShootingAngleError = Rotation2d.fromDegrees(-5);
+		public static final Rotation2d kShootingAngleError = Rotation2d.fromDegrees(-7);
 
 		public static final boolean kInvertGyro = false; // Always ensure Gyro is CCW+ CW-
 
@@ -306,17 +309,23 @@ public final class Constants {
 			public static final double kI = 0;
 			public static final double kIZone = 0;
 			public static final double kD = 1;
-			public static final double kPTheta = 0.05;
-			//			public static final double kITheta = 0.1;
-			public static final double kITheta = 0;
-			//			public static final double kIZoneTheta = 4;
-			public static final double kIZoneTheta = 0;
-			public static final double kDTheta = 0.001;
+
+//			public static final double kPTheta = 0.05;
+//			public static final double kITheta = 0.07;
+//			public static final double kIZoneTheta = 10;
+//			public static final double kDTheta = 0.001;
+
+			public static final double kPTheta = 0.007;
+			public static final double kITheta = 0.015;
+			public static final double kIZoneTheta = 4;
+			public static final double kDTheta = 0.0003;
 
 			public static final double kMaxSpeed = 2;
 			public static final double kAcceleration = 1;
 			public static final double kMaxAngularSpeed = 8;
 			public static final double kAngularAcceleration = 16;
+
+			public static final TrapezoidProfile.Constraints kAngleConstraints = new TrapezoidProfile.Constraints(Units.radiansToDegrees(kMaxAngularSpeed), Units.radiansToDegrees(kAngularAcceleration));
 
 			public static final PathConstraints kConstraints =
 					new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);

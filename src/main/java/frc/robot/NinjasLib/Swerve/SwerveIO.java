@@ -5,6 +5,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,7 +27,7 @@ import frc.robot.RobotState.RobotStates;
 public abstract class SwerveIO extends StateMachineSubsystem {
 	private static SwerveIO _instance;
 
-	private final PIDController _anglePID;
+	private final ProfiledPIDController _anglePID;
 	private final PIDController _xPID;
 	private final PIDController _yPID;
 	private final PIDController _axisPID;
@@ -52,10 +53,11 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		_previousState = SwerveState.DEFAULT;
 		_demand = new SwerveDemand();
 
-		_anglePID = new PIDController(
+		_anglePID = new ProfiledPIDController(
 				SwerveConstants.AutoConstants.kPTheta,
 				SwerveConstants.AutoConstants.kITheta,
-				SwerveConstants.AutoConstants.kDTheta);
+			SwerveConstants.AutoConstants.kDTheta,
+			SwerveConstants.AutoConstants.kAngleConstraints);
 		_anglePID.setIZone(SwerveConstants.AutoConstants.kIZoneTheta);
 		_anglePID.enableContinuousInput(-180, 180);
 
@@ -116,6 +118,10 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 
 //		Shuffleboard.getTab("Swerve").add("Angle PID Target", angle);
 //		Shuffleboard.getTab("Swerve").add("Angle PID", result);
+		SmartDashboard.putNumber("Angle PID Current", RobotState.getGyroYaw().getDegrees());
+		SmartDashboard.putNumber("Angle PID Error", _anglePID.getPositionError());
+		SmartDashboard.putNumber("Angle PID Target", angle);
+		SmartDashboard.putNumber("Angle PID", result);
 
 		return result;
 	}

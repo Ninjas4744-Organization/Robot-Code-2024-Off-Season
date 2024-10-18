@@ -121,8 +121,6 @@ public class StateMachine extends StateMachineSubsystem {
 			case NOTE_SEARCH:
 				if (wantedState == RobotStates.INTAKE
 						|| wantedState == RobotStates.CLIMB_PREPARE
-						|| wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
-						|| wantedState == RobotStates.SHOOT_AMP_PREPARE
 						|| wantedState == RobotStates.CLOSE
 						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;

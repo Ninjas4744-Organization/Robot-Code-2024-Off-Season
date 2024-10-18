@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.NinjasLib.Vision.VisionIO;
@@ -38,6 +39,8 @@ public class RobotContainer {
 		Shuffleboard.getTab("Competition").addBoolean("Shooter Ready", () -> RobotState.getRobotState() == RobotStates.SHOOT_SPEAKER_READY || RobotState.getRobotState() == RobotStates.SHOOT_AMP_READY);
 		Shuffleboard.getTab("Competition").addString("Robot State", () -> RobotState.getRobotState().toString());
 		Shuffleboard.getTab("Competition").addBoolean("Can Gyro Reset", () -> VisionIO.getInstance().hasTargets());
+
+		new Trigger(() -> RobotState.getRobotPose().getX() <= 5 && RobotState.getNoteInIndexer()).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 
 		configureBindings();
 	}
@@ -98,7 +101,7 @@ public class RobotContainer {
 	}
 
 	public void resetSubsystems() {
-		RobotState.setRobotPose(Constants.VisionConstants.getStartingPose());
+//		RobotState.setRobotPose(Constants.VisionConstants.getStartingPose());
 
 		RobotState.setRobotState(RobotStates.RESET);
 		Shooter.getInstance().resetSubsystem();

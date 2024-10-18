@@ -121,7 +121,7 @@ public class NinjasSparkMaxController extends NinjasController {
 								new State(getGoal(), 0))
 						.position);
 
-		if (atGoal() || _profileTimer.get() > _profile.totalTime()) return;
+//		if (atGoal() || _profileTimer.get() > _profile.totalTime()) return;
 
 		switch (_controlState) {
 			case PIDF_POSITION:
