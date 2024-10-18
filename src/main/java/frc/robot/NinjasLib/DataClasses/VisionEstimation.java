@@ -9,8 +9,11 @@ public class VisionEstimation {
 	/** The time this pose was detected by */
 	public double timestamp;
 
-	/** Whether or not this the camera that returned this estimation has targets */
+	/** Whether this the camera that returned this estimation has targets */
 	public boolean hasTargets;
+
+	/** The pose of the target */
+	public Pose2d target;
 
 	/**
 	 * Creates a new VisionEstimation
@@ -19,9 +22,10 @@ public class VisionEstimation {
 	 * @param timestamp - The time this pose was detected by
 	 * @param hasTargets - Whether or not this the camera that returned this estimation has targets
 	 */
-	public VisionEstimation(Pose2d pose, double timestamp, boolean hasTargets) {
+	public VisionEstimation(Pose2d pose, double timestamp, boolean hasTargets, Pose2d target) {
 		this.pose = pose;
 		this.timestamp = timestamp;
 		this.hasTargets = hasTargets;
+		this.target = target;
 	}
 }

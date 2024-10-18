@@ -348,6 +348,10 @@ public final class Constants {
 
 		public static final double kMaxAmbiguity = 0.2;
 
+		public static double distanceToFOM(double distance){
+			return 0.0963 * distance * distance - 0.3026 * distance + 0.3555;
+		}
+
 		public static final boolean kUseOurField = false;
 		public static final double kFieldLength = Units.feetToMeters(54.0);
 		public static AprilTagFieldLayout kBlueFieldLayout;
@@ -406,7 +410,6 @@ public final class Constants {
 					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
 						? kBlueFieldLayout
 						: kRedFieldLayout;
-//					layout = kBlueFieldLayout;
 			}
 
 			if (!ignoredTags.isEmpty()) layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));

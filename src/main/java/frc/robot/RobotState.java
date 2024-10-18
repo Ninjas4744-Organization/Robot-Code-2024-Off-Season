@@ -2,6 +2,8 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.AllianceStationID;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.Swerve.Swerve;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
@@ -112,8 +115,19 @@ public class RobotState {
 	 * @param visionEstimation - the estimation
 	 */
 	public static void updateRobotPose(VisionEstimation visionEstimation) {
-		if (visionEstimation.hasTargets)
-			poseEstimator.addVisionMeasurement(visionEstimation.pose, visionEstimation.timestamp);
+		if (visionEstimation.hasTargets){
+			double distanceToTarget = getRobotPose().getTranslation().getDistance(visionEstimation.target.getTranslation());
+
+			poseEstimator.addVisionMeasurement(
+				visionEstimation.pose,
+				visionEstimation.timestamp,
+				new Matrix<>(Nat.N3(), Nat.N1(), new double[] {
+					VisionConstants.distanceToFOM(distanceToTarget),
+					VisionConstants.distanceToFOM(distanceToTarget),
+					VisionConstants.distanceToFOM(distanceToTarget),
+				})
+			);
+		}
 
 		_robotPosePublisher.set(getRobotPose());
 	}
