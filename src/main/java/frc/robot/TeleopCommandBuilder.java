@@ -10,6 +10,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.RobotState.RobotStates;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -53,5 +54,13 @@ public class TeleopCommandBuilder {
 
 	public static Command changeRobotState(RobotStates state) {
 		return Commands.runOnce(() -> StateMachine.getInstance().changeRobotState(state), StateMachine.getInstance());
+	}
+
+	public static Command runIfTestMode(Command command) {
+		return Commands.either(
+			command,
+			Commands.none(),
+			() -> RobotState.getRobotState() == RobotStates.TESTING
+		);
 	}
 }

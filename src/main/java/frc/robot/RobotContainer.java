@@ -55,6 +55,7 @@ public class RobotContainer {
 	private void configureBindings() {
 		StateMachine.getInstance().setTriggerForSimulationTesting(_driverJoystick.R2());
 
+		configureTestBindings();
 		configureDriverBindings();
 		configureOperatorBindings();
 	}
@@ -67,7 +68,6 @@ public class RobotContainer {
 						() -> isSwerveLookAt,
 						() -> isSwerveBayblade));
 
-		//				_driverJoystick.square().onTrue(Commands.runOnce(() -> isSwerveBayblade = !isSwerveBayblade));
 		_driverJoystick.R1().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
 		_driverJoystick.R2().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
 
@@ -77,13 +77,17 @@ public class RobotContainer {
 
 	private void configureOperatorBindings() {
 		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
+
 		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> {
 			if (RobotState.getRobotPose().getX() <= 5)
 				StateMachine.getInstance().changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE);
 			else StateMachine.getInstance().changeRobotState(RobotStates.DELIVERY);
 		}));
+
 		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_AMP_PREPARE));
+
 		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE));
+
 		_driverJoystick
 				.R2()
 				.onTrue(Commands.runOnce(
@@ -95,14 +99,13 @@ public class RobotContainer {
 	}
 
 	private void configureTestBindings() {
-		_driverJoystick.triangle().whileTrue(Indexer.getInstance().runMotor(-1));
-		_driverJoystick.cross().whileTrue(Indexer.getInstance().runMotor(1));
+		_driverJoystick.triangle().whileTrue(TeleopCommandBuilder.runIfTestMode(Indexer.getInstance().runMotor(1)));
+		_driverJoystick.cross().whileTrue(TeleopCommandBuilder.runIfTestMode(Indexer.getInstance().runMotor(-1)));
 
-		_driverJoystick.povDown().whileTrue(ShooterAngle.getInstance().runMotor(-0.5));
-		_driverJoystick.povUp().whileTrue(ShooterAngle.getInstance().runMotor(0.5));
+		_driverJoystick.povDown().whileTrue(TeleopCommandBuilder.runIfTestMode(ShooterAngle.getInstance().runMotor(-0.5)));
+		_driverJoystick.povUp().whileTrue(TeleopCommandBuilder.runIfTestMode(ShooterAngle.getInstance().runMotor(0.5)));
 
-		_driverJoystick.square().whileTrue(Shooter.getInstance().runMotor(1));
-		_driverJoystick.circle().whileTrue(Shooter.getInstance().runMotor(1));
+		_driverJoystick.square().whileTrue(TeleopCommandBuilder.runIfTestMode(Shooter.getInstance().runMotor(1)));
 	}
 
 	public void periodic() {
