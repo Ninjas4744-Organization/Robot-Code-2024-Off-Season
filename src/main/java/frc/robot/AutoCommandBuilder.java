@@ -35,22 +35,28 @@ public class AutoCommandBuilder {
 
 	/** Registers all auto commands to pathplanner */
 	public static void registerCommands() {
-		NamedCommands.registerCommand("Prepare Shoot", TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE));
-		NamedCommands.registerCommand("Wait Shoot Ready", Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_SPEAKER_READY));
+		NamedCommands.registerCommand(
+				"Prepare Shoot", TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE));
+		NamedCommands.registerCommand(
+				"Wait Shoot Ready",
+				Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_SPEAKER_READY));
 		NamedCommands.registerCommand("Shoot", TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT));
-		NamedCommands.registerCommand("Full Shoot", Commands.sequence(
-			TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE),
-			Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_SPEAKER_READY),
-			TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT),
-			Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_SEARCH)
-		));
+		NamedCommands.registerCommand(
+				"Full Shoot",
+				Commands.sequence(
+						TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT_SPEAKER_PREPARE),
+						Commands.waitUntil(
+								() -> RobotState.getRobotState() == RobotState.RobotStates.SHOOT_SPEAKER_READY),
+						TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT),
+						Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_SEARCH)));
 		NamedCommands.registerCommand("Intake", TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.INTAKE));
-		NamedCommands.registerCommand("Reset", Commands.sequence(
-			TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.RESET),
-			Commands.waitUntil(() -> ShooterAngle.getInstance().isResetted()
-				&& Indexer.getInstance().isResetted()
-				&& Shooter.getInstance().isResetted())
-		));
+		NamedCommands.registerCommand(
+				"Reset",
+				Commands.sequence(
+						TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.RESET),
+						Commands.waitUntil(() -> ShooterAngle.getInstance().isResetted()
+								&& Indexer.getInstance().isResetted()
+								&& Shooter.getInstance().isResetted())));
 	}
 
 	/**

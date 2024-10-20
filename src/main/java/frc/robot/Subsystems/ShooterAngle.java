@@ -46,18 +46,20 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToPeriodicMap(
-			() -> controller().setPosition(61),
-			RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
+				() -> controller().setPosition(61), RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
 
 		addFunctionToPeriodicMap(
-			() -> controller()
-				.setPosition(ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getSpeakerHolePose()).getDegrees()),
-			RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.SHOOT_SPEAKER_READY);
+				() -> controller()
+						.setPosition(
+								ShooterAngleConstants.calculateLaunchAngle(ShooterAngleConstants.getSpeakerHolePose())
+										.getDegrees()),
+				RobotStates.SHOOT_SPEAKER_PREPARE,
+				RobotStates.SHOOT_SPEAKER_READY);
 
 		addFunctionToOnChangeMap(() -> controller().setPosition(45), RobotStates.DELIVERY);
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET);
-		addFunctionToOnChangeMap(() -> controller().setPosition(37), RobotStates.CLOSE);
+		addFunctionToOnChangeMap(() -> controller().setPosition(31), RobotStates.CLOSE);
 	}
 
 	@Override

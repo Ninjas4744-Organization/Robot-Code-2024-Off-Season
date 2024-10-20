@@ -10,7 +10,6 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.RobotState.RobotStates;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -28,7 +27,8 @@ public class TeleopCommandBuilder {
 							* MathUtil.applyDeadband(rotation.get().getX(), SwerveConstants.kJoystickDeadband);
 					double ry = -MathUtil.applyDeadband(rotation.get().getY(), SwerveConstants.kJoystickDeadband);
 
-					double finalRotation = rx * SwerveConstants.maxAngularVelocity * SwerveConstants.kRotationSpeedFactor;
+					double finalRotation =
+							rx * SwerveConstants.maxAngularVelocity * SwerveConstants.kRotationSpeedFactor;
 
 					if (isLookAt.getAsBoolean())
 						finalRotation = SwerveIO.getInstance().lookAt(new Translation2d(ry, rx), 45);
@@ -46,8 +46,7 @@ public class TeleopCommandBuilder {
 			else {
 				if (VisionIO.getInstance().hasTargets())
 					RobotState.resetGyro(RobotState.getRobotPose().getRotation());
-				else
-					RobotState.resetGyro(Rotation2d.fromDegrees(0));
+				else RobotState.resetGyro(Rotation2d.fromDegrees(0));
 			}
 		});
 	}

@@ -15,7 +15,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.NinjasLib.DataClasses.*;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,18 +36,18 @@ public final class Constants {
 			kControllerConstants.subsystemName = "ShooterAngle";
 
 			kControllerConstants.PIDFConstants = new PIDFConstants();
-			kControllerConstants.PIDFConstants.kCruiseVelocity = 50;
-			kControllerConstants.PIDFConstants.kAcceleration = 50;
-			kControllerConstants.PIDFConstants.kP = 0.3;
+			kControllerConstants.PIDFConstants.kCruiseVelocity = 75;
+			kControllerConstants.PIDFConstants.kAcceleration = 150;
+			kControllerConstants.PIDFConstants.kP = 0.15;
+			//			kControllerConstants.PIDFConstants.kP = 0.05;
 
 			kControllerConstants.positionGoalTolerance = 0.5;
 			kControllerConstants.dynamicProfiling = true;
 
 			kControllerConstants.encoderConversionFactor = 1.0 / 300.0 * 360.0;
-			kControllerConstants.encoderHomePosition = 37.7;
+			kControllerConstants.encoderHomePosition = 31;
 			kControllerConstants.isMaxSoftLimit = true;
-			kControllerConstants.maxSoftLimit = 78;
-
+			kControllerConstants.maxSoftLimit = 72;
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
 			kSimulatedControllerConstants.motorTorque = 1;
@@ -58,23 +57,28 @@ public final class Constants {
 		public static final Translation3d kSpeakerOffset = new Translation3d(0, 0, 0.74);
 		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.12);
 		public static final InterpolatingDoubleTreeMap kAngleMap = new InterpolatingDoubleTreeMap();
+
 		static {
-			kAngleMap.put(1.6, 61.5 - 1);
-			kAngleMap.put(2.3, 53.0 - 1 - 1 - 0.5);
-			kAngleMap.put(2.5, 51.5 - 1 + 0.5 - 0.5 - 1 - 0.5);
-			kAngleMap.put(3.0, 46.9 - 1 + 0.5 + 0.5 - 1 - 0.5);
-			kAngleMap.put(3.6, 41.1 - 1 + 0.5 + 0.5 + 1.5 + 0.5 - 1 + 0.5 - 1 - 0.5);
-			kAngleMap.put(4.0, 39.9 - 1 + 1 + 0.5 + 0.5 + 1.5 - 0.5 - 1 - 0.5);
-			kAngleMap.put(4.5, 37.2 - 0.5 - 1 + 1 + 0.5 + 0.5 + 1.5 - 0.5 - 1 - 0.5);
+			kAngleMap.put(1.6, 60.5 - 6.7);
+			kAngleMap.put(2.3, 50.5 - 6.7);
+			kAngleMap.put(2.5, 49.0 - 6.7);
+			kAngleMap.put(3.0, 45.4 - 6.7);
+			kAngleMap.put(3.6, 41.1 - 6.7);
+			kAngleMap.put(4.0, 40.4 - 6.7);
+			kAngleMap.put(4.5, 37.2 - 6.7);
 		}
 
 		public static Pose3d getSpeakerHolePose() {
 			return new Pose3d(
-				VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID).getX()
+					VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID)
+									.getX()
 							+ kSpeakerOffset.getX() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-				VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID).getY()
+					VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID)
+									.getY()
 							+ kSpeakerOffset.getY() * (RobotState.getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-				VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID).getZ() + kSpeakerOffset.getZ(),
+					VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID)
+									.getZ()
+							+ kSpeakerOffset.getZ(),
 					new Rotation3d());
 		}
 
@@ -310,10 +314,10 @@ public final class Constants {
 			public static final double kIZone = 0;
 			public static final double kD = 1;
 
-//			public static final double kPTheta = 0.05;
-//			public static final double kITheta = 0.07;
-//			public static final double kIZoneTheta = 10;
-//			public static final double kDTheta = 0.001;
+			//			public static final double kPTheta = 0.05;
+			//			public static final double kITheta = 0.07;
+			//			public static final double kIZoneTheta = 10;
+			//			public static final double kDTheta = 0.001;
 
 			public static final double kPTheta = 0.07;
 			public static final double kITheta = 0.15;
@@ -325,7 +329,8 @@ public final class Constants {
 			public static final double kMaxAngularSpeed = 8;
 			public static final double kAngularAcceleration = 16;
 
-			public static final TrapezoidProfile.Constraints kAngleConstraints = new TrapezoidProfile.Constraints(Units.radiansToDegrees(kMaxAngularSpeed), Units.radiansToDegrees(kAngularAcceleration));
+			public static final TrapezoidProfile.Constraints kAngleConstraints = new TrapezoidProfile.Constraints(
+					Units.radiansToDegrees(kMaxAngularSpeed), Units.radiansToDegrees(kAngularAcceleration));
 
 			public static final PathConstraints kConstraints =
 					new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);
@@ -342,9 +347,19 @@ public final class Constants {
 
 	public static class VisionConstants {
 		public static final Map<String, Transform3d> kCameras = Map.of(
-			"Front", new Transform3d(0.28 - 0.11 - 0.2, 0.105, -0.055, new Rotation3d(0, 30, 0)),
-			"Left", new Transform3d(-0.035 + 0.1, 0.285 - 0.33, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(90 + 3))),
-			"Right", new Transform3d(-0.03 - 0.1, -0.285 + 0.33, -0.06, new Rotation3d(0, 30, Units.degreesToRadians(-90 + 3))));
+				"Front", new Transform3d(0.28 - 0.11 - 0.2, 0.105, -0.055, new Rotation3d(0, 30, 0)),
+				"Left",
+						new Transform3d(
+								-0.035 + 0.1,
+								0.285 - 0.33,
+								-0.06,
+								new Rotation3d(0, 30, Units.degreesToRadians(90 + 3))),
+				"Right",
+						new Transform3d(
+								-0.03 - 0.1,
+								-0.285 + 0.33,
+								-0.06,
+								new Rotation3d(0, 30, Units.degreesToRadians(-90 + 3))));
 
 		public static final double kMaxAmbiguity = 0.2;
 
@@ -404,9 +419,9 @@ public final class Constants {
 				if (kUseOurField) layout = kOurFieldLayout;
 				else
 					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
-						? kBlueFieldLayout
-						: kRedFieldLayout;
-//					layout = kBlueFieldLayout;
+							? kBlueFieldLayout
+							: kRedFieldLayout;
+				//					layout = kBlueFieldLayout;
 			}
 
 			if (!ignoredTags.isEmpty()) layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));
@@ -429,16 +444,16 @@ public final class Constants {
 			Pose2d redStation2 = new Pose2d(0.5, 4.25, new Rotation2d(0));
 			Pose2d redStation3 = new Pose2d(0.5, 0.88, new Rotation2d(0));
 
-            return switch (station) {
-                case Blue1 -> blueStation1;
-                case Blue2 -> blueStation2;
-                case Blue3 -> blueStation3;
-                case Red1 -> redStation1;
-                case Red2 -> redStation2;
-                case Red3 -> redStation3;
-                default -> new Pose2d();
-            };
-        }
+			return switch (station) {
+				case Blue1 -> blueStation1;
+				case Blue2 -> blueStation2;
+				case Blue3 -> blueStation3;
+				case Red1 -> redStation1;
+				case Red2 -> redStation2;
+				case Red3 -> redStation3;
+				default -> new Pose2d();
+			};
+		}
 
 		public class Simulation {
 			public static final int kResolutionWidth = 1280;

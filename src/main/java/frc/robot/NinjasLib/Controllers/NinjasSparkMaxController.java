@@ -3,10 +3,10 @@ package frc.robot.NinjasLib.Controllers;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.NinjasLib.DataClasses.MainControllerConstants;
 
 public class NinjasSparkMaxController extends NinjasController {
@@ -16,7 +16,8 @@ public class NinjasSparkMaxController extends NinjasController {
 	private final TrapezoidProfile _profile;
 	private final Timer _profileTimer = new Timer();
 	private State _initialProfileState;
-	private double pidSetpoint;
+	private ProfiledPIDController _PIDFController;
+	private boolean isCurrentlyPiding = false;
 
 	public NinjasSparkMaxController(MainControllerConstants constants) {
 		super(constants);
@@ -54,7 +55,12 @@ public class NinjasSparkMaxController extends NinjasController {
 		_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
 				constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
 
-		_initialProfileState = new State(getPosition(), getVelocity());
+		_PIDFController = new ProfiledPIDController(
+				constants.PIDFConstants.kP,
+				constants.PIDFConstants.kI,
+				constants.PIDFConstants.kD,
+				new TrapezoidProfile.Constraints(
+						constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
 	}
 
 	@Override
@@ -73,6 +79,7 @@ public class NinjasSparkMaxController extends NinjasController {
 
 		_profileTimer.restart();
 		_initialProfileState = new State(getPosition(), getVelocity());
+		_PIDFController.setGoal(position);
 	}
 
 	@Override
@@ -83,7 +90,8 @@ public class NinjasSparkMaxController extends NinjasController {
 			_main.getPIDController().setReference(getGoal(), ControlType.kVelocity);
 
 		_profileTimer.restart();
-		_initialProfileState = new State(getPosition(), getVelocity());
+		_initialProfileState = new State(getVelocity(), 0);
+		_PIDFController.setGoal(getVelocity());
 	}
 
 	@Override
@@ -110,49 +118,15 @@ public class NinjasSparkMaxController extends NinjasController {
 	public void periodic() {
 		super.periodic();
 
-		SmartDashboard.putNumber("Timer", _profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0));
-		SmartDashboard.putNumber("Initial Profile State Pos", _initialProfileState.position);
-		SmartDashboard.putNumber("Initial Profile State Vel", _initialProfileState.velocity);
-		SmartDashboard.putNumber("Goal State Pos", getGoal());
-		SmartDashboard.putNumber(
-				"Profile Wanted Pos",
-				_profile.calculate(
-								_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
-								_initialProfileState,
-								new State(getGoal(), 0))
-						.position);
-
-//		if (atGoal() || _profileTimer.get() > _profile.totalTime()) return;
-
 		switch (_controlState) {
 			case PIDF_POSITION:
-//				pidSetpoint = _profile.calculate(
-//					0.02,
-//					new State(pidSetpoint, getVelocity()),
-//					new State(getGoal(), 0))
-//					.position;
-//
-//				_main.getPIDController().setReference(pidSetpoint, ControlType.kPosition);
-
-				_main.getPIDController()
-					.setReference(
-						_profile.calculate(
-							_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
-							_initialProfileState,
-							new State(getGoal(), 0))
-							.position,
-						ControlType.kPosition);
+				isCurrentlyPiding = true;
+				_main.set(_PIDFController.calculate(getPosition()));
 				break;
 
 			case PIDF_VELOCITY:
-				_main.getPIDController()
-						.setReference(
-								_profile.calculate(
-												_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
-												_initialProfileState,
-												new State(getPosition(), getGoal()))
-										.velocity,
-								ControlType.kVelocity);
+				isCurrentlyPiding = true;
+				_main.set(_PIDFController.calculate(getVelocity()));
 				break;
 
 			case FF_POSITION:
@@ -178,5 +152,18 @@ public class NinjasSparkMaxController extends NinjasController {
 			default:
 				break;
 		}
+
+		if (!isCurrentlyPiding) {
+			switch (_controlState) {
+				case PIDF_POSITION:
+					_PIDFController.reset(new State(getPosition(), getVelocity()));
+					break;
+
+				case PIDF_VELOCITY:
+					_PIDFController.reset(new State(getVelocity(), 0));
+					break;
+			}
+		}
+		isCurrentlyPiding = false;
 	}
 }
