@@ -117,7 +117,7 @@ public class RobotState {
 	public static void updateRobotPose(VisionEstimation visionEstimation) {
 		if (visionEstimation.hasTargets){
 			double distanceToTarget = getRobotPose().getTranslation().getDistance(visionEstimation.target.getTranslation());
-      System.out.println(distanceToTarget + " " + VisionConstants.distanceToFOM(distanceToTarget));
+
 			poseEstimator.addVisionMeasurement(
 				visionEstimation.pose,
 				visionEstimation.timestamp,
@@ -136,21 +136,26 @@ public class RobotState {
 		Pose2d averagePose = new Pose2d();
 		double averageTimestamp = 0;
 		double rotationSum = 0;
+		Pose2d averageTarget = new Pose2d();
 		int count = 0;
 
 		for (VisionEstimation estimation : visionEstimations) {
-			if (estimation == null) continue;
-			if (estimation.pose == null) continue;
+			if (estimation.pose == null || !estimation.hasTargets) continue;
 
-			if (estimation.hasTargets) {
-				averagePose = new Pose2d(
-						averagePose.getX() + estimation.pose.getX(),
-						averagePose.getY() + estimation.pose.getY(),
-						averagePose.getRotation());
-				rotationSum += estimation.pose.getRotation().getDegrees();
-				averageTimestamp += estimation.timestamp;
-				count++;
-			}
+			averagePose = new Pose2d(
+				averagePose.getX() + estimation.pose.getX(),
+				averagePose.getY() + estimation.pose.getY(),
+				averagePose.getRotation());
+			rotationSum += estimation.pose.getRotation().getDegrees();
+
+			averageTarget = new Pose2d(
+				averageTarget.getX() + estimation.target.getX(),
+				averageTarget.getY() + estimation.target.getY(),
+				new Rotation2d()
+			);
+
+			averageTimestamp += estimation.timestamp;
+			count++;
 		}
 
 		averagePose = new Pose2d(
@@ -158,10 +163,14 @@ public class RobotState {
 				averagePose.getY() / count,
 				new Rotation2d(Rotation2d.fromDegrees(rotationSum).getRadians() / count));
 
+		averageTarget = new Pose2d(
+			averageTarget.getX() / count,
+			averageTarget.getY() / count,
+			new Rotation2d());
+
 		if (count == 0) return;
 
-		poseEstimator.addVisionMeasurement(averagePose, averageTimestamp / count);
-		_robotPosePublisher.set(getRobotPose());
+		updateRobotPose(new VisionEstimation(averagePose, averageTimestamp / count, true, averageTarget));
 	}
 
 	/**

@@ -116,10 +116,10 @@ public class RobotContainer {
 								.getTranslation()));
 
 		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
-//		RobotState.updateRobotPose(estimations);
-		for(VisionEstimation estimation : estimations)
-			if(estimation.pose != null)
-				RobotState.updateRobotPose(estimation);
+		RobotState.updateRobotPose(estimations);
+//		for(VisionEstimation estimation : estimations)
+//			if(estimation.pose != null)
+//				RobotState.updateRobotPose(estimation);
 	}
 
 	public void resetSubsystems() {
