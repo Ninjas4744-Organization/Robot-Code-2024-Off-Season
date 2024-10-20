@@ -118,28 +118,4 @@ tasks.withType(JavaCompile) {
 	options.compilerArgs.add '-XDstringConcat=inline'
 }
 
-spotless {
-	java {
-		target fileTree('.') {
-			include '**/*.java'
-			exclude '**/build/**', '**/build-*/**'
-		}
-		toggleOffOn()
-		palantirJavaFormat()
-		indentWithTabs(4)
-		removeUnusedImports()
-		trimTrailingWhitespace()
-		endWithNewline()
-	}
-	format 'misc', {
-		target fileTree('.') {
-			include '**/*.md', '**/.gitignore'
-			exclude '**/build/**', '**/build-*/**'
-		}
-		trimTrailingWhitespace()
-		indentWithTabs(4)
-		endWithNewline()
-	}
-}
-
 //build.dependsOn installLocalGitHook

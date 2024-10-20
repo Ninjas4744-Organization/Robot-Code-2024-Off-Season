@@ -116,19 +116,19 @@ public class RobotContainer {
 								.getTranslation()));
 
 		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
-		RobotState.updateRobotPose(estimations);
+//		RobotState.updateRobotPose(estimations);
+		for(VisionEstimation estimation : estimations)
+			if(estimation.pose != null)
+				RobotState.updateRobotPose(estimation);
 	}
 
 	public void resetSubsystems() {
-		//		RobotState.setRobotPose(Constants.VisionConstants.getStartingPose());
-
 		RobotState.setRobotState(RobotStates.RESET);
 		Shooter.getInstance().resetSubsystem();
 		Indexer.getInstance().resetSubsystem();
 		ShooterAngle.getInstance().resetSubsystem();
 
 		TeleopCommandBuilder.resetGyro(false)
-				.beforeStarting(Commands.waitSeconds(0.5))
 				.schedule();
 	}
 }

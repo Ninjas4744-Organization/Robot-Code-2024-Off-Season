@@ -8,12 +8,14 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.DataClasses.VisionOutput;
 import frc.robot.RobotState;
+
+import java.util.Arrays;
 import java.util.HashMap;
 
 public abstract class VisionIO extends SubsystemBase {
 	private static VisionIO _instance;
 	protected HashMap<String, VisionOutput> _outputs;
-	protected VisionEstimation[] _estimationsData;
+	protected VisionEstimation[] _visionEstimations;
 	protected VisionCamera[] _cameras;
 
 	public static VisionIO getInstance() {
@@ -31,11 +33,13 @@ public abstract class VisionIO extends SubsystemBase {
 		for (int i = 0; i < VisionConstants.kCameras.size(); i++)
 			_cameras[i] = new VisionCamera(camerasNames[i], VisionConstants.kCameras.get(camerasNames[i]));
 
-		_estimationsData = new VisionEstimation[camerasNames.length];
+		_visionEstimations = new VisionEstimation[camerasNames.length];
 		_outputs = new HashMap<>();
 		for (String name : camerasNames) {
 			VisionOutput output = new VisionOutput();
 			_outputs.put(name, output);
+
+			_visionEstimations[Arrays.asList(camerasNames).indexOf(name)] = new VisionEstimation(output.robotPose, output.timestamp, output.hasTargets, output.closestTag.pose.toPose2d());
 		}
 	}
 
@@ -44,7 +48,7 @@ public abstract class VisionIO extends SubsystemBase {
 		for (int i = 0; i < _cameras.length; i++) {
 			VisionOutput output = _cameras[i].Update();
 			_outputs.put(_cameras[i].getName(), output);
-			_estimationsData[i] = new VisionEstimation(output.robotPose, output.timestamp, output.hasTargets);
+			_visionEstimations[i] = new VisionEstimation(output.robotPose, output.timestamp, output.hasTargets, output.closestTag.pose.toPose2d());
 		}
 	}
 
@@ -53,7 +57,7 @@ public abstract class VisionIO extends SubsystemBase {
 	 * it has targets
 	 */
 	public VisionEstimation[] getVisionEstimations() {
-		return _estimationsData;
+		return _visionEstimations;
 	}
 
 	/**

@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.NinjasLib.DataClasses.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -363,6 +364,10 @@ public final class Constants {
 
 		public static final double kMaxAmbiguity = 0.2;
 
+		public static double distanceToFOM(double distance){
+      return 0.0105 * distance * distance + 0.172 * distance - 0.1741;
+		}
+
 		public static final boolean kUseOurField = false;
 		public static final double kFieldLength = Units.feetToMeters(54.0);
 		public static AprilTagFieldLayout kBlueFieldLayout;
@@ -419,9 +424,8 @@ public final class Constants {
 				if (kUseOurField) layout = kOurFieldLayout;
 				else
 					layout = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
-							? kBlueFieldLayout
-							: kRedFieldLayout;
-				//					layout = kBlueFieldLayout;
+						? kBlueFieldLayout
+						: kRedFieldLayout;
 			}
 
 			if (!ignoredTags.isEmpty()) layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));
