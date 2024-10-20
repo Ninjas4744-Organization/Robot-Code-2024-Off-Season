@@ -71,10 +71,11 @@ public class SwerveModule {
 
 		lastAngle = getState().angle;
 
-//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).addNumber("Speed", () -> getState().speedMetersPerSecond);
-//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).addNumber("Angle", () -> getState().angle.getDegrees());
-//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).addNumber("Position", () -> getPosition().distanceMeters);
-//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).addNumber("Absolute Angle", () -> getCanCoder().getDegrees());
+		//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).addNumber("Speed", () -> getState().speedMetersPerSecond);
+		//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).addNumber("Angle", () -> getState().angle.getDegrees());
+		//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).addNumber("Position", () -> getPosition().distanceMeters);
+		//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).addNumber("Absolute Angle", () ->
+		// getCanCoder().getDegrees());
 	}
 
 	public SwerveModuleState getState() {
@@ -90,8 +91,8 @@ public class SwerveModule {
 	public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
 		desiredState = OnboardModuleState.optimize(desiredState, getState().angle);
 
-//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).add("Desired Speed", desiredState.speedMetersPerSecond);
-//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).add("Desired Angle", desiredState.angle.getDegrees());
+		//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).add("Desired Speed", desiredState.speedMetersPerSecond);
+		//		Shuffleboard.getTab("Swerve Mod " + moduleNumber).add("Desired Angle", desiredState.angle.getDegrees());
 
 		setAngle(desiredState);
 		setSpeed(desiredState, isOpenLoop);

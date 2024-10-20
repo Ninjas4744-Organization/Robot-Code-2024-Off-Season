@@ -36,11 +36,18 @@ public class RobotContainer {
 		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
 		Shuffleboard.getTab("Competition").addBoolean("Note", RobotState::getNoteInIndexer);
-		Shuffleboard.getTab("Competition").addBoolean("Shooter Ready", () -> RobotState.getRobotState() == RobotStates.SHOOT_SPEAKER_READY || RobotState.getRobotState() == RobotStates.SHOOT_AMP_READY);
-		Shuffleboard.getTab("Competition").addString("Robot State", () -> RobotState.getRobotState().toString());
-		Shuffleboard.getTab("Competition").addBoolean("Can Gyro Reset", () -> VisionIO.getInstance().hasTargets());
+		Shuffleboard.getTab("Competition")
+				.addBoolean(
+						"Shooter Ready",
+						() -> RobotState.getRobotState() == RobotStates.SHOOT_SPEAKER_READY
+								|| RobotState.getRobotState() == RobotStates.SHOOT_AMP_READY);
+		Shuffleboard.getTab("Competition")
+				.addString("Robot State", () -> RobotState.getRobotState().toString());
+		Shuffleboard.getTab("Competition")
+				.addBoolean("Can Gyro Reset", () -> VisionIO.getInstance().hasTargets());
 
-		new Trigger(() -> RobotState.getRobotPose().getX() <= 5 && RobotState.getNoteInIndexer()).onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
+		new Trigger(() -> RobotState.getRobotPose().getX() <= 5 && RobotState.getNoteInIndexer())
+				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 
 		configureBindings();
 	}
@@ -60,7 +67,7 @@ public class RobotContainer {
 						() -> isSwerveLookAt,
 						() -> isSwerveBayblade));
 
-//				_driverJoystick.square().onTrue(Commands.runOnce(() -> isSwerveBayblade = !isSwerveBayblade));
+		//				_driverJoystick.square().onTrue(Commands.runOnce(() -> isSwerveBayblade = !isSwerveBayblade));
 		_driverJoystick.R1().onTrue(Commands.runOnce(() -> isSwerveLookAt = !isSwerveLookAt));
 		_driverJoystick.R2().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
 
@@ -73,15 +80,18 @@ public class RobotContainer {
 		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> {
 			if (RobotState.getRobotPose().getX() <= 5)
 				StateMachine.getInstance().changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE);
-			else
-				StateMachine.getInstance().changeRobotState(RobotStates.DELIVERY);
+			else StateMachine.getInstance().changeRobotState(RobotStates.DELIVERY);
 		}));
 		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_AMP_PREPARE));
 		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE));
-		_driverJoystick.R2().onTrue(Commands.runOnce(() -> {
-			StateMachine.getInstance().changeRobotState(RobotStates.SHOOT);
-			StateMachine.getInstance().changeRobotState(RobotStates.OUTTAKE);
-		}, StateMachine.getInstance()));
+		_driverJoystick
+				.R2()
+				.onTrue(Commands.runOnce(
+						() -> {
+							StateMachine.getInstance().changeRobotState(RobotStates.SHOOT);
+							StateMachine.getInstance().changeRobotState(RobotStates.OUTTAKE);
+						},
+						StateMachine.getInstance()));
 	}
 
 	private void configureTestBindings() {
@@ -96,10 +106,14 @@ public class RobotContainer {
 	}
 
 	public void periodic() {
-		SmartDashboard.putNumber("Distance", RobotState.getRobotPose()
-			.getTranslation()
-			.plus(Constants.ShooterAngleConstants.kShooterPose.toTranslation2d())
-			.getDistance(Constants.ShooterAngleConstants.getSpeakerHolePose().toPose2d().getTranslation()));
+		SmartDashboard.putNumber(
+				"Distance",
+				RobotState.getRobotPose()
+						.getTranslation()
+						.plus(Constants.ShooterAngleConstants.kShooterPose.toTranslation2d())
+						.getDistance(Constants.ShooterAngleConstants.getSpeakerHolePose()
+								.toPose2d()
+								.getTranslation()));
 
 		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
 //		RobotState.updateRobotPose(estimations);
@@ -114,6 +128,7 @@ public class RobotContainer {
 		Indexer.getInstance().resetSubsystem();
 		ShooterAngle.getInstance().resetSubsystem();
 
-		TeleopCommandBuilder.resetGyro(false).schedule();
+		TeleopCommandBuilder.resetGyro(false)
+				.schedule();
 	}
 }

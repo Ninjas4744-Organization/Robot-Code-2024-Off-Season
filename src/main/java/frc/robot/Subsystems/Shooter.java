@@ -4,7 +4,6 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasTalonFXController;
 import frc.robot.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
-import frc.robot.RobotState.RobotStates;
 
 public class Shooter extends StateMachineMotoredSubsystem {
 	private static Shooter _instance;
@@ -37,22 +36,23 @@ public class Shooter extends StateMachineMotoredSubsystem {
 
 	@Override
 	protected void setFunctionMaps() {
-		addFunctionToOnChangeMap(
-				() -> controller().setVelocity(ShooterConstants.States.kSpeaker),
-			RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.SHOOT_SPEAKER_READY);
-
-		addFunctionToOnChangeMap(
-			() -> controller().setVelocity(ShooterConstants.States.kAmp),
-			RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
-
-		addFunctionToOnChangeMap(
-			() -> controller().setVelocity(4600),
-			RobotStates.DELIVERY);
-
-		addFunctionToOnChangeMap(() -> controller().setVelocity(ShooterConstants.States.kOuttake), RobotStates.OUTTAKE);
-//		addFunctionToOnChangeMap(() -> controller().setVelocity(66), RobotStates.NOTE_IN_INDEXER);
-
-		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET, RobotStates.CLOSE);
+		//		addFunctionToOnChangeMap(
+		//				() -> controller().setVelocity(ShooterConstants.States.kSpeaker),
+		//			RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.SHOOT_SPEAKER_READY);
+		//
+		//		addFunctionToOnChangeMap(
+		//			() -> controller().setVelocity(ShooterConstants.States.kAmp),
+		//			RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
+		//
+		//		addFunctionToOnChangeMap(
+		//			() -> controller().setVelocity(4600),
+		//			RobotStates.DELIVERY);
+		//
+		//		addFunctionToOnChangeMap(() -> controller().setVelocity(ShooterConstants.States.kOuttake),
+		// RobotStates.OUTTAKE);
+		////		addFunctionToOnChangeMap(() -> controller().setVelocity(66), RobotStates.NOTE_IN_INDEXER);
+		//
+		//		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET, RobotStates.CLOSE);
 	}
 
 	public boolean isReady() {

@@ -31,8 +31,8 @@ public class RobotState {
 		RESET,
 		SHOOT_SPEAKER_PREPARE,
 		SHOOT_AMP_PREPARE,
-    SHOOT_SPEAKER_READY,
-    SHOOT_AMP_READY,
+		SHOOT_SPEAKER_READY,
+		SHOOT_AMP_READY,
 		SHOOT,
 		NOTE_SEARCH,
 		NOTE_IN_INDEXER,
@@ -42,7 +42,7 @@ public class RobotState {
 		CLIMBED,
 		DRIVE_TO_AMP,
 		DRIVE_TO_SOURCE,
-    TESTING,
+		TESTING,
 		OUTTAKE,
 		DELIVERY
 	}
@@ -144,10 +144,9 @@ public class RobotState {
 
 			if (estimation.hasTargets) {
 				averagePose = new Pose2d(
-					averagePose.getX() + estimation.pose.getX(),
-					averagePose.getY() + estimation.pose.getY(),
-					averagePose.getRotation()
-				);
+						averagePose.getX() + estimation.pose.getX(),
+						averagePose.getY() + estimation.pose.getY(),
+						averagePose.getRotation());
 				rotationSum += estimation.pose.getRotation().getDegrees();
 				averageTimestamp += estimation.timestamp;
 				count++;
@@ -155,13 +154,11 @@ public class RobotState {
 		}
 
 		averagePose = new Pose2d(
-			averagePose.getX() / count,
-			averagePose.getY() / count,
-			new Rotation2d(Rotation2d.fromDegrees(rotationSum).getRadians() / count)
-		);
+				averagePose.getX() / count,
+				averagePose.getY() / count,
+				new Rotation2d(Rotation2d.fromDegrees(rotationSum).getRadians() / count));
 
-		if (count == 0)
-			return;
+		if (count == 0) return;
 
 		poseEstimator.addVisionMeasurement(averagePose, averageTimestamp / count);
 		_robotPosePublisher.set(getRobotPose());
@@ -239,8 +236,6 @@ public class RobotState {
 	}
 
 	public static AllianceStationID getAllianceStation() {
-		return isSimulated()
-			? DriverStationSim.getAllianceStationId()
-			: DriverStation.getRawAllianceStation();
+		return isSimulated() ? DriverStationSim.getAllianceStationId() : DriverStation.getRawAllianceStation();
 	}
 }
