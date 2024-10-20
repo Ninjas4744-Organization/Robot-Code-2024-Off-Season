@@ -128,7 +128,7 @@ public final class Constants {
 		public class States {
 			public static final double kSpeaker = 5580;
 			public static final double kAmp = 1850;
-			public static final double kOuttake = 120;
+			public static final double kOuttake = 1200;
 		}
 	}
 
