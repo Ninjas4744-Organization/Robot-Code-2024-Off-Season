@@ -40,24 +40,23 @@ public class Shooter extends StateMachineMotoredSubsystem {
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
 			() -> controller().setVelocity(ShooterConstants.States.kSpeaker),
-			RobotState.RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.SHOOT_SPEAKER_READY);
+			RobotState.RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.SHOOT_SPEAKER_READY, RobotStates.OOGA_BOOGA, RobotStates.OOGA_BOOGA_READY);
 
 		addFunctionToOnChangeMap(
 			() -> controller().setVelocity(ShooterConstants.States.kAmp),
 			RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
 
 		addFunctionToOnChangeMap(
-			() -> controller().setVelocity(4600),
+			() -> controller().setVelocity(ShooterConstants.States.kDelivery),
 			RobotStates.DELIVERY);
 
 		addFunctionToOnChangeMap(() -> controller().setVelocity(ShooterConstants.States.kOuttake),
 			RobotStates.OUTTAKE);
-		//		addFunctionToOnChangeMap(() -> controller().setVelocity(66), RobotStates.NOTE_IN_INDEXER);
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET, RobotStates.CLOSE);
 	}
 
 	public boolean isReady() {
-		return controller().getVelocity() > ShooterConstants.kMinimumShootTolerance && atGoal();
+		return controller().getVelocity() >= controller().getGoal() - ShooterConstants.kMinimumShootTolerance;
 	}
 }

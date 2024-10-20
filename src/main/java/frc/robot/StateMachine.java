@@ -10,6 +10,7 @@ import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -134,7 +135,8 @@ public class StateMachine extends StateMachineSubsystem {
 						|| wantedState == RobotStates.CLOSE
 						|| wantedState == RobotStates.DELIVERY
 						|| wantedState == RobotStates.RESET
-						|| wantedState == RobotStates.OUTTAKE) RobotState.setRobotState(wantedState);
+					|| wantedState == RobotStates.OUTTAKE
+					|| wantedState == RobotStates.OOGA_BOOGA) RobotState.setRobotState(wantedState);
 				break;
 
 			case DRIVE_TO_AMP:
@@ -165,15 +167,31 @@ public class StateMachine extends StateMachineSubsystem {
 
 			case TESTING:
 				if (wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+				break;
 
 			case OUTTAKE:
 				if (wantedState == RobotStates.CLOSE || wantedState == RobotStates.RESET)
 					RobotState.setRobotState(wantedState);
+				break;
 
 			case DELIVERY:
 				if (wantedState == RobotStates.CLOSE
 						|| wantedState == RobotStates.RESET
 						|| wantedState == RobotStates.SHOOT) RobotState.setRobotState(wantedState);
+				break;
+
+			case OOGA_BOOGA:
+				if (wantedState == RobotStates.OOGA_BOOGA_READY
+					|| wantedState == RobotStates.CLOSE
+					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+				break;
+
+			case OOGA_BOOGA_READY:
+				if (wantedState == RobotStates.OOGA_BOOGA
+					|| wantedState == RobotStates.CLOSE
+					|| wantedState == RobotStates.SHOOT
+					|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
+				break;
 		}
 
 		if (RobotState.getRobotState() == RobotStates.IDLE)
@@ -230,6 +248,20 @@ public class StateMachine extends StateMachineSubsystem {
 						() -> ShooterAngle.getInstance().atGoal()
 								&& Shooter.getInstance().isReady(),
 						RobotStates.SHOOT_SPEAKER_READY));
+
+		_endConditionMap.put(
+			RobotStates.OOGA_BOOGA,
+			new StateEndCondition(
+				() -> ShooterAngle.getInstance().atGoal()
+					&& Shooter.getInstance().isReady(),
+				RobotStates.OOGA_BOOGA_READY));
+
+		_endConditionMap.put(
+			RobotStates.OOGA_BOOGA_READY,
+			new StateEndCondition(
+				() -> ShooterAngle.getInstance().atGoal()
+					&& Shooter.getInstance().isReady(),
+				RobotStates.OOGA_BOOGA));
 
 		_endConditionMap.put(
 				RobotStates.DELIVERY,

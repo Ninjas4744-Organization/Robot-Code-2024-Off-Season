@@ -96,6 +96,8 @@ public class RobotContainer {
 							StateMachine.getInstance().changeRobotState(RobotStates.OUTTAKE);
 						},
 						StateMachine.getInstance()));
+
+		_driverJoystick.povUp().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.OOGA_BOOGA));
 	}
 
 	private void configureTestBindings() {

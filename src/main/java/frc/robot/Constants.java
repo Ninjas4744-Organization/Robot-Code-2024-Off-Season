@@ -40,7 +40,6 @@ public final class Constants {
 			kControllerConstants.PIDFConstants.kCruiseVelocity = 75;
 			kControllerConstants.PIDFConstants.kAcceleration = 150;
 			kControllerConstants.PIDFConstants.kP = 0.15;
-			//			kControllerConstants.PIDFConstants.kP = 0.05;
 
 			kControllerConstants.positionGoalTolerance = 0.5;
 			kControllerConstants.dynamicProfiling = true;
@@ -94,6 +93,13 @@ public final class Constants {
 			double angleClamped = Math.min(Math.max(angle, 37.7), 80);
 			return Rotation2d.fromDegrees(angleClamped);
 		}
+
+		public static class States {
+			public static final double Up = 56;
+			public static final double Amp = 61;
+			public static final double Close = 31;
+			public static final double Delivery = 45;
+		}
 	}
 
 	public static class ShooterConstants {
@@ -129,6 +135,7 @@ public final class Constants {
 			public static final double kSpeaker = 5580;
 			public static final double kAmp = 1850;
 			public static final double kOuttake = 1200;
+			public static final double kDelivery = 4600;
 		}
 	}
 

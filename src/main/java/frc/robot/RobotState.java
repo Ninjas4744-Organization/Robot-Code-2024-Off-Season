@@ -44,7 +44,9 @@ public class RobotState {
 		DRIVE_TO_SOURCE,
 		TESTING,
 		OUTTAKE,
-		DELIVERY
+		DELIVERY,
+		OOGA_BOOGA,
+		OOGA_BOOGA_READY
 	}
 
 	private static RobotStates robotState = RobotStates.IDLE;

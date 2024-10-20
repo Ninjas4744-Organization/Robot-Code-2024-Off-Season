@@ -6,14 +6,15 @@ import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionOutput;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class VisionCamera {
 	private final PhotonCamera _camera;
@@ -47,7 +48,15 @@ public class VisionCamera {
 	 * @return The vision output of this camera
 	 */
 	public VisionOutput Update() {
-		PhotonPipelineResult result = _camera.getLatestResult();
+    PhotonPipelineResult result;
+    try {
+      result = _camera.getLatestResult();
+    } catch (Exception e) {
+      System.out.println("Camera " + getName() + "disconnected");
+      _output.hasTargets = false;
+      return _output;
+    }
+
 		_estimator.setFieldTags(Constants.VisionConstants.getFieldLayout(_ignoredTags));
 		Optional<EstimatedRobotPose> currentPose = _estimator.update(result);
 
