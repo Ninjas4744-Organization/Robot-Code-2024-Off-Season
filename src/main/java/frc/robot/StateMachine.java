@@ -26,6 +26,8 @@ public class StateMachine extends StateMachineSubsystem {
 	private Map<RobotStates, StateEndCondition> _endConditionMap;
 
 	private StateMachine() {
+		super();
+
 		_endConditionMap = new HashMap<>();
 
 		for (RobotStates state : RobotStates.values())

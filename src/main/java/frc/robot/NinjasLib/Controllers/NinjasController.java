@@ -2,6 +2,7 @@ package frc.robot.NinjasLib.Controllers;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.NinjasLib.DataClasses.MainControllerConstants;
+
 import java.util.Map;
 
 public abstract class NinjasController {

@@ -22,15 +22,16 @@ public class RobotContainer {
 	private boolean isSwerveBayblade = false;
 
 	public RobotContainer() {
+		Shooter.getInstance();
+		ShooterAngle.getInstance();
+		StateMachine.getInstance();
+		Indexer.getInstance();
+		Constants.VisionConstants.getFieldLayout();
+
 		RobotState.initPoseEstimator();
 
 		AutoCommandBuilder.configureAutoBuilder();
 		AutoCommandBuilder.registerCommands();
-
-		Indexer.getInstance();
-		Shooter.getInstance();
-		ShooterAngle.getInstance();
-		Constants.VisionConstants.getFieldLayout();
 
 		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
 		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);

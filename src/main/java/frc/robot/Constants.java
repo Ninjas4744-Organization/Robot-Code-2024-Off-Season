@@ -96,7 +96,7 @@ public final class Constants {
 
 		public static class States {
 			public static final double Up = 56;
-			public static final double Amp = 61;
+			public static final double Amp = 64;
 			public static final double Close = 31;
 			public static final double Delivery = 45;
 		}
@@ -133,7 +133,7 @@ public final class Constants {
 
 		public class States {
 			public static final double kSpeaker = 5580;
-			public static final double kAmp = 1850;
+			public static final double kAmp = 1625;
 			public static final double kOuttake = 1200;
 			public static final double kDelivery = 4600;
 		}
