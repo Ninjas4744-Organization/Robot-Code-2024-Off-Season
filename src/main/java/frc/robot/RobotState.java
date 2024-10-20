@@ -117,7 +117,7 @@ public class RobotState {
 	public static void updateRobotPose(VisionEstimation visionEstimation) {
 		if (visionEstimation.hasTargets){
 			double distanceToTarget = getRobotPose().getTranslation().getDistance(visionEstimation.target.getTranslation());
-
+      System.out.println(distanceToTarget + " " + VisionConstants.distanceToFOM(distanceToTarget));
 			poseEstimator.addVisionMeasurement(
 				visionEstimation.pose,
 				visionEstimation.timestamp,

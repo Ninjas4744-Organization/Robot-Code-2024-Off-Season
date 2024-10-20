@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.NinjasLib.DataClasses.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -364,7 +365,7 @@ public final class Constants {
 		public static final double kMaxAmbiguity = 0.2;
 
 		public static double distanceToFOM(double distance){
-			return 0.0963 * distance * distance - 0.3026 * distance + 0.3555;
+      return 0.0105 * distance * distance + 0.172 * distance - 0.1741;
 		}
 
 		public static final boolean kUseOurField = false;
