@@ -37,8 +37,8 @@ public final class Constants {
 			kControllerConstants.subsystemName = "ShooterAngle";
 
 			kControllerConstants.PIDFConstants = new PIDFConstants();
-			kControllerConstants.PIDFConstants.kCruiseVelocity = 75;
-			kControllerConstants.PIDFConstants.kAcceleration = 150;
+//			kControllerConstants.PIDFConstants.kCruiseVelocity = 75;
+//			kControllerConstants.PIDFConstants.kAcceleration = 150;
 			kControllerConstants.PIDFConstants.kP = 0.15;
 
 			kControllerConstants.positionGoalTolerance = 0.5;

@@ -123,6 +123,7 @@ public class StateMachine extends StateMachineSubsystem {
 						|| wantedState == RobotStates.CLIMB_PREPARE
 						|| wantedState == RobotStates.CLOSE
 						|| wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
+					|| wantedState == RobotStates.OUTTAKE
 						|| wantedState == RobotStates.RESET) RobotState.setRobotState(wantedState);
 				break;
 
