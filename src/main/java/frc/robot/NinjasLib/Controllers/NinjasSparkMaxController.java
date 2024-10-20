@@ -55,7 +55,12 @@ public class NinjasSparkMaxController extends NinjasController {
 		_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
 				constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
 
-		_PIDFController = new ProfiledPIDController(constants.PIDFConstants.kP, constants.PIDFConstants.kI, constants.PIDFConstants.kD, new TrapezoidProfile.Constraints(constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
+		_PIDFController = new ProfiledPIDController(
+				constants.PIDFConstants.kP,
+				constants.PIDFConstants.kI,
+				constants.PIDFConstants.kD,
+				new TrapezoidProfile.Constraints(
+						constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
 	}
 
 	@Override
@@ -158,7 +163,6 @@ public class NinjasSparkMaxController extends NinjasController {
 					_PIDFController.reset(new State(getVelocity(), 0));
 					break;
 			}
-
 		}
 		isCurrentlyPiding = false;
 	}

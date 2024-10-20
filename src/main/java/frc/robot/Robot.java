@@ -37,9 +37,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void autonomousInit() {
-		if(!RobotState.isSimulated())
-			if(DriverStation.isFMSAttached())
-				Shuffleboard.startRecording();
+		if (!RobotState.isSimulated()) if (DriverStation.isFMSAttached()) Shuffleboard.startRecording();
 
 		_autoCommand = AutoCommandBuilder.autoCommand("Center 1");
 		if (_autoCommand != null) _autoCommand.schedule();
@@ -55,9 +53,7 @@ public class Robot extends TimedRobot {
 	public void teleopInit() {
 		if (_autoCommand != null) _autoCommand.cancel();
 
-		if(!RobotState.isSimulated())
-			if(DriverStation.isFMSAttached())
-				Shuffleboard.startRecording();
+		if (!RobotState.isSimulated()) if (DriverStation.isFMSAttached()) Shuffleboard.startRecording();
 
 		_robotContainer.resetSubsystems();
 	}

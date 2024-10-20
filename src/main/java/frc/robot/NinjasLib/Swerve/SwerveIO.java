@@ -58,8 +58,8 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		_anglePID = new ProfiledPIDController(
 				SwerveConstants.AutoConstants.kPTheta,
 				SwerveConstants.AutoConstants.kITheta,
-			SwerveConstants.AutoConstants.kDTheta,
-			SwerveConstants.AutoConstants.kAngleConstraints);
+				SwerveConstants.AutoConstants.kDTheta,
+				SwerveConstants.AutoConstants.kAngleConstraints);
 		_anglePID.setIZone(SwerveConstants.AutoConstants.kIZoneTheta);
 		_anglePID.enableContinuousInput(-180, 180);
 
@@ -69,19 +69,22 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 				SwerveConstants.AutoConstants.kD);
 		_axisPID.setIZone(SwerveConstants.AutoConstants.kIZone);
 
-		_xPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+		_xPID = new PIDController(
+				SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
 		_xPID.setIZone(SwerveConstants.AutoConstants.kIZone);
-		_yPID = new PIDController(SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
+		_yPID = new PIDController(
+				SwerveConstants.AutoConstants.kP, SwerveConstants.AutoConstants.kI, SwerveConstants.AutoConstants.kD);
 		_yPID.setIZone(SwerveConstants.AutoConstants.kIZone);
 
 		_pathFollower = new PathFollower();
 
-//		Shuffleboard.getTab("Swerve").addBoolean("Path Following Finished", this::isPathFollowingFinished);
-//		Shuffleboard.getTab("Swerve").addNumber("Driver Input X", () -> _demand.driverInput.vxMetersPerSecond);
-//		Shuffleboard.getTab("Swerve").addNumber("Driver Input Y", () -> _demand.driverInput.vyMetersPerSecond);
-//		Shuffleboard.getTab("Swerve").addNumber("Driver Input Omega", () -> _demand.driverInput.omegaRadiansPerSecond);
-//		Shuffleboard.getTab("Swerve").addString("State", () -> _state.toString());
-//		Shuffleboard.getTab("Swerve").addString("Previous State", () -> _previousState.toString());
+		//		Shuffleboard.getTab("Swerve").addBoolean("Path Following Finished", this::isPathFollowingFinished);
+		//		Shuffleboard.getTab("Swerve").addNumber("Driver Input X", () -> _demand.driverInput.vxMetersPerSecond);
+		//		Shuffleboard.getTab("Swerve").addNumber("Driver Input Y", () -> _demand.driverInput.vyMetersPerSecond);
+		//		Shuffleboard.getTab("Swerve").addNumber("Driver Input Omega", () ->
+		// _demand.driverInput.omegaRadiansPerSecond);
+		//		Shuffleboard.getTab("Swerve").addString("State", () -> _state.toString());
+		//		Shuffleboard.getTab("Swerve").addString("Previous State", () -> _previousState.toString());
 	}
 
 	/**
@@ -120,9 +123,11 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundedAngle : angle;
 		double result = _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle);
 
-//		Shuffleboard.getTab("Swerve").add("Angle PID Target", angle);
-//		Shuffleboard.getTab("Swerve").add("Angle PID", result);
-		SmartDashboard.putNumber("Angle PID Current", new Rotation2d(Units.degreesToRadians(RobotState.getGyroYaw().getDegrees())).getDegrees());
+		//		Shuffleboard.getTab("Swerve").add("Angle PID Target", angle);
+		//		Shuffleboard.getTab("Swerve").add("Angle PID", result);
+		SmartDashboard.putNumber(
+				"Angle PID Current",
+				new Rotation2d(Units.degreesToRadians(RobotState.getGyroYaw().getDegrees())).getDegrees());
 		SmartDashboard.putNumber("Angle PID Target", angle);
 		SmartDashboard.putNumber("Angle PID", result);
 
@@ -146,11 +151,11 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		return 0;
 	}
 
-  public double lookAtTarget(Pose2d target, boolean invert, Rotation2d sheer) {
+	public double lookAtTarget(Pose2d target, boolean invert, Rotation2d sheer) {
 		Translation2d lookAtTranslation =
 				target.getTranslation().minus(RobotState.getRobotPose().getTranslation());
 
-    lookAtTranslation = lookAtTranslation.rotateBy(sheer);
+		lookAtTranslation = lookAtTranslation.rotateBy(sheer);
 
 		lookAtTranslation = RobotState.isSimulated()
 				? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY())
@@ -355,7 +360,12 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	public void periodic() {
 		switch (_state) {
 			case DEFAULT:
-				drive(new ChassisSpeeds(fromPercent(_demand.driverInput).vxMetersPerSecond, fromPercent(_demand.driverInput).vyMetersPerSecond, _demand.driverInput.omegaRadiansPerSecond), SwerveConstants.kFieldRelative);
+				drive(
+						new ChassisSpeeds(
+								fromPercent(_demand.driverInput).vxMetersPerSecond,
+								fromPercent(_demand.driverInput).vyMetersPerSecond,
+								_demand.driverInput.omegaRadiansPerSecond),
+						SwerveConstants.kFieldRelative);
 				break;
 
 			case FOLLOW_PATH:
@@ -374,7 +384,9 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 								_demand.driverInput.vxMetersPerSecond,
 								_demand.driverInput.vyMetersPerSecond,
 								lookAtTarget(
-									_demand.targetPose, /*RobotState.getRobotState() == RobotStates.NOTE_SEARCH*/false, SwerveConstants.kShootingAngleError.unaryMinus())),
+										_demand.targetPose, /*RobotState.getRobotState() == RobotStates.NOTE_SEARCH*/
+										false,
+										SwerveConstants.kShootingAngleError.unaryMinus())),
 						SwerveConstants.kFieldRelative);
 				break;
 
@@ -393,11 +405,16 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 			case DRIVE_ASSIST:
 				if (NoteDetection.hasTarget()) {
 					Translation2d pid = pidTo(NoteDetection.getNotePose().getTranslation());
-          double rotation = lookAtTarget(NoteDetection.getNotePose(), true, new Rotation2d());
+					double rotation = lookAtTarget(NoteDetection.getNotePose(), true, new Rotation2d());
 
 					drive(new ChassisSpeeds(pid.getX(), pid.getY(), rotation), true);
 				} else
-					drive(new ChassisSpeeds(fromPercent(_demand.driverInput).vxMetersPerSecond, fromPercent(_demand.driverInput).vyMetersPerSecond, _demand.driverInput.omegaRadiansPerSecond), SwerveConstants.kFieldRelative);
+					drive(
+							new ChassisSpeeds(
+									fromPercent(_demand.driverInput).vxMetersPerSecond,
+									fromPercent(_demand.driverInput).vyMetersPerSecond,
+									_demand.driverInput.omegaRadiansPerSecond),
+							SwerveConstants.kFieldRelative);
 				break;
 
 			default:
@@ -420,7 +437,9 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		addFunctionToPeriodicMap(
 				() -> {
 					_demand.targetPose = VisionConstants.getOffsetTagPose(
-						VisionConstants.getTagPose(VisionConstants.getAmpTag().ID).toPose2d(), 1.25);
+							VisionConstants.getTagPose(VisionConstants.getAmpTag().ID)
+									.toPose2d(),
+							1.25);
 
 					double dist =
 							RobotState.getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());
@@ -431,14 +450,18 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		addFunctionToOnChangeMap(
 				() -> {
 					setState(SwerveState.LOOK_AT_TARGET);
-					updateDemand(VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID).toPose2d());
+					updateDemand(VisionConstants.getTagPose(VisionConstants.getSpeakerTag().ID)
+							.toPose2d());
 				},
-			RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.DELIVERY);
+				RobotStates.SHOOT_SPEAKER_PREPARE,
+				RobotStates.DELIVERY);
 
 		addFunctionToPeriodicMap(
 				() -> {
 					_demand.targetPose = VisionConstants.getOffsetTagPose(
-						VisionConstants.getTagPose(VisionConstants.getSourceTag().ID).toPose2d(), 1.25);
+							VisionConstants.getTagPose(VisionConstants.getSourceTag().ID)
+									.toPose2d(),
+							1.25);
 
 					double dist =
 							RobotState.getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());
@@ -446,19 +469,18 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 				},
 				RobotStates.DRIVE_TO_SOURCE);
 
-//		addFunctionToOnChangeMap(
-//				() -> {
-//					setState(SwerveState.LOCKED_AXIS);
-//					updateDemand(Rotation2d.fromDegrees(90), 1.84, false);
-//				},
-//				RobotStates.SHOOT_AMP_PREPARE);
+		//		addFunctionToOnChangeMap(
+		//				() -> {
+		//					setState(SwerveState.LOCKED_AXIS);
+		//					updateDemand(Rotation2d.fromDegrees(90), 1.84, false);
+		//				},
+		//				RobotStates.SHOOT_AMP_PREPARE);
 
 		addFunctionToOnChangeMap(() -> setState(SwerveState.DRIVE_ASSIST), RobotStates.NOTE_SEARCH);
 	}
 
 	public void afterPeriodic() {
-		if (!isCurrentlyAnglePiding)
-			_anglePID.reset(RobotState.getGyroYaw().getDegrees());
+		if (!isCurrentlyAnglePiding) _anglePID.reset(RobotState.getGyroYaw().getDegrees());
 
 		isCurrentlyAnglePiding = false;
 	}
