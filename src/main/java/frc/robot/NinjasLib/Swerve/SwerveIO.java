@@ -35,6 +35,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	private final Timer pathfindingTimer = new Timer();
 	private PathPlannerTrajectory pathfindingCurrentTraj = null;
 	private PathFollower _pathFollower;
+	private boolean isCurrentlyAnglePiding = false;
 
 	private final SwerveDemand _demand;
 	private SwerveState _state;
@@ -113,6 +114,8 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	 *     rounding, DON'T USE 0 (division by zero error)
 	 */
 	public double lookAt(double angle, double roundToAngle) {
+		isCurrentlyAnglePiding = true;
+
 		double roundedAngle = Math.round(angle / roundToAngle) * roundToAngle;
 		angle = Math.abs(roundedAngle - angle) <= roundToAngle / 3 ? roundedAngle : angle;
 		double result = _anglePID.calculate(RobotState.getGyroYaw().getDegrees(), angle);
@@ -371,7 +374,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 								_demand.driverInput.vxMetersPerSecond,
 								_demand.driverInput.vyMetersPerSecond,
 								lookAtTarget(
-                  _demand.targetPose, RobotState.getRobotState() == RobotStates.NOTE_SEARCH, SwerveConstants.kShootingAngleError.unaryMinus())),
+									_demand.targetPose, /*RobotState.getRobotState() == RobotStates.NOTE_SEARCH*/false, SwerveConstants.kShootingAngleError.unaryMinus())),
 						SwerveConstants.kFieldRelative);
 				break;
 
@@ -451,5 +454,12 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 //				RobotStates.SHOOT_AMP_PREPARE);
 
 		addFunctionToOnChangeMap(() -> setState(SwerveState.DRIVE_ASSIST), RobotStates.NOTE_SEARCH);
+	}
+
+	public void afterPeriodic() {
+		if (!isCurrentlyAnglePiding)
+			_anglePID.reset(RobotState.getGyroYaw().getDegrees());
+
+		isCurrentlyAnglePiding = false;
 	}
 }

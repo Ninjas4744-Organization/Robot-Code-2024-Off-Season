@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.NinjasLib.Swerve.SwerveIO;
 
 public class Robot extends TimedRobot {
 	private Command _autoCommand;
@@ -22,6 +23,7 @@ public class Robot extends TimedRobot {
 	public void robotPeriodic() {
 		CommandScheduler.getInstance().run();
 		_robotContainer.periodic();
+		SwerveIO.getInstance().afterPeriodic();
 	}
 
 	@Override

@@ -37,17 +37,18 @@ public final class Constants {
 			kControllerConstants.subsystemName = "ShooterAngle";
 
 			kControllerConstants.PIDFConstants = new PIDFConstants();
-			kControllerConstants.PIDFConstants.kCruiseVelocity = 50;
-			kControllerConstants.PIDFConstants.kAcceleration = 50;
-			kControllerConstants.PIDFConstants.kP = 0.3;
+			kControllerConstants.PIDFConstants.kCruiseVelocity = 75;
+			kControllerConstants.PIDFConstants.kAcceleration = 150;
+			kControllerConstants.PIDFConstants.kP = 0.15;
+//			kControllerConstants.PIDFConstants.kP = 0.05;
 
 			kControllerConstants.positionGoalTolerance = 0.5;
 			kControllerConstants.dynamicProfiling = true;
 
 			kControllerConstants.encoderConversionFactor = 1.0 / 300.0 * 360.0;
-			kControllerConstants.encoderHomePosition = 37.7;
+			kControllerConstants.encoderHomePosition = 31;
 			kControllerConstants.isMaxSoftLimit = true;
-			kControllerConstants.maxSoftLimit = 78;
+			kControllerConstants.maxSoftLimit = 72;
 
 
 			kSimulatedControllerConstants.mainControllerConstants = kControllerConstants;
@@ -59,13 +60,13 @@ public final class Constants {
 		public static final Translation3d kShooterPose = new Translation3d(0, 0, 0.12);
 		public static final InterpolatingDoubleTreeMap kAngleMap = new InterpolatingDoubleTreeMap();
 		static {
-			kAngleMap.put(1.6, 61.5 - 1);
-			kAngleMap.put(2.3, 53.0 - 1 - 1 - 0.5);
-			kAngleMap.put(2.5, 51.5 - 1 + 0.5 - 0.5 - 1 - 0.5);
-			kAngleMap.put(3.0, 46.9 - 1 + 0.5 + 0.5 - 1 - 0.5);
-			kAngleMap.put(3.6, 41.1 - 1 + 0.5 + 0.5 + 1.5 + 0.5 - 1 + 0.5 - 1 - 0.5);
-			kAngleMap.put(4.0, 39.9 - 1 + 1 + 0.5 + 0.5 + 1.5 - 0.5 - 1 - 0.5);
-			kAngleMap.put(4.5, 37.2 - 0.5 - 1 + 1 + 0.5 + 0.5 + 1.5 - 0.5 - 1 - 0.5);
+			kAngleMap.put(1.6, 60.5 - 6.7);
+			kAngleMap.put(2.3, 50.5 - 6.7);
+			kAngleMap.put(2.5, 49.0 - 6.7);
+			kAngleMap.put(3.0, 45.4 - 6.7);
+			kAngleMap.put(3.6, 41.1 - 6.7);
+			kAngleMap.put(4.0, 40.4 - 6.7);
+			kAngleMap.put(4.5, 37.2 - 6.7);
 		}
 
 		public static Pose3d getSpeakerHolePose() {

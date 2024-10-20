@@ -57,7 +57,7 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 		addFunctionToOnChangeMap(() -> controller().setPosition(45), RobotStates.DELIVERY);
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET);
-		addFunctionToOnChangeMap(() -> controller().setPosition(37), RobotStates.CLOSE);
+		addFunctionToOnChangeMap(() -> controller().setPosition(31), RobotStates.CLOSE);
 	}
 
 	@Override

@@ -16,8 +16,8 @@ public class NinjasSparkMaxController extends NinjasController {
 	private final TrapezoidProfile _profile;
 	private final Timer _profileTimer = new Timer();
 	private State _initialProfileState;
-	private State pidSetpoint;
 	private ProfiledPIDController _PIDFController;
+	private boolean isCurrentlyPiding = false;
 
 	public NinjasSparkMaxController(MainControllerConstants constants) {
 		super(constants);
@@ -56,9 +56,6 @@ public class NinjasSparkMaxController extends NinjasController {
 				constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
 
 		_PIDFController = new ProfiledPIDController(constants.PIDFConstants.kP, constants.PIDFConstants.kI, constants.PIDFConstants.kD, new TrapezoidProfile.Constraints(constants.PIDFConstants.kCruiseVelocity, constants.PIDFConstants.kAcceleration));
-
-		_initialProfileState = new State(getPosition(), getVelocity());
-		pidSetpoint = new State(getPosition(), getVelocity());
 	}
 
 	@Override
@@ -75,9 +72,8 @@ public class NinjasSparkMaxController extends NinjasController {
 		if (_controlState == ControlState.PID_POSITION)
 			_main.getPIDController().setReference(getGoal(), ControlType.kPosition);
 
-//		_profileTimer.restart();
-//		_initialProfileState = new State(getPosition(), getVelocity());
-//		pidSetpoint = new State(getPosition(), getVelocity());
+		_profileTimer.restart();
+		_initialProfileState = new State(getPosition(), getVelocity());
 		_PIDFController.setGoal(position);
 	}
 
@@ -88,11 +84,9 @@ public class NinjasSparkMaxController extends NinjasController {
 		if (_controlState == ControlState.PID_VELOCITY)
 			_main.getPIDController().setReference(getGoal(), ControlType.kVelocity);
 
-//		_profileTimer.restart();
-//		_initialProfileState = new State(getPosition(), getVelocity());
-//		pidSetpoint = new State(getPosition(), getVelocity());
-
-		_PIDFController.setGoal(new State(getPosition(), velocity));
+		_profileTimer.restart();
+		_initialProfileState = new State(getVelocity(), 0);
+		_PIDFController.setGoal(getVelocity());
 	}
 
 	@Override
@@ -119,50 +113,15 @@ public class NinjasSparkMaxController extends NinjasController {
 	public void periodic() {
 		super.periodic();
 
-//		SmartDashboard.putNumber("Timer", 0.02);
-//		SmartDashboard.putNumber("Initial Profile State Pos", pidSetpoint.position);
-//		SmartDashboard.putNumber("Initial Profile State Vel", pidSetpoint.velocity);
-//		SmartDashboard.putNumber("Goal State Pos", getGoal());
-//		SmartDashboard.putNumber(
-//				"Profile Wanted Pos",
-//			_profile.calculate(
-//				0.02,
-//				pidSetpoint,
-//				new State(getGoal(), 0))
-//				.position);
-
-//		if (atGoal() || _profileTimer.get() > _profile.totalTime()) return;
-
 		switch (_controlState) {
 			case PIDF_POSITION:
-//				pidSetpoint = _profile.calculate(
-//					0.1,
-//					pidSetpoint,
-//					new State(getGoal(), 0));
-//
-//				_main.getPIDController().setReference(pidSetpoint.position, ControlType.kPosition);
-
+				isCurrentlyPiding = true;
 				_main.set(_PIDFController.calculate(getPosition()));
-
-//				_main.getPIDController()
-//					.setReference(
-//						_profile.calculate(
-//							_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
-//							_initialProfileState,
-//							new State(getGoal(), 0))
-//							.position,
-//						ControlType.kPosition);
 				break;
 
 			case PIDF_VELOCITY:
-				_main.getPIDController()
-						.setReference(
-								_profile.calculate(
-												_profileTimer.get() + (_constants.dynamicProfiling ? 0.1 : 0),
-												_initialProfileState,
-												new State(getPosition(), getGoal()))
-										.velocity,
-								ControlType.kVelocity);
+				isCurrentlyPiding = true;
+				_main.set(_PIDFController.calculate(getVelocity()));
 				break;
 
 			case FF_POSITION:
@@ -188,5 +147,19 @@ public class NinjasSparkMaxController extends NinjasController {
 			default:
 				break;
 		}
+
+		if (!isCurrentlyPiding) {
+			switch (_controlState) {
+				case PIDF_POSITION:
+					_PIDFController.reset(new State(getPosition(), getVelocity()));
+					break;
+
+				case PIDF_VELOCITY:
+					_PIDFController.reset(new State(getVelocity(), 0));
+					break;
+			}
+
+		}
+		isCurrentlyPiding = false;
 	}
 }
