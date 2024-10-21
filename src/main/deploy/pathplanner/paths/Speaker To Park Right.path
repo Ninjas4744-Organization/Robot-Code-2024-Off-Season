@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 2.0,
-        "y": 5.0
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.0,
-        "y": 2.9531189969651095
+        "y": 1.9531189969651095
       },
       "isLocked": false,
       "linkedName": "Speaker"
@@ -34,8 +34,8 @@
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularVelocity": 270.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,

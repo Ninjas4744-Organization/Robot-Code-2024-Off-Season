@@ -3,7 +3,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -19,16 +20,22 @@ public class AutoCommandBuilder {
 		Pathfinding.setPathfinder(new LocalADStarAK());
 
 		AutoBuilder.configureHolonomic(
-				RobotState::getRobotPose, // Robot pose supplier
-				RobotState::setRobotPose, // Method to reset odometry (will be called if your auto has a starting
+			() -> new Pose2d(
+				RobotState.getRobotPose().getX(),
+				RobotState.getRobotPose().getY(),
+				RobotState.getGyroYaw()
+			), // Robot pose supplier
+			(pose) -> {
+				RobotState.setRobotPose(pose);
+				RobotState.resetGyro(pose.getRotation());
+			}, // Method to reset odometry (will be called if your auto has a starting
 				// pose)
-				SwerveIO.getInstance()::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+			() -> SwerveIO.getInstance().getChassisSpeeds(false), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
 				(drive) -> SwerveIO.getInstance()
-						.updateDemand(
-								drive, false), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+					.drive(drive, false), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
 				Constants.SwerveConstants.AutoConstants.kAutonomyConfig,
 				// Boolean supplier that mirrors path if red alliance
-				() -> DriverStation.getAlliance().get() == Alliance.Red,
+			() -> RobotState.getAlliance() == Alliance.Red,
 				SwerveIO.getInstance() // Reference to swerve subsystem to set requirements
 				);
 	}
@@ -50,6 +57,7 @@ public class AutoCommandBuilder {
 						TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.SHOOT),
 						Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_SEARCH)));
 		NamedCommands.registerCommand("Intake", TeleopCommandBuilder.changeRobotState(RobotState.RobotStates.INTAKE));
+		NamedCommands.registerCommand("Wait Note", Commands.waitUntil(() -> RobotState.getRobotState() == RobotState.RobotStates.NOTE_IN_INDEXER));
 		NamedCommands.registerCommand(
 				"Reset",
 				Commands.sequence(
@@ -57,14 +65,16 @@ public class AutoCommandBuilder {
 						Commands.waitUntil(() -> ShooterAngle.getInstance().isResetted()
 								&& Indexer.getInstance().isResetted()
 								&& Shooter.getInstance().isResetted())));
+		NamedCommands.registerCommand("Stop", Commands.runOnce(() -> SwerveIO.getInstance().drive(new ChassisSpeeds(), false)));
+		NamedCommands.registerCommand("Print 1", Commands.print("Start"));
+		NamedCommands.registerCommand("Print 2", Commands.print("Note In Indexer"));
 	}
 
 	/**
 	 * @return final autonomy command from pathplanner
 	 */
 	public static Command autoCommand(String auto) {
-		SwerveIO.getInstance().setState(SwerveDemand.SwerveState.VELOCITY);
-		//		RobotState.setRobotState(RobotState.RobotStates.RESET);
+		SwerveIO.getInstance().setState(SwerveDemand.SwerveState.AUTONOMY);
 		RobotState.setRobotState(RobotState.RobotStates.NOTE_IN_INDEXER);
 
 		return AutoBuilder.buildAuto(auto);

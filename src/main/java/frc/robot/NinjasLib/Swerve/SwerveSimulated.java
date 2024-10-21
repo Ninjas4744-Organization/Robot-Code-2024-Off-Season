@@ -31,7 +31,7 @@ public class SwerveSimulated extends SwerveIO {
 	}
 
 	@Override
-	public ChassisSpeeds getChassisSpeeds() {
-		return _currentChassisSpeeds;
+  public ChassisSpeeds getChassisSpeeds(boolean fieldRelative) {
+    return fieldRelative ? _currentChassisSpeeds : ChassisSpeeds.fromFieldRelativeSpeeds(_currentChassisSpeeds, RobotState.getGyroYaw());
 	}
 }

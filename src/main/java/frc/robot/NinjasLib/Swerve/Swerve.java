@@ -69,9 +69,10 @@ public class Swerve extends SwerveIO {
 	}
 
 	@Override
-	public ChassisSpeeds getChassisSpeeds() {
-		return ChassisSpeeds.fromRobotRelativeSpeeds(
-				SwerveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates()), RobotState.getGyroYaw());
+  public ChassisSpeeds getChassisSpeeds(boolean fieldRelative) {
+    return fieldRelative ? ChassisSpeeds.fromRobotRelativeSpeeds(
+      SwerveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates()), RobotState.getGyroYaw())
+      : SwerveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates());
 	}
 
 	/** Sets the swerve modules rotation, so it makes an X shape and makes the swerve immovable */

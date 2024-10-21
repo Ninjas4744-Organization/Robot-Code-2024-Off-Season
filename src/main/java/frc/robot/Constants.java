@@ -317,15 +317,10 @@ public final class Constants {
 		}
 
 		public static final class AutoConstants {
-			public static final double kP = 2.3;
+			public static final double kP = 0.05;
 			public static final double kI = 0;
 			public static final double kIZone = 0;
-			public static final double kD = 1;
-
-			//			public static final double kPTheta = 0.05;
-			//			public static final double kITheta = 0.07;
-			//			public static final double kIZoneTheta = 10;
-			//			public static final double kDTheta = 0.001;
+			public static final double kD = 0;
 
 			public static final double kPTheta = 0.07;
 			public static final double kITheta = 0.15;
@@ -333,7 +328,7 @@ public final class Constants {
 			public static final double kDTheta = 0.003;
 
 			public static final double kMaxSpeed = 2;
-			public static final double kAcceleration = 1;
+			public static final double kAcceleration = 4;
 			public static final double kMaxAngularSpeed = 8;
 			public static final double kAngularAcceleration = 16;
 
@@ -344,8 +339,8 @@ public final class Constants {
 					new PathConstraints(kMaxSpeed, kAcceleration, kMaxAngularSpeed, kAngularAcceleration);
 
 			public static final HolonomicPathFollowerConfig kAutonomyConfig = new HolonomicPathFollowerConfig(
-					new PIDConstants(kP, 0, 0),
-					new PIDConstants(kPTheta, 0, 0),
+				new PIDConstants(kP, kI, kD),
+				new PIDConstants(kPTheta, kITheta, kDTheta),
 					SwerveConstants.maxModuleSpeed,
 					SwerveConstants.kTrackWidth, // Distance from robot center to the furthest module.
 					new ReplanningConfig() // Default path replanning config.
@@ -371,9 +366,11 @@ public final class Constants {
 
 		public static final double kMaxAmbiguity = 0.2;
 
-		public static double distanceToFOM(double distance){
-      return 0.0105 * distance * distance + 0.172 * distance - 0.1741;
-//			return 0.9;
+		public static double calculateFOM(double distance) {
+			double distFOM = 0.015 * distance * distance + 0.172 * distance - 0.05;
+			double speedFOM = 0.25 * RobotState.getRobotVelocity().getNorm() * RobotState.getRobotVelocity().getNorm();
+
+			return distFOM + speedFOM + 0.9;
 		}
 
 		public static final boolean kUseOurField = false;

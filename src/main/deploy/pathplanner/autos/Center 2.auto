@@ -18,9 +18,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Print 1"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Center To Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
           }
         },
         {
@@ -44,6 +56,24 @@
         {
           "type": "named",
           "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Print 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Prepare Shoot"
           }
         },
@@ -51,6 +81,12 @@
           "type": "path",
           "data": {
             "pathName": "Note 3 To Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
           }
         },
         {

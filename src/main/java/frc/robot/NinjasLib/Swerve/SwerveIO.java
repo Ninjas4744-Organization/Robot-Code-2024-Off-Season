@@ -104,7 +104,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 		return positions;
 	}
 
-	public abstract ChassisSpeeds getChassisSpeeds();
+  public abstract ChassisSpeeds getChassisSpeeds(boolean fieldRelative);
 
 	/**
 	 * Makes the swerve use PID to look at the given angle
@@ -197,7 +197,7 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 			return;
 		}
 		PathPlannerTrajectory trajectory = new PathPlannerTrajectory(
-				path, getChassisSpeeds(), RobotState.getRobotPose().getRotation());
+      path, getChassisSpeeds(true), RobotState.getRobotPose().getRotation());
 		if (pathfindingCurrentTraj == null
 				|| pathfindingCurrentTraj.getTotalTimeSeconds() != trajectory.getTotalTimeSeconds()) {
 			System.out.println("New path available");
@@ -266,12 +266,12 @@ public abstract class SwerveIO extends StateMachineSubsystem {
 	}
 
 	/**
-	 * Set the current state of the swerve so it will work according
+   * Set the current state of the swerve, so it will work according
 	 * @param state the wanted state
 	 */
 	public void setState(SwerveState state) {
 		if (RobotState.isAutonomous()) {
-			_state = SwerveState.VELOCITY;
+      _state = SwerveState.AUTONOMY;
 			return;
 		}
 

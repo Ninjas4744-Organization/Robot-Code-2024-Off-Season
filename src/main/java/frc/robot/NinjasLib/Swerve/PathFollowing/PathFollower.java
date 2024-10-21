@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.RobotState;
+
 import java.util.List;
 
 public class PathFollower {
@@ -68,7 +69,7 @@ public class PathFollower {
 
 		_trajectory = new PathPlannerTrajectory(
 				_path,
-				SwerveIO.getInstance().getChassisSpeeds(),
+			SwerveIO.getInstance().getChassisSpeeds(true),
 				RobotState.getRobotPose().getRotation());
 
 		_profileTimer.restart();
