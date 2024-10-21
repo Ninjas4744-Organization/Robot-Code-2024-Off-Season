@@ -59,13 +59,13 @@ public final class Constants {
 		public static final InterpolatingDoubleTreeMap kAngleMap = new InterpolatingDoubleTreeMap();
 
 		static {
-			kAngleMap.put(1.6, 60.5 - 6.7);
-			kAngleMap.put(2.3, 50.5 - 6.7);
-			kAngleMap.put(2.5, 49.0 - 6.7);
-			kAngleMap.put(3.0, 45.4 - 6.7);
-			kAngleMap.put(3.6, 41.1 - 6.7);
-			kAngleMap.put(4.0, 40.4 - 6.7);
-			kAngleMap.put(4.5, 37.2 - 6.7);
+      kAngleMap.put(1.6, 60.5 - 6.7 - 2);
+      kAngleMap.put(2.3, 50.5 - 6.7 - 2);
+      kAngleMap.put(2.5, 49.0 - 6.7 - 2);
+      kAngleMap.put(3.0, 45.4 - 6.7 - 2);
+      kAngleMap.put(3.6, 41.1 - 6.7 - 2 - 1 - 1.5);
+      kAngleMap.put(4.0, 40.4 - 6.7 - 2);
+      kAngleMap.put(4.5, 37.2 - 6.7 - 2);
 		}
 
 		public static Pose3d getSpeakerHolePose() {
@@ -373,6 +373,7 @@ public final class Constants {
 
 		public static double distanceToFOM(double distance){
       return 0.0105 * distance * distance + 0.172 * distance - 0.1741;
+//			return 0.9;
 		}
 
 		public static final boolean kUseOurField = false;

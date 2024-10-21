@@ -11,6 +11,8 @@ import frc.robot.RobotState;
 
 public class Swerve extends SwerveIO {
 	private SwerveModule[] _modules;
+//	SlewRateLimiter _xRateLimiter;
+//	SlewRateLimiter _yRateLimiter;
 
 	public Swerve() {
 		super();
@@ -21,6 +23,9 @@ public class Swerve extends SwerveIO {
 			new SwerveModule(2, SwerveConstants.Mod2.constants),
 			new SwerveModule(3, SwerveConstants.Mod3.constants)
 		};
+
+//		_xRateLimiter = new SlewRateLimiter(6.5, -Double.MAX_VALUE, 0);
+//		_yRateLimiter = new SlewRateLimiter(6.5, -Double.MAX_VALUE, 0);
 	}
 
 	@Override
@@ -29,6 +34,12 @@ public class Swerve extends SwerveIO {
 		//		Shuffleboard.getTab("Swerve").add("Drive Y", drive.vyMetersPerSecond);
 		//		Shuffleboard.getTab("Swerve").add("Drive Omega", drive.omegaRadiansPerSecond);
 		//		Shuffleboard.getTab("Swerve").add("Drive Field Relative", fieldRelative);
+
+//		drive = new ChassisSpeeds(
+//			_xRateLimiter.calculate(drive.vxMetersPerSecond),
+//			_yRateLimiter.calculate(drive.vyMetersPerSecond),
+//			drive.omegaRadiansPerSecond
+//		);
 
 		SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.kSwerveKinematics.toSwerveModuleStates(
 				fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive);
