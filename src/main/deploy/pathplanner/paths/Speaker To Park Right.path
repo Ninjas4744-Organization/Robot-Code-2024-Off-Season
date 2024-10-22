@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0,
-        "y": 1.9531189969651095
+        "x": 2.7071067811865475,
+        "y": 3.2928932188134525
       },
       "isLocked": false,
       "linkedName": "Speaker"
     },
     {
       "anchor": {
-        "x": 5.0,
-        "y": 0.7
+        "x": 4.0,
+        "y": 2.0
       },
       "prevControl": {
-        "x": 1.9152912690536734,
-        "y": 0.7
+        "x": 3.0,
+        "y": 2.0
       },
       "nextControl": null,
       "isLocked": false,

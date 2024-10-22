@@ -22,6 +22,12 @@
           "data": {
             "name": "Full Shoot"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Speaker To Park Right"
+          }
         }
       ]
     }

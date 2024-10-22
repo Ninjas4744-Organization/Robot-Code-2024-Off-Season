@@ -66,7 +66,7 @@ public class VisionCamera {
 		_targets = currentPose.get().targetsUsed;
 		findMinMax(_output);
 
-		if (_output.maxAmbiguity < VisionConstants.kMaxAmbiguity) {
+		if (_output.maxAmbiguity < VisionConstants.kMaxAmbiguity || _output.closestTagDist < 4) {
 			_output.timestamp = currentPose.get().timestampSeconds;
 
 			_output.robotPose = new Pose2d(

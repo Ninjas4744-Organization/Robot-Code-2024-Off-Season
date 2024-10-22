@@ -14,19 +14,19 @@
         {
           "type": "named",
           "data": {
-            "name": "Prepare Shoot"
+            "name": "Reset"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Wait Shoot Ready"
+            "name": "Full Shoot"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Shoot"
+            "pathName": "Left To Park Left"
           }
         }
       ]

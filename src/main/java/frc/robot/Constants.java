@@ -59,13 +59,13 @@ public final class Constants {
 		public static final InterpolatingDoubleTreeMap kAngleMap = new InterpolatingDoubleTreeMap();
 
 		static {
-      kAngleMap.put(1.6, 60.5 - 6.7 - 2);
-      kAngleMap.put(2.3, 50.5 - 6.7 - 2);
-      kAngleMap.put(2.5, 49.0 - 6.7 - 2);
-      kAngleMap.put(3.0, 45.4 - 6.7 - 2);
-      kAngleMap.put(3.6, 41.1 - 6.7 - 2 - 1 - 1.5);
-      kAngleMap.put(4.0, 40.4 - 6.7 - 2);
-      kAngleMap.put(4.5, 37.2 - 6.7 - 2);
+			kAngleMap.put(2.5, 49.0 - 6.7 - 2 + 0.5 - 0.5);
+			kAngleMap.put(1.6, 60.5 - 6.7 - 2 + 0.5 - 0.5);
+			kAngleMap.put(2.3, 50.5 - 6.7 - 2 + 0.5 - 0.5);
+			kAngleMap.put(3.0, 45.4 - 6.7 - 2 + 0.5 - 0.5 - 0.5);
+			kAngleMap.put(3.6, 41.1 - 6.7 - 2 - 1 - 1.5 - 0.5);
+			kAngleMap.put(4.0, 40.4 - 6.7 - 2 - 0.5);
+			kAngleMap.put(4.5, 37.2 - 6.7 - 2 - 0.5);
 		}
 
 		public static Pose3d getSpeakerHolePose() {
@@ -423,6 +423,9 @@ public final class Constants {
 
 		public static AprilTagFieldLayout getFieldLayout(List<Integer> ignoredTags) {
 			AprilTagFieldLayout layout;
+
+			if (RobotState.isAutonomous())
+				return kBlueFieldLayout;
 
 			if (RobotState.isSimulated()) layout = kUseOurField ? kOurFieldLayout : kBlueFieldLayout;
 			else {

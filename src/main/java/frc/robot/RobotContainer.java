@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.Swerve.Swerve;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.RobotState.RobotStates;
@@ -79,19 +80,19 @@ public class RobotContainer {
 	}
 
 	private void configureOperatorBindings() {
-		_driverJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
+		_operatorJoystick.cross().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
 
-		_driverJoystick.triangle().onTrue(Commands.runOnce(() -> {
+		_operatorJoystick.triangle().onTrue(Commands.runOnce(() -> {
 			if (RobotState.getRobotPose().getX() <= 5)
 				StateMachine.getInstance().changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE);
 			else StateMachine.getInstance().changeRobotState(RobotStates.DELIVERY);
 		}));
 
-		_driverJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_AMP_PREPARE));
+		_operatorJoystick.square().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_AMP_PREPARE));
 
-		_driverJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE));
+		_operatorJoystick.circle().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE));
 
-		_driverJoystick
+		_operatorJoystick
 				.R2()
 				.onTrue(Commands.runOnce(
 						() -> {
@@ -100,17 +101,22 @@ public class RobotContainer {
 						},
 						StateMachine.getInstance()));
 
-		_driverJoystick.povUp().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.OOGA_BOOGA));
+		_operatorJoystick.povUp().onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.OOGA_BOOGA));
+
+		_operatorJoystick.povDown().onTrue(Commands.runOnce(() -> {
+			StateMachine.getInstance().changeRobotState(RobotStates.RESET);
+			((Swerve) (SwerveIO.getInstance())).resetModulesToAbsolute();
+		}));
 	}
 
 	private void configureTestBindings() {
-		_driverJoystick.triangle().whileTrue(TeleopCommandBuilder.runIfTestMode(Indexer.getInstance().runMotor(1)));
-		_driverJoystick.cross().whileTrue(TeleopCommandBuilder.runIfTestMode(Indexer.getInstance().runMotor(-1)));
+		_operatorJoystick.triangle().whileTrue(TeleopCommandBuilder.runIfTestMode(Indexer.getInstance().runMotor(1)));
+		_operatorJoystick.cross().whileTrue(TeleopCommandBuilder.runIfTestMode(Indexer.getInstance().runMotor(-1)));
 
-		_driverJoystick.povDown().whileTrue(TeleopCommandBuilder.runIfTestMode(ShooterAngle.getInstance().runMotor(-0.5)));
-		_driverJoystick.povUp().whileTrue(TeleopCommandBuilder.runIfTestMode(ShooterAngle.getInstance().runMotor(0.5)));
+		_operatorJoystick.povDown().whileTrue(TeleopCommandBuilder.runIfTestMode(ShooterAngle.getInstance().runMotor(-0.5)));
+		_operatorJoystick.povUp().whileTrue(TeleopCommandBuilder.runIfTestMode(ShooterAngle.getInstance().runMotor(0.5)));
 
-		_driverJoystick.square().whileTrue(TeleopCommandBuilder.runIfTestMode(Shooter.getInstance().runMotor(1)));
+		_operatorJoystick.square().whileTrue(TeleopCommandBuilder.runIfTestMode(Shooter.getInstance().runMotor(1)));
 	}
 
 	public void periodic() {
@@ -129,10 +135,10 @@ public class RobotContainer {
 //			return;
 
 		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
-		RobotState.updateRobotPose(estimations);
-//    for (VisionEstimation estimation : estimations)
-//      if (estimation.pose != null)
-//        RobotState.updateRobotPose(estimation);
+//		RobotState.updateRobotPose(estimations);
+		for (VisionEstimation estimation : estimations)
+			if (estimation.pose != null)
+				RobotState.updateRobotPose(estimation);
 	}
 
 	public void resetSubsystems() {

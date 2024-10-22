@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,12 +24,14 @@ public class AutoCommandBuilder {
 			() -> new Pose2d(
 				RobotState.getRobotPose().getX(),
 				RobotState.getRobotPose().getY(),
-				RobotState.getGyroYaw()
+				RobotState.getRobotPose().getRotation().rotateBy(Rotation2d.fromDegrees(RobotState.getAlliance() == Alliance.Red ? 180 : 0))
 			), // Robot pose supplier
-			(pose) -> {
-				RobotState.setRobotPose(pose);
-				RobotState.resetGyro(pose.getRotation());
-			}, // Method to reset odometry (will be called if your auto has a starting
+//			RobotState::getRobotPose,
+//			(pose) -> {
+//				RobotState.setRobotPose(pose);
+//				RobotState.resetGyro(pose.getRotation());
+//			}, // Method to reset odometry (will be called if your auto has a starting
+			RobotState::setRobotPose,
 				// pose)
 			() -> SwerveIO.getInstance().getChassisSpeeds(false), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
 				(drive) -> SwerveIO.getInstance()
