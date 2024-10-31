@@ -22,12 +22,6 @@
           "data": {
             "name": "Full Shoot"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left To Park Left"
-          }
         }
       ]
     }

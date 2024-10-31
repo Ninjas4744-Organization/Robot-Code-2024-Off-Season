@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
 	public void autonomousInit() {
 //		if (!RobotState.isSimulated()) if (DriverStation.isFMSAttached()) Shuffleboard.startRecording();
 
-		_autoCommand = AutoCommandBuilder.autoCommand("Center 1");
+		_autoCommand = AutoCommandBuilder.autoCommand("Left 1");
 		if (_autoCommand != null) _autoCommand.schedule();
 	}
 
