@@ -4,9 +4,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.NinjasLib.Controllers.NinjasController;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
+import frc.robot.NinjasLib.RobotStateIO;
 import frc.robot.RobotState;
 
-public abstract class StateMachineMotoredSubsystem extends StateMachineSubsystem {
+public abstract class StateMachineMotoredSubsystem<StateEnum> extends StateMachineSubsystem<StateEnum> {
 	protected NinjasController _controller;
 	protected NinjasSimulatedController _simulatedController;
 
@@ -16,7 +17,7 @@ public abstract class StateMachineMotoredSubsystem extends StateMachineSubsystem
 	}
 
 	protected NinjasController controller() {
-		if (RobotState.isSimulated()) return _simulatedController;
+		if (RobotStateIO.getInstance().isSimulated()) return _simulatedController;
 		else return _controller;
 	}
 

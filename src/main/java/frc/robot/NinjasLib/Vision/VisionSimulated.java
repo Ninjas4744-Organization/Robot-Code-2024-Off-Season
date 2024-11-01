@@ -12,7 +12,7 @@ public class VisionSimulated extends VisionIO {
 	private SimCameraProperties[] _cameraProperties;
 	private PhotonCameraSim[] _simulatedCameras;
 
-	public VisionSimulated() {
+	protected VisionSimulated() {
 		super();
 
 		_visionSystemSim.addAprilTags(VisionConstants.getFieldLayout());

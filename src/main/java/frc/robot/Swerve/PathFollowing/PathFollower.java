@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib.Swerve.PathFollowing;
+package frc.robot.Swerve.PathFollowing;
 
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
-import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.RobotState;
+import frc.robot.Swerve.SwerveIO;
 
 import java.util.List;
 

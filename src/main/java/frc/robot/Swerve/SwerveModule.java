@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib.Swerve;
+package frc.robot.Swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.ControlType;
@@ -13,12 +13,12 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
-import frc.robot.NinjasLib.Swerve.Extras.CANCoderUtil;
-import frc.robot.NinjasLib.Swerve.Extras.CANCoderUtil.CCUsage;
-import frc.robot.NinjasLib.Swerve.Extras.CANSparkMaxUtil;
-import frc.robot.NinjasLib.Swerve.Extras.CANSparkMaxUtil.Usage;
-import frc.robot.NinjasLib.Swerve.Extras.OnboardModuleState;
 import frc.robot.RobotState;
+import frc.robot.Swerve.Extras.CANCoderUtil;
+import frc.robot.Swerve.Extras.CANCoderUtil.CCUsage;
+import frc.robot.Swerve.Extras.CANSparkMaxUtil;
+import frc.robot.Swerve.Extras.CANSparkMaxUtil.Usage;
+import frc.robot.Swerve.Extras.OnboardModuleState;
 
 public class SwerveModule {
 	public int moduleNumber;

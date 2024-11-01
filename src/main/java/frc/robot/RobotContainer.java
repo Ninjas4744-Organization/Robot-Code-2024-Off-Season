@@ -9,13 +9,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
-import frc.robot.NinjasLib.Swerve.Swerve;
-import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.RobotState.RobotStates;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
+import frc.robot.Swerve.Swerve;
+import frc.robot.Swerve.SwerveIO;
 
 public class RobotContainer {
 	private CommandPS5Controller _driverJoystick;

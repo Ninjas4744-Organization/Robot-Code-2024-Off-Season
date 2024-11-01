@@ -74,7 +74,8 @@ public class VisionCamera {
 					currentPose.get().estimatedPose.getY(),
 					Rotation2d.fromRadians(
 							currentPose.get().estimatedPose.getRotation().getZ()));
-		} else _output.hasTargets = false;
+		} else
+      		_output.hasTargets = false;
 
 		return _output;
 	}

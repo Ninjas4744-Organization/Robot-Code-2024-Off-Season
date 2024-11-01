@@ -1,0 +1,28 @@
+package frc.robot;
+
+public enum RobotStates {
+    IDLE,
+    INTAKE,
+    INDEX,
+    INDEX_BACK,
+    CLOSE,
+    RESET,
+    SHOOT_SPEAKER_PREPARE,
+    SHOOT_AMP_PREPARE,
+    SHOOT_SPEAKER_READY,
+    SHOOT_AMP_READY,
+    SHOOT,
+    NOTE_SEARCH,
+    NOTE_IN_INDEXER,
+    CLIMB_PREPARE,
+    CLIMB_READY,
+    CLIMB,
+    CLIMBED,
+    DRIVE_TO_AMP,
+    DRIVE_TO_SOURCE,
+    TESTING,
+    OUTTAKE,
+    DELIVERY,
+    OOGA_BOOGA,
+    OOGA_BOOGA_READY
+}

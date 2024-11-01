@@ -17,6 +17,7 @@ public abstract class VisionIO extends SubsystemBase {
 	protected HashMap<String, VisionOutput> _outputs;
 	protected VisionEstimation[] _visionEstimations;
 	protected VisionCamera[] _cameras;
+	protected
 
 	public static VisionIO getInstance() {
 		if (_instance == null) {
@@ -26,7 +27,7 @@ public abstract class VisionIO extends SubsystemBase {
 		return _instance;
 	}
 
-	public VisionIO() {
+	protected VisionIO() {
 		String[] camerasNames = VisionConstants.kCameras.keySet().toArray(new String[0]);
 
 		_cameras = new VisionCamera[camerasNames.length];

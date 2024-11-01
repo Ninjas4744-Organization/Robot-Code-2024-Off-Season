@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand;
-import frc.robot.NinjasLib.Swerve.PathFollowing.LocalADStarAK;
-import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
+import frc.robot.Swerve.PathFollowing.LocalADStarAK;
+import frc.robot.Swerve.SwerveIO;
 
 public class AutoCommandBuilder {
 	public static void configureAutoBuilder() {

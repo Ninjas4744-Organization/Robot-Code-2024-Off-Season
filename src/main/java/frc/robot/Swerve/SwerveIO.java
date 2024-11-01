@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib.Swerve;
+package frc.robot.Swerve;
 
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -20,10 +20,10 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand.SwerveState;
 import frc.robot.NinjasLib.Subsystems.StateMachineSubsystem;
-import frc.robot.NinjasLib.Swerve.PathFollowing.PathFollower;
 import frc.robot.NinjasLib.Vision.NoteDetection;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotStates;
+import frc.robot.Swerve.PathFollowing.PathFollower;
 
 public abstract class SwerveIO extends StateMachineSubsystem {
 	private static SwerveIO _instance;
