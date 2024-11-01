@@ -1,12 +1,5 @@
 {
-  "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.25,
-      "y": 4.5
-    },
-    "rotation": 145.0
-  },
+  "version": "2025.0",
   "command": {
     "type": "sequential",
     "data": {
@@ -32,6 +25,7 @@
       ]
     }
   },
+  "resetOdom": true,
   "folder": "Center Autos",
   "choreoAuto": false
 }

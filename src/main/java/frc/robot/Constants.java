@@ -350,6 +350,7 @@ public final class Constants {
 
 	public static class VisionConstants {
 		public static final Map<String, Transform3d> kCameras = Map.of(
+//				"Front", new Transform3d(0, 0, 0, new Rotation3d(0, 30, 0)),
 				"Front", new Transform3d(0.28 - 0.11 - 0.2, 0.105, -0.055, new Rotation3d(0, 30, 0)),
 				"Left",
 						new Transform3d(
@@ -367,10 +368,11 @@ public final class Constants {
 		public static final double kMaxAmbiguity = 0.2;
 
 		public static double calculateFOM(double distance) {
-			double distFOM = 0.015 * distance * distance + 0.172 * distance - 0.05;
-			double speedFOM = 0.25 * RobotState.getRobotVelocity().getNorm() * RobotState.getRobotVelocity().getNorm();
+//			double distFOM = 0.015 * distance * distance + 0.172 * distance - 0.05;
+			double distFOM = 0.314 * distance - 0.236;
+			double speedFOM = 0.2 * RobotState.getRobotVelocity().getNorm();
 
-			return distFOM + speedFOM + 0.9;
+			return distFOM + speedFOM;
 		}
 
 		public static final boolean kUseOurField = false;
