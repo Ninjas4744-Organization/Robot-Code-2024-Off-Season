@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants;
+import frc.robot.Constants.Constants;
 import frc.robot.RobotState;
 import frc.robot.Swerve.SwerveIO;
 

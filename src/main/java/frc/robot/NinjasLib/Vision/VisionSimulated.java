@@ -1,46 +1,50 @@
 package frc.robot.NinjasLib.Vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.RobotState;
+import frc.robot.NinjasLib.DataClasses.VisionConstants;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 public class VisionSimulated extends VisionIO {
-	private VisionSystemSim _visionSystemSim = new VisionSystemSim("main");
-	private SimCameraProperties[] _cameraProperties;
-	private PhotonCameraSim[] _simulatedCameras;
+	private final VisionSystemSim _visionSystemSim = new VisionSystemSim("main");
+	private Supplier<Pose2d> _robotPoseSupplier;
 
-	protected VisionSimulated() {
-		super();
+    protected VisionSimulated(VisionConstants constants) {
+		super(constants);
 
-		_visionSystemSim.addAprilTags(VisionConstants.getFieldLayout());
+		_robotPoseSupplier = constants.simulationConstants.robotPoseSupplier;
 
-		_simulatedCameras = new PhotonCameraSim[_cameras.length];
-		_cameraProperties = new SimCameraProperties[_cameras.length];
+		_visionSystemSim.addAprilTags(constants.fieldLayoutGetter.getFieldLayout(List.of()));
+
+        PhotonCameraSim[] _simulatedCameras = new PhotonCameraSim[_cameras.length];
+        SimCameraProperties[] _cameraProperties = new SimCameraProperties[_cameras.length];
 
 		for (int i = 0; i < _cameras.length; i++) {
 			_cameraProperties[i] = new SimCameraProperties();
 			_cameraProperties[i].setCalibration(
-					VisionConstants.Simulation.kResolutionWidth,
-					VisionConstants.Simulation.kResolutionHeight,
-					Rotation2d.fromDegrees(VisionConstants.Simulation.kFOV));
+					constants.simulationConstants.resolutionWidth,
+					constants.simulationConstants.resolutionHeight,
+					Rotation2d.fromDegrees(constants.simulationConstants.FOV));
 			_cameraProperties[i].setCalibError(
-					VisionConstants.Simulation.kAverageError, VisionConstants.Simulation.kErrorStdDev);
-			_cameraProperties[i].setFPS(VisionConstants.Simulation.kFPS);
-			_cameraProperties[i].setAvgLatencyMs(VisionConstants.Simulation.kAverageLatency);
-			_cameraProperties[i].setLatencyStdDevMs(VisionConstants.Simulation.kLatencyStdDev);
+					constants.simulationConstants.averageError, constants.simulationConstants.errorStdDev);
+			_cameraProperties[i].setFPS(constants.simulationConstants.FPS);
+			_cameraProperties[i].setAvgLatencyMs(constants.simulationConstants.averageLatency);
+			_cameraProperties[i].setLatencyStdDevMs(constants.simulationConstants.latencyStdDev);
 
 			_simulatedCameras[i] = new PhotonCameraSim(_cameras[i].getCamera(), _cameraProperties[i]);
 
-			_visionSystemSim.addCamera(_simulatedCameras[i], VisionConstants.kCameras.get(_cameras[i].getName()));
+			_visionSystemSim.addCamera(_simulatedCameras[i], constants.cameras.get(_cameras[i].getName()));
 		}
 	}
 
 	@Override
 	public void periodic() {
 		super.periodic();
-		_visionSystemSim.update(RobotState.getRobotPose());
+		_visionSystemSim.update(_robotPoseSupplier.get());
 	}
 }

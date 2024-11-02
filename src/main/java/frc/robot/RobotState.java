@@ -14,8 +14,9 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
-import frc.robot.Constants.SwerveConstants;
-import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.Constants;
+import frc.robot.Constants.Constants.SwerveConstants;
+import frc.robot.Constants.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.RobotStateIO;
 import frc.robot.Swerve.Swerve;
@@ -28,6 +29,10 @@ public class RobotState extends RobotStateIO<RobotStates> {
 			.getStructTopic("Robot Pose", Pose2d.struct)
 			.publish();
 	private static DigitalInput _indexerNote = new DigitalInput(Constants.kIndexerBeamBreakerId);
+
+	public static RobotState getInstance() {
+		return (RobotState)RobotStateIO.getInstance();
+	}
 
 	/**
 	 * @return Whether there's a note in the indexer according to its beam breaker

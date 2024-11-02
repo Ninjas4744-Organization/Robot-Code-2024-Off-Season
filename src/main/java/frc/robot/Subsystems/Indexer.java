@@ -4,9 +4,9 @@ import frc.robot.Constants.IndexerConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasTalonFXController;
 import frc.robot.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
-import frc.robot.RobotState;
+import frc.robot.RobotStates;
 
-public class Indexer extends StateMachineMotoredSubsystem {
+public class Indexer extends StateMachineMotoredSubsystem<RobotStates> {
 	private static Indexer _instance;
 
 	public static Indexer getInstance() {
@@ -38,21 +38,21 @@ public class Indexer extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-				() -> controller().setPercent(IndexerConstants.States.kShoot), RobotState.RobotStates.SHOOT);
+				() -> controller().setPercent(IndexerConstants.States.kShoot.get()), RobotStates.SHOOT);
 
 		addFunctionToOnChangeMap(
-				() -> controller().setPercent(IndexerConstants.States.kOuttake), RobotState.RobotStates.OUTTAKE);
+				() -> controller().setPercent(IndexerConstants.States.kOuttake.get()), RobotStates.OUTTAKE);
 
 		addFunctionToOnChangeMap(
-				() -> controller().stop(), RobotState.RobotStates.CLOSE, RobotState.RobotStates.NOTE_IN_INDEXER);
+				() -> controller().stop(), RobotStates.CLOSE, RobotStates.NOTE_IN_INDEXER);
 
 		addFunctionToOnChangeMap(
-				() -> controller().setPercent(IndexerConstants.States.kIntake), RobotState.RobotStates.INTAKE);
+				() -> controller().setPercent(IndexerConstants.States.kIntake.get()), RobotStates.INTAKE);
 		addFunctionToOnChangeMap(
-				() -> controller().setPercent(IndexerConstants.States.kIndex), RobotState.RobotStates.INDEX);
+				() -> controller().setPercent(IndexerConstants.States.kIndex.get()), RobotStates.INDEX);
 		addFunctionToOnChangeMap(
-				() -> controller().setPercent(IndexerConstants.States.kIndexBack), RobotState.RobotStates.INDEX_BACK);
+				() -> controller().setPercent(IndexerConstants.States.kIndexBack.get()), RobotStates.INDEX_BACK);
 
-		addFunctionToOnChangeMap(this::resetSubsystem, RobotState.RobotStates.RESET, RobotState.RobotStates.CLOSE);
+		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET, RobotStates.CLOSE);
 	}
 }

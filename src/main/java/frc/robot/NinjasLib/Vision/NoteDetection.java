@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.NoteDetectionConstants;
+import frc.robot.Constants.Constants.NoteDetectionConstants;
 import frc.robot.RobotState;
 
 public class NoteDetection {

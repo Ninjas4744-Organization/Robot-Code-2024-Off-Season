@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.Constants.SwerveConstants;
 import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
 import frc.robot.RobotState;
 import frc.robot.Swerve.Extras.CANCoderUtil;

@@ -1,13 +1,11 @@
 package frc.robot.NinjasLib.Vision;
 
 import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.VisionConstants;
+import frc.robot.NinjasLib.DataClasses.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.DataClasses.VisionOutput;
-import frc.robot.RobotState;
+import frc.robot.NinjasLib.RobotStateIO;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,22 +15,26 @@ public abstract class VisionIO extends SubsystemBase {
 	protected HashMap<String, VisionOutput> _outputs;
 	protected VisionEstimation[] _visionEstimations;
 	protected VisionCamera[] _cameras;
-	protected
 
 	public static VisionIO getInstance() {
-		if (_instance == null) {
-			if (RobotState.isSimulated()) _instance = new VisionSimulated();
-			else _instance = new Vision();
-		}
+		if (_instance == null)
+			throw new RuntimeException("VisionIO constants not given. Initialize VisionIO by setConstants(VisionConstants) first.");
 		return _instance;
 	}
 
-	protected VisionIO() {
-		String[] camerasNames = VisionConstants.kCameras.keySet().toArray(new String[0]);
+	public static void setConstants(VisionConstants constants) {
+		if (_instance == null) {
+			if (RobotStateIO.getInstance().isSimulated()) _instance = new VisionSimulated(constants);
+			else _instance = new Vision(constants);
+		}
+	}
+
+	protected VisionIO(VisionConstants constants) {
+		String[] camerasNames = constants.cameras.keySet().toArray(new String[0]);
 
 		_cameras = new VisionCamera[camerasNames.length];
-		for (int i = 0; i < VisionConstants.kCameras.size(); i++)
-			_cameras[i] = new VisionCamera(camerasNames[i], VisionConstants.kCameras.get(camerasNames[i]));
+		for (int i = 0; i < constants.cameras.size(); i++)
+			_cameras[i] = new VisionCamera(camerasNames[i], constants.cameras.get(camerasNames[i]), constants);
 
 		_visionEstimations = new VisionEstimation[camerasNames.length];
 		_outputs = new HashMap<>();
@@ -125,33 +127,6 @@ public abstract class VisionIO extends SubsystemBase {
 			if (hasTargets(camera)) return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Get the camera that its looking direction is closest to the given direction,
-	 * for example if given direction (1, 0) and the robot is looking straight(gyro=0) it will return front camera
-	 * @param dir The direction to find the closest camera to, field relative
-	 * @return The name of the camera with the closest direction
-	 */
-	public String getCameraByDirection(Translation2d dir) {
-		Rotation2d dirAngle = dir.getAngle().rotateBy(RobotState.getGyroYaw().unaryMinus());
-
-		String closestCamera = "";
-		Rotation2d closestAngleDiff = Rotation2d.fromDegrees(Double.MAX_VALUE);
-
-		String[] camerasNames = VisionConstants.kCameras.keySet().toArray(new String[0]);
-
-		for (String camera : camerasNames) {
-			Rotation2d cameraAngle = Rotation2d.fromRadians(
-					VisionConstants.kCameras.get(camera).getRotation().getZ());
-
-			if (dirAngle.minus(cameraAngle).getDegrees() < closestAngleDiff.getDegrees()) {
-				closestAngleDiff = dirAngle.minus(cameraAngle);
-				closestCamera = camera;
-			}
-		}
-
-		return closestCamera;
 	}
 
 	public void ignoreTag(int id) {

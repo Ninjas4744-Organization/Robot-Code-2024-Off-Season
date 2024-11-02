@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 
 public abstract class RobotStateIO<StateEnum> {
-    private static RobotStateIO _instance;
+    protected static RobotStateIO _instance;
 
     public static RobotStateIO getInstance() {
         if(_instance == null)

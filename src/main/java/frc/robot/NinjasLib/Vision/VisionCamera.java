@@ -3,8 +3,7 @@ package frc.robot.NinjasLib.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import frc.robot.Constants;
-import frc.robot.Constants.VisionConstants;
+import frc.robot.NinjasLib.DataClasses.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionOutput;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -20,19 +19,22 @@ public class VisionCamera {
 	private final PhotonCamera _camera;
 	private final PhotonPoseEstimator _estimator;
 	private List<PhotonTrackedTarget> _targets;
-	private VisionOutput _output;
-	private List<Integer> _ignoredTags;
+	private final VisionOutput _output;
+	private final List<Integer> _ignoredTags;
+	private final VisionConstants _constants;
 
 	/**
 	 * @param name Name of the camera.
 	 * @param cameraPose Location of the camera on the robot (from center, positive x forward,
 	 *     positive y left, and positive angle is counterclockwise).
 	 */
-	public VisionCamera(String name, Transform3d cameraPose) {
+	public VisionCamera(String name, Transform3d cameraPose, VisionConstants constants) {
+		_constants = constants;
+
 		_camera = new PhotonCamera(name);
 
 		_estimator = new PhotonPoseEstimator(
-				Constants.VisionConstants.getFieldLayout(),
+			_constants.fieldLayoutGetter.getFieldLayout(List.of()),
 				PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
 				_camera,
 				cameraPose);
@@ -57,7 +59,7 @@ public class VisionCamera {
       return _output;
     }
 
-		_estimator.setFieldTags(Constants.VisionConstants.getFieldLayout(_ignoredTags));
+		_estimator.setFieldTags(_constants.fieldLayoutGetter.getFieldLayout(_ignoredTags));
 		Optional<EstimatedRobotPose> currentPose = _estimator.update(result);
 
 		_output.hasTargets = result.hasTargets();
@@ -66,7 +68,7 @@ public class VisionCamera {
 		_targets = currentPose.get().targetsUsed;
 		findMinMax(_output);
 
-		if (_output.maxAmbiguity < VisionConstants.kMaxAmbiguity || _output.closestTagDist < 4) {
+		if (_output.maxAmbiguity < _constants.maxAmbiguity || _output.closestTagDist < _constants.maxDistance) {
 			_output.timestamp = currentPose.get().timestampSeconds;
 
 			_output.robotPose = new Pose2d(
@@ -92,19 +94,19 @@ public class VisionCamera {
 			if (distance < output.closestTagDist) {
 				output.closestTagDist = distance;
 				output.closestTag =
-						Constants.VisionConstants.getFieldLayout().getTags().get(target.getFiducialId() - 1);
+					_constants.fieldLayoutGetter.getFieldLayout(List.of()).getTags().get(target.getFiducialId() - 1);
 			}
 
 			if (distance > output.farthestTagDist) {
 				output.farthestTagDist = distance;
 				output.farthestTag =
-						Constants.VisionConstants.getFieldLayout().getTags().get(target.getFiducialId() - 1);
+					_constants.fieldLayoutGetter.getFieldLayout(List.of()).getTags().get(target.getFiducialId() - 1);
 			}
 
 			if (ambiguity > output.maxAmbiguity) {
 				output.maxAmbiguity = ambiguity;
 				output.maxAmbiguityTag =
-						Constants.VisionConstants.getFieldLayout().getTags().get(target.getFiducialId() - 1);
+					_constants.fieldLayoutGetter.getFieldLayout(List.of()).getTags().get(target.getFiducialId() - 1);
 			}
 		}
 	}

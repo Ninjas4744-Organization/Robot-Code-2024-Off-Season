@@ -5,12 +5,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
 
 public class Swerve extends SwerveIO {
-	private SwerveModule[] _modules;
+	private final SwerveModule[] _modules;
 //	SlewRateLimiter _xRateLimiter;
 //	SlewRateLimiter _yRateLimiter;
 
@@ -41,8 +40,8 @@ public class Swerve extends SwerveIO {
 //			drive.omegaRadiansPerSecond
 //		);
 
-		SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.kSwerveKinematics.toSwerveModuleStates(
-				fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getGyroYaw()) : drive);
+		SwerveModuleState[] swerveModuleStates = SwerveConstants.kSwerveKinematics.toSwerveModuleStates(
+				fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(drive, RobotState.getInstance().getGyroYaw()) : drive);
 		setModuleStates(swerveModuleStates, SwerveConstants.kOpenLoop);
 	}
 
@@ -71,7 +70,7 @@ public class Swerve extends SwerveIO {
 	@Override
   public ChassisSpeeds getChassisSpeeds(boolean fieldRelative) {
     return fieldRelative ? ChassisSpeeds.fromRobotRelativeSpeeds(
-      SwerveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates()), RobotState.getGyroYaw())
+      SwerveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates()), RobotState.getInstance().getGyroYaw())
       : SwerveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates());
 	}
 
@@ -111,6 +110,6 @@ public class Swerve extends SwerveIO {
 	@Override
 	public void periodic() {
 		super.periodic();
-		RobotState.updateRobotPose(getModulePositions());
+		RobotState.getInstance().updateRobotPose(getModulePositions());
 	}
 }

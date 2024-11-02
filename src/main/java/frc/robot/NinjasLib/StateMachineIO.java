@@ -4,12 +4,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.NinjasLib.DataClasses.StateEndCondition;
 import frc.robot.NinjasLib.Subsystems.StateMachineSubsystem;
-import frc.robot.RobotState;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class StateMachineIO<StateEnum> extends StateMachineSubsystem {
+public abstract class StateMachineIO<StateEnum> extends StateMachineSubsystem<StateEnum> {
     private static StateMachineIO _instance;
     private Map<StateEnum, StateEndCondition<StateEnum>> _endConditionMap;
 
@@ -23,7 +22,7 @@ public abstract class StateMachineIO<StateEnum> extends StateMachineSubsystem {
         _instance = instance;
     }
 
-    private StateMachineIO() {
+    protected StateMachineIO() {
         super();
         _endConditionMap = new HashMap<>();
         setEndConditionMap();
@@ -48,12 +47,16 @@ public abstract class StateMachineIO<StateEnum> extends StateMachineSubsystem {
      */
     protected abstract void setEndConditionMap();
 
+    protected void addEndCondition(StateEnum state, StateEndCondition<StateEnum> endCondition) {
+        _endConditionMap.put(state, endCondition);
+    }
+
     @Override
     public void periodic() {
         super.periodic();
 
         if (_endConditionMap.get(RobotStateIO.getInstance().getRobotState()).condition.getAsBoolean() &&
-            !RobotState.isSimulated() &&
+            !RobotStateIO.getInstance().isSimulated() &&
             _endConditionMap.get(RobotStateIO.getInstance().getRobotState()) != null)
             changeRobotState(_endConditionMap.get(RobotStateIO.getInstance().getRobotState()).nextState);
     }

@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.NinjasLib.Vision.VisionIO;
-import frc.robot.RobotState.RobotStates;
 import frc.robot.Swerve.SwerveIO;
 
 import java.util.function.BooleanSupplier;
@@ -24,7 +23,7 @@ public class TeleopCommandBuilder {
 				() -> {
 					double lx = -MathUtil.applyDeadband(translation.get().getX(), SwerveConstants.kJoystickDeadband);
 					double ly = -MathUtil.applyDeadband(translation.get().getY(), SwerveConstants.kJoystickDeadband);
-					double rx = (RobotState.isSimulated() ? 1 : -1)
+					double rx = (RobotState.getInstance().isSimulated() ? 1 : -1)
 							* MathUtil.applyDeadband(rotation.get().getX(), SwerveConstants.kJoystickDeadband);
 					double ry = -MathUtil.applyDeadband(rotation.get().getY(), SwerveConstants.kJoystickDeadband);
 
@@ -43,11 +42,11 @@ public class TeleopCommandBuilder {
 
 	public static Command resetGyro(boolean forceZero) {
 		return Commands.runOnce(() -> {
-			if (forceZero) RobotState.resetGyro(Rotation2d.fromDegrees(0));
+			if (forceZero) RobotState.getInstance().resetGyro(Rotation2d.fromDegrees(0));
 			else {
 				if (VisionIO.getInstance().hasTargets())
-					RobotState.resetGyro(RobotState.getRobotPose().getRotation());
-				else RobotState.resetGyro(Rotation2d.fromDegrees(0));
+					RobotState.getInstance().resetGyro(RobotState.getInstance().getRobotPose().getRotation());
+				else RobotState.getInstance().resetGyro(Rotation2d.fromDegrees(0));
 			}
 		});
 	}
@@ -60,7 +59,15 @@ public class TeleopCommandBuilder {
 		return Commands.either(
 			command,
 			Commands.none(),
-			() -> RobotState.getRobotState() == RobotStates.TESTING
+			() -> RobotState.getInstance().getRobotState() == RobotStates.TESTING
+		);
+	}
+
+	public static Command runIfNotTestMode(Command command) {
+		return Commands.either(
+			command,
+			Commands.none(),
+			() -> RobotState.getInstance().getRobotState() != RobotStates.TESTING
 		);
 	}
 }
