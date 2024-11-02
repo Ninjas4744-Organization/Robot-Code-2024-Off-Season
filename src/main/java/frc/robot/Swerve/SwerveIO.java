@@ -18,7 +18,6 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand.SwerveState;
 import frc.robot.NinjasLib.Subsystems.StateMachineSubsystem;
-import frc.robot.NinjasLib.Vision.NoteDetection;
 import frc.robot.RobotState;
 import frc.robot.RobotStates;
 import frc.robot.Swerve.PathFollowing.PathFollower;
@@ -397,12 +396,12 @@ public abstract class SwerveIO extends StateMachineSubsystem<RobotStates> {
 				break;
 
 			case DRIVE_ASSIST:
-				if (NoteDetection.hasTarget()) {
-					Translation2d pid = pidTo(NoteDetection.getNotePose().getTranslation());
-					double rotation = lookAtTarget(NoteDetection.getNotePose(), true, new Rotation2d());
-
-					drive(new ChassisSpeeds(pid.getX(), pid.getY(), rotation), true);
-				} else
+//				if (NoteDetection.hasTarget()) {
+//					Translation2d pid = pidTo(NoteDetection.getNotePose().getTranslation());
+//					double rotation = lookAtTarget(NoteDetection.getNotePose(), true, new Rotation2d());
+//
+//					drive(new ChassisSpeeds(pid.getX(), pid.getY(), rotation), true);
+//				} else
 					drive(
 							new ChassisSpeeds(
 									fromPercent(_demand.driverInput).vxMetersPerSecond,

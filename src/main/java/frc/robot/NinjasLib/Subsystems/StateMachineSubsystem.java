@@ -62,7 +62,7 @@ public abstract class StateMachineSubsystem<StateEnum> extends SubsystemBase {
 
 	/**
 	 * adds a function to the function on change map
-	 * this function is being called once uppon detected
+	 * this function is being called once upon detected
 	 * change of current state to any of given states
 	 *
 	 * @param function - the function to add

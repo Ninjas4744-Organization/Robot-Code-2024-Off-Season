@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testInit() {
 		CommandScheduler.getInstance().cancelAll();
-		RobotState.setRobotState(RobotState.RobotStates.TESTING);
+		RobotState.getInstance().setRobotState(RobotStates.TESTING);
 	}
 
 	@Override

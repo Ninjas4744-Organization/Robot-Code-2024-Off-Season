@@ -7,20 +7,29 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.Constants.NoteDetectionConstants;
+import frc.robot.NinjasLib.DataClasses.VisionConstants.NoteDetectionConstants;
 import frc.robot.RobotState;
 
 public class NoteDetection {
-	private static StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
+	private static final StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
 			.getStructTopic("NotePose", Pose2d.struct)
 			.publish();
+
+	private static NoteDetectionConstants _constants;
+
+	public static void setConstants(NoteDetectionConstants constants){
+		_constants = constants;
+	}
 
 	/**
 	 * @return The pose of the note on the field
 	 */
 	public static Pose2d getNotePose() {
-		double tx = LimelightHelpers.getTX("");
-		double ty = LimelightHelpers.getTY("");
+		if(_constants == null)
+			throw new RuntimeException("Note detection constants not set. Please set them with setConstants(NoteDetectionConstants)");
+
+		double tx = LimelightHelpers.getTX(_constants.limelightName);
+		double ty = LimelightHelpers.getTY(_constants.limelightName);
 
 		Translation2d translation = convertMeasurement(tx, ty);
 
@@ -30,19 +39,20 @@ public class NoteDetection {
 		Transform2d noteTransform =
 				new Transform2d(new Translation2d(translation.getY(), -translation.getX()), new Rotation2d());
 
-		Pose2d notePose = RobotState.getRobotPose().plus(noteTransform);
+		Pose2d notePose = RobotState.getInstance().getRobotPose().plus(noteTransform);
 		publisher.set(notePose);
+
 		return notePose;
 	}
 
 	/** Converts limelight's degrees measurement to meters */
 	private static Translation2d convertMeasurement(double tx, double ty) {
-		double distY = (NoteDetectionConstants.limelightHeight - NoteDetectionConstants.noteHeight)
-				* Math.tan(Rotation2d.fromDegrees(NoteDetectionConstants.limelightMountAngleX + ty)
+		double distY = (_constants.limelightHeight - _constants.noteHeight)
+				* Math.tan(Rotation2d.fromDegrees(_constants.limelightMountAngleX + ty)
 						.getRadians());
 
 		double distX = distY
-				* Math.tan(Rotation2d.fromDegrees(NoteDetectionConstants.limelightMountAngleY + tx)
+				* Math.tan(Rotation2d.fromDegrees(_constants.limelightMountAngleY + tx)
 						.getRadians());
 
 		return new Translation2d(distX, distY);
@@ -52,7 +62,10 @@ public class NoteDetection {
 	 * @return Whether the limelight has detected a note
 	 */
 	public static boolean hasTarget() {
-		SmartDashboard.putBoolean("Limelight detected", LimelightHelpers.getTA("") > 0.5);
-		return LimelightHelpers.getTA("") > 0.5;
+		if(_constants == null)
+			throw new RuntimeException("Note detection constants not set. Please set them with setConstants(NoteDetectionConstants)");
+
+		SmartDashboard.putBoolean("Limelight detected", LimelightHelpers.getTA(_constants.limelightName) > 0.5);
+		return LimelightHelpers.getTA(_constants.limelightName) > 0.5;
 	}
 }

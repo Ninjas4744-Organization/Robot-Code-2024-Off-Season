@@ -19,7 +19,7 @@ public abstract class RobotStateIO<StateEnum> {
         _instance = instance;
     }
 
-    private StateEnum robotState;
+    protected StateEnum robotState;
 
     /**
      * @return State of the robot

@@ -31,7 +31,10 @@ public abstract class StateMachineIO<StateEnum> extends StateMachineSubsystem<St
     public void setTriggerForSimulationTesting(Trigger trigger) {
         if (RobotStateIO.getInstance().isSimulated())
             trigger.onTrue(Commands.runOnce(
-                () -> changeRobotState(_endConditionMap.get(RobotStateIO.getInstance().getRobotState()).nextState)));
+                () -> {
+                    if(_endConditionMap.get(RobotStateIO.getInstance().getRobotState()) != null)
+                        changeRobotState(_endConditionMap.get(RobotStateIO.getInstance().getRobotState()).nextState);
+                }));
     }
 
     /**
@@ -55,9 +58,11 @@ public abstract class StateMachineIO<StateEnum> extends StateMachineSubsystem<St
     public void periodic() {
         super.periodic();
 
+        if(_endConditionMap.get(RobotStateIO.getInstance().getRobotState()) == null)
+            return;
+
         if (_endConditionMap.get(RobotStateIO.getInstance().getRobotState()).condition.getAsBoolean() &&
-            !RobotStateIO.getInstance().isSimulated() &&
-            _endConditionMap.get(RobotStateIO.getInstance().getRobotState()) != null)
+            !RobotStateIO.getInstance().isSimulated())
             changeRobotState(_endConditionMap.get(RobotStateIO.getInstance().getRobotState()).nextState);
     }
 }

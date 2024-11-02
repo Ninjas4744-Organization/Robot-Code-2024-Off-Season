@@ -13,6 +13,9 @@ public class StateMachine extends StateMachineIO<RobotStates> {
 		return (StateMachine) StateMachineIO.getInstance();
 	}
 
+	private Timer _shootTimer;
+	private Timer _outtakeTimer;
+
 	@Override
 	public void changeRobotState(RobotStates wantedState) {
 		switch (RobotState.getInstance().getRobotState()) {
@@ -168,9 +171,6 @@ public class StateMachine extends StateMachineIO<RobotStates> {
 					RobotState.getInstance().getNoteInIndexer() ? RobotStates.NOTE_IN_INDEXER : RobotStates.NOTE_SEARCH);
 	}
 
-	private final Timer _shootTimer = new Timer();
-	private final Timer _outtakeTimer = new Timer();
-
 	@Override
 	protected void setEndConditionMap() {
 		addEndCondition(
@@ -263,6 +263,9 @@ public class StateMachine extends StateMachineIO<RobotStates> {
 
 	@Override
 	protected void setFunctionMaps() {
+		_shootTimer = new Timer();
+		_outtakeTimer = new Timer();
+
 		addFunctionToOnChangeMap(_shootTimer::restart, RobotStates.SHOOT);
 		addFunctionToOnChangeMap(_outtakeTimer::restart, RobotStates.OUTTAKE);
 	}

@@ -2,7 +2,6 @@ package frc.robot.NinjasLib.DataClasses;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import frc.robot.NinjasLib.Vision.FOMCalculator;
 import frc.robot.NinjasLib.Vision.FieldLayoutGetter;
 
 import java.util.Map;
@@ -12,12 +11,11 @@ public class VisionConstants {
     public Map<String, Transform3d> cameras;
     public double maxAmbiguity;
     public double maxDistance;
-    public FOMCalculator fomCalculator;
     public FieldLayoutGetter fieldLayoutGetter;
-    public Simulation simulationConstants;
+    public SimulationConstants simulationConstants;
     public NoteDetectionConstants noteDetectionConstants;
 
-    public static class Simulation {
+    public static class SimulationConstants {
         public int resolutionWidth;
         public int resolutionHeight;
         public double FOV;
@@ -30,6 +28,7 @@ public class VisionConstants {
     }
 
     public static class NoteDetectionConstants {
+        public String limelightName;
         public double limelightMountAngleX;
         public double limelightMountAngleY;
         public double limelightHeight;

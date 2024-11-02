@@ -15,20 +15,24 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.Constants.Constants;
-import frc.robot.Constants.Constants.SwerveConstants;
-import frc.robot.Constants.Constants.VisionConstants;
+import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.RobotStateIO;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Swerve.SwerveIO;
 
 public class RobotState extends RobotStateIO<RobotStates> {
-	private static AHRS navX = new AHRS();
+	private static final AHRS navX = new AHRS();
 	private static SwerveDrivePoseEstimator poseEstimator;
-	private static StructPublisher<Pose2d> _robotPosePublisher = NetworkTableInstance.getDefault()
+	private static final StructPublisher<Pose2d> _robotPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic("Robot Pose", Pose2d.struct)
 			.publish();
-	private static DigitalInput _indexerNote = new DigitalInput(Constants.kIndexerBeamBreakerId);
+	private static final DigitalInput _indexerNote = new DigitalInput(Constants.kIndexerBeamBreakerId);
+
+	public RobotState(){
+		robotState = RobotStates.IDLE;
+	}
 
 	public static RobotState getInstance() {
 		return (RobotState)RobotStateIO.getInstance();
@@ -76,15 +80,13 @@ public class RobotState extends RobotStateIO<RobotStates> {
 	 */
 	public void updateRobotPose(VisionEstimation visionEstimation) {
 		if (visionEstimation.hasTargets){
-			double distanceToTarget = getRobotPose().getTranslation().getDistance(visionEstimation.target.getTranslation());
-
 			poseEstimator.addVisionMeasurement(
 				visionEstimation.pose,
 				visionEstimation.timestamp,
 				new Matrix<>(Nat.N3(), Nat.N1(), new double[] {
-					VisionConstants.calculateFOM(distanceToTarget),
-					VisionConstants.calculateFOM(distanceToTarget),
-					VisionConstants.calculateFOM(distanceToTarget) * 5,
+					VisionConstants.calculateFOM(visionEstimation),
+					VisionConstants.calculateFOM(visionEstimation),
+					VisionConstants.calculateFOM(visionEstimation) * 5,
 				})
 			);
 		}

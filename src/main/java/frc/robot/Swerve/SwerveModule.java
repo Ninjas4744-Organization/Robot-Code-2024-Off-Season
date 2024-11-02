@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants.Constants.SwerveConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
 import frc.robot.RobotState;
 import frc.robot.Swerve.Extras.CANCoderUtil;
@@ -51,7 +51,7 @@ public class SwerveModule {
 		this.m_angleKFF = SwerveConstants.kAngleFF;
 		angleOffset = moduleConstants.angleOffset;
 
-		if (!RobotState.isSimulated()) {
+		if (!RobotState.getInstance().getInstance().isSimulated()) {
 			/* Angle Encoder Config */
 			angleEncoder = new CANcoder(moduleConstants.cancoderID);
 			configAngleEncoder();
@@ -79,12 +79,12 @@ public class SwerveModule {
 	}
 
 	public SwerveModuleState getState() {
-		if (RobotState.isSimulated()) return new SwerveModuleState(0, getAngle());
+		if (RobotState.getInstance().isSimulated()) return new SwerveModuleState(0, getAngle());
 		else return new SwerveModuleState(driveEncoder.getVelocity(), getAngle());
 	}
 
 	public SwerveModulePosition getPosition() {
-		if (RobotState.isSimulated()) return new SwerveModulePosition(0, getAngle());
+		if (RobotState.getInstance().isSimulated()) return new SwerveModulePosition(0, getAngle());
 		else return new SwerveModulePosition(driveEncoder.getPosition(), getAngle());
 	}
 
@@ -99,7 +99,7 @@ public class SwerveModule {
 	}
 
 	private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
-		if (RobotState.isSimulated()) return;
+		if (RobotState.getInstance().isSimulated()) return;
 
 		if (isOpenLoop) {
 			double percentOutput = desiredState.speedMetersPerSecond / SwerveConstants.maxSpeed;
@@ -124,7 +124,7 @@ public class SwerveModule {
 	}
 
 	public void resetToAbsolute() {
-		if (RobotState.isSimulated()) return;
+		if (RobotState.getInstance().isSimulated()) return;
 
 		double absolutePosition = getCanCoder().getDegrees() - angleOffset.getDegrees();
 		// integratedAngleEncoder.setPosition(absolutePosition);
@@ -207,7 +207,7 @@ public class SwerveModule {
 	}
 
 	private Rotation2d getAngle() {
-		if (RobotState.isSimulated()) return new Rotation2d();
+		if (RobotState.getInstance().isSimulated()) return new Rotation2d();
 		else return Rotation2d.fromDegrees(integratedAngleEncoder.getPosition());
 	}
 }

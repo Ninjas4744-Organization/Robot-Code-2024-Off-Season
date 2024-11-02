@@ -53,13 +53,13 @@ public class ShooterAngleConstants {
 
     public static Pose3d getSpeakerHolePose() {
         return new Pose3d(
-            Constants.VisionConstants.getTagPose(Constants.VisionConstants.getSpeakerTag().ID)
+            FieldConstants.getTagPose(FieldConstants.getSpeakerTag().ID)
                 .getX()
                 + kSpeakerOffset.getX() * (RobotState.getInstance().getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-            Constants.VisionConstants.getTagPose(Constants.VisionConstants.getSpeakerTag().ID)
+            FieldConstants.getTagPose(FieldConstants.getSpeakerTag().ID)
                 .getY()
                 + kSpeakerOffset.getY() * (RobotState.getInstance().getAlliance() == DriverStation.Alliance.Red ? -1 : 1),
-            Constants.VisionConstants.getTagPose(Constants.VisionConstants.getSpeakerTag().ID)
+            FieldConstants.getTagPose(FieldConstants.getSpeakerTag().ID)
                 .getZ()
                 + kSpeakerOffset.getZ(),
             new Rotation3d());

@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public class VisionSimulated extends VisionIO {
 	private final VisionSystemSim _visionSystemSim = new VisionSystemSim("main");
-	private Supplier<Pose2d> _robotPoseSupplier;
+	private final Supplier<Pose2d> _robotPoseSupplier;
 
     protected VisionSimulated(VisionConstants constants) {
 		super(constants);

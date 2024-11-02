@@ -159,9 +159,9 @@ public final class SwerveConstants {
             new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
     }
 
-    public class Simulation {
+    public static class Simulation {
         public static final double kSimToRealSpeedConversion = 0.02; // meters per 0.02s -> meters per 1s
-        public static final double kAcceleration = 10;
+        public static final double kAcceleration = 20;
     }
 
     public static final class AutoConstants {
