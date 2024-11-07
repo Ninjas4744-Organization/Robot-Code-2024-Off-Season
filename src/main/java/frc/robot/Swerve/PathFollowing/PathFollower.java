@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib.Swerve.PathFollowing;
+package frc.robot.Swerve.PathFollowing;
 
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -8,14 +8,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants;
-import frc.robot.NinjasLib.Swerve.SwerveIO;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotState;
+import frc.robot.Swerve.SwerveIO;
 
 import java.util.List;
 
 public class PathFollower {
-	private Timer _profileTimer;
+	private final Timer _profileTimer;
 
 	private boolean started = false;
 
@@ -55,22 +55,22 @@ public class PathFollower {
 
 	private void starting(Pose2d targetPose) {
 		List<Translation2d> points = List.of(
-				RobotState.getRobotPose().getTranslation(),
-				RobotState.getRobotPose().getTranslation(),
+				RobotState.getInstance().getRobotPose().getTranslation(),
+				RobotState.getInstance().getRobotPose().getTranslation(),
 				targetPose.getTranslation(),
 				targetPose.getTranslation());
 
 		PathPlannerPath _path = new PathPlannerPath(
 				points,
-				Constants.SwerveConstants.AutoConstants.kConstraints,
+				SwerveConstants.AutoConstants.kConstraints,
 				new GoalEndState(
 						0,
-						RobotState.isSimulated() ? targetPose.getRotation().unaryMinus() : targetPose.getRotation()));
+						RobotState.getInstance().isSimulated() ? targetPose.getRotation().unaryMinus() : targetPose.getRotation()));
 
 		_trajectory = new PathPlannerTrajectory(
 				_path,
 			SwerveIO.getInstance().getChassisSpeeds(true),
-				RobotState.getRobotPose().getRotation());
+				RobotState.getInstance().getRobotPose().getRotation());
 
 		_profileTimer.restart();
 	}

@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib.Swerve.Extras;
+package frc.robot.Swerve.Extras;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;

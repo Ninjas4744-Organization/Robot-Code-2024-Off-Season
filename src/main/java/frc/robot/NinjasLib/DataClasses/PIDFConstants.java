@@ -22,7 +22,7 @@ public class PIDFConstants {
 
 	/**
 	 * IZone is the error zone to enable the I component, for example, if you work in meters and your
-	 * PD doesnt work after error of 0.1m you can set this to 0.15
+	 * PD doesn't work after error of 0.1m you can set this to 0.15
 	 */
 	public double kIZone = Double.POSITIVE_INFINITY;
 
@@ -47,47 +47,6 @@ public class PIDFConstants {
 	 * reached
 	 */
 	public double kAcceleration = 0;
-
-	//	public PIDFConstants() {}
-	//
-	//	public PIDFConstants(double kP, double kI, double kD) {
-	//		this.kP = kP;
-	//		this.kI = kI;
-	//		this.kD = kD;
-	//	}
-	//
-	//	public PIDFConstants(double kP, double kI, double kD, double kIZone) {
-	//		this(kP, kI, kD);
-	//		this.kIZone = kIZone;
-	//	}
-	//
-	//	public PIDFConstants(double kP, double kI, double kD, double kCruiseVelocity, double kAcceleration) {
-	//		this(kP, kI, kD);
-	//		this.kCruiseVelocity = kCruiseVelocity;
-	//		this.kAcceleration = kAcceleration;
-	//	}
-	//
-	//	public PIDFConstants(double kCruiseVelocity, double kAcceleration, double kS, double kV) {
-	//		this.kCruiseVelocity = kCruiseVelocity;
-	//		this.kAcceleration = kAcceleration;
-	//		this.kV = kV;
-	//		this.kS = kS;
-	//	}
-	//
-	//	public PIDFConstants(
-	//			double kP,
-	//			double kI,
-	//			double kD,
-	//			double kIZone,
-	//			double kS,
-	//			double kV,
-	//			double kCruiseVelocity,
-	//			double kAcceleration) {
-	//		this(kP, kI, kD, kCruiseVelocity, kAcceleration);
-	//		this.kIZone = kIZone;
-	//		this.kS = kS;
-	//		this.kV = kV;
-	//	}
 
 	@Override
 	public String toString() {

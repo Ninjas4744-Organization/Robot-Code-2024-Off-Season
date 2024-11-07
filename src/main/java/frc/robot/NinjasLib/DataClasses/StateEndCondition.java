@@ -1,13 +1,12 @@
 package frc.robot.NinjasLib.DataClasses;
 
-import frc.robot.RobotState.RobotStates;
 import java.util.function.BooleanSupplier;
 
-public class StateEndCondition {
+public class StateEndCondition<StateEnum> {
 	public BooleanSupplier condition;
-	public RobotStates nextState;
+	public StateEnum nextState;
 
-	public StateEndCondition(BooleanSupplier condition, RobotStates nextState) {
+	public StateEndCondition(BooleanSupplier condition, StateEnum nextState) {
 		this.condition = condition;
 		this.nextState = nextState;
 	}

@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib.Swerve.Extras;
+package frc.robot.Swerve.Extras;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 

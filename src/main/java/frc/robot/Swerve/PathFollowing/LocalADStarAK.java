@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib.Swerve.PathFollowing;
+package frc.robot.Swerve.PathFollowing;
 
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
@@ -8,6 +8,7 @@ import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinder;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;
+
 import java.util.Collections;
 import java.util.List;
 

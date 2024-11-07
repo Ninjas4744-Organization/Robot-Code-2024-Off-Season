@@ -4,10 +4,9 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasTalonFXController;
 import frc.robot.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
-import frc.robot.RobotState;
-import frc.robot.RobotState.RobotStates;
+import frc.robot.RobotStates;
 
-public class Shooter extends StateMachineMotoredSubsystem {
+public class Shooter extends StateMachineMotoredSubsystem<RobotStates> {
 	private static Shooter _instance;
 
 	public static Shooter getInstance() {
@@ -39,18 +38,18 @@ public class Shooter extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToOnChangeMap(
-			() -> controller().setVelocity(ShooterConstants.States.kSpeaker),
-			RobotState.RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.SHOOT_SPEAKER_READY, RobotStates.OOGA_BOOGA, RobotStates.OOGA_BOOGA_READY);
+			() -> controller().setVelocity(ShooterConstants.States.kSpeaker.get()),
+			RobotStates.SHOOT_SPEAKER_PREPARE, RobotStates.SHOOT_SPEAKER_READY, RobotStates.OOGA_BOOGA, RobotStates.OOGA_BOOGA_READY);
 
 		addFunctionToOnChangeMap(
-			() -> controller().setVelocity(ShooterConstants.States.kAmp),
+			() -> controller().setVelocity(ShooterConstants.States.kAmp.get()),
 			RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
 
 		addFunctionToOnChangeMap(
-			() -> controller().setVelocity(ShooterConstants.States.kDelivery),
+			() -> controller().setVelocity(ShooterConstants.States.kDelivery.get()),
 			RobotStates.DELIVERY);
 
-		addFunctionToOnChangeMap(() -> controller().setVelocity(ShooterConstants.States.kOuttake),
+		addFunctionToOnChangeMap(() -> controller().setVelocity(ShooterConstants.States.kOuttake.get()),
 			RobotStates.OUTTAKE);
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET, RobotStates.CLOSE);

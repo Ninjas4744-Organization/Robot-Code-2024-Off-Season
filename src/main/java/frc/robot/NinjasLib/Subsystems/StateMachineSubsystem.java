@@ -1,24 +1,21 @@
 package frc.robot.NinjasLib.Subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotState;
-import frc.robot.RobotState.RobotStates;
+import frc.robot.NinjasLib.RobotStateIO;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class StateMachineSubsystem extends SubsystemBase {
-	private Map<RobotStates, Runnable> _periodicFunctionMap;
-	private Map<RobotStates, Runnable> _onChangeFunctionMap;
-	private RobotStates previousRobotState;
+public abstract class StateMachineSubsystem<StateEnum> extends SubsystemBase {
+	private Map<StateEnum, Runnable> _periodicFunctionMap;
+	private Map<StateEnum, Runnable> _onChangeFunctionMap;
+	private StateEnum previousRobotState;
 
 	public StateMachineSubsystem() {
 		_periodicFunctionMap = new HashMap<>();
 		_onChangeFunctionMap = new HashMap<>();
 
-		previousRobotState = RobotState.getRobotState();
-
-		for (RobotStates state : RobotStates.values()) _periodicFunctionMap.put(state, () -> {});
-		for (RobotStates state : RobotStates.values()) _onChangeFunctionMap.put(state, () -> {});
+		previousRobotState = (StateEnum) RobotStateIO.getInstance().getRobotState();
 
 		setFunctionMaps();
 	}
@@ -35,9 +32,9 @@ public abstract class StateMachineSubsystem extends SubsystemBase {
 	 * <p>Examples:
 	 *
 	 * <p>addFunctionToOnChangeMap.put(() -> System.out.println("Started Intaking"),
-	 * RobotStates.INTAKE);
+	 * StateEnum.INTAKE);
 	 *
-	 * <p>addFunctionToPeriodicMap.put(() -> System.out.println("Intaking"), RobotStates.INTAKE);
+	 * <p>addFunctionToPeriodicMap.put(() -> System.out.println("Intaking"), StateEnum.INTAKE);
 	 *
 	 * <p>Doing that will spam "Intaking" in the console when the robot is at INTAKE state and print
 	 * "Started Intaking" at the moment the state changed to INTAKING.
@@ -53,35 +50,36 @@ public abstract class StateMachineSubsystem extends SubsystemBase {
 	 * adds a function to the function periodic map
 	 * this function is being called periodically
 	 * ATTENTION!!!
-	 * only use for methods you want to be called more then once
+	 * only use for methods you want to be called more than once
 	 *
 	 * @param function - the function to add
 	 * @param states - the states that the function will run at
 	 * @see #setFunctionMaps
 	 */
-	protected void addFunctionToPeriodicMap(Runnable function, RobotStates... states) {
-		for (RobotStates state : states) _periodicFunctionMap.put(state, function);
+	protected void addFunctionToPeriodicMap(Runnable function, StateEnum... states) {
+		for (StateEnum state : states) _periodicFunctionMap.put(state, function);
 	}
 
 	/**
 	 * adds a function to the function on change map
-	 * this function is being called once uppon detected
+	 * this function is being called once upon detected
 	 * change of current state to any of given states
 	 *
 	 * @param function - the function to add
 	 * @param states - the states that the function will run at
 	 * @see #setFunctionMaps
 	 */
-	protected void addFunctionToOnChangeMap(Runnable function, RobotStates... states) {
-		for (RobotStates state : states) _onChangeFunctionMap.put(state, function);
+	protected void addFunctionToOnChangeMap(Runnable function, StateEnum... states) {
+		for (StateEnum state : states) _onChangeFunctionMap.put(state, function);
 	}
 
 	@Override
 	public void periodic() {
-		if (RobotState.getRobotState() != previousRobotState)
-			_onChangeFunctionMap.get(RobotState.getRobotState()).run();
-		previousRobotState = RobotState.getRobotState();
+		if (!RobotStateIO.getInstance().getRobotState().equals(previousRobotState) && _onChangeFunctionMap.get(RobotStateIO.getInstance().getRobotState()) != null)
+			_onChangeFunctionMap.get(RobotStateIO.getInstance().getRobotState()).run();
+		previousRobotState = (StateEnum) RobotStateIO.getInstance().getRobotState();
 
-		_periodicFunctionMap.get(RobotState.getRobotState()).run();
+		if(_periodicFunctionMap.get(RobotStateIO.getInstance().getRobotState()) != null)
+			_periodicFunctionMap.get(RobotStateIO.getInstance().getRobotState()).run();
 	}
 }

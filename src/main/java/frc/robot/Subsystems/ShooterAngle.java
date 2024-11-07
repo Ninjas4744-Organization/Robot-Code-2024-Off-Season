@@ -6,9 +6,9 @@ import frc.robot.Constants.ShooterAngleConstants;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
 import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
 import frc.robot.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
-import frc.robot.RobotState.RobotStates;
+import frc.robot.RobotStates;
 
-public class ShooterAngle extends StateMachineMotoredSubsystem {
+public class ShooterAngle extends StateMachineMotoredSubsystem<RobotStates> {
 	private static ShooterAngle _instance;
 	private DigitalInput _limit;
 
@@ -46,7 +46,7 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 	@Override
 	protected void setFunctionMaps() {
 		addFunctionToPeriodicMap(
-			() -> controller().setPosition(ShooterAngleConstants.States.Amp), RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
+			() -> controller().setPosition(ShooterAngleConstants.States.Amp.get()), RobotStates.SHOOT_AMP_PREPARE, RobotStates.SHOOT_AMP_READY);
 
 		addFunctionToPeriodicMap(
 				() -> controller()
@@ -56,12 +56,12 @@ public class ShooterAngle extends StateMachineMotoredSubsystem {
 				RobotStates.SHOOT_SPEAKER_PREPARE,
 				RobotStates.SHOOT_SPEAKER_READY);
 
-		addFunctionToPeriodicMap(() -> controller().setPosition(ShooterAngleConstants.States.Up), RobotStates.OOGA_BOOGA, RobotStates.OOGA_BOOGA_READY);
+		addFunctionToPeriodicMap(() -> controller().setPosition(ShooterAngleConstants.States.Up.get()), RobotStates.OOGA_BOOGA, RobotStates.OOGA_BOOGA_READY);
 
-		addFunctionToPeriodicMap(() -> controller().setPosition(ShooterAngleConstants.States.Delivery), RobotStates.DELIVERY);
+		addFunctionToPeriodicMap(() -> controller().setPosition(ShooterAngleConstants.States.Delivery.get()), RobotStates.DELIVERY);
 
 		addFunctionToOnChangeMap(this::resetSubsystem, RobotStates.RESET);
-		addFunctionToPeriodicMap(() -> controller().setPosition(ShooterAngleConstants.States.Close), RobotStates.CLOSE);
+		addFunctionToPeriodicMap(() -> controller().setPosition(ShooterAngleConstants.States.Close.get()), RobotStates.CLOSE);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package frc.robot.NinjasLib.Swerve.Extras;
+package frc.robot.Swerve.Extras;
 
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;

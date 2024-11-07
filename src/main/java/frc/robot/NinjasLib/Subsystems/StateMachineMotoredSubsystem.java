@@ -4,19 +4,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.NinjasLib.Controllers.NinjasController;
 import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
-import frc.robot.RobotState;
+import frc.robot.NinjasLib.RobotStateIO;
 
-public abstract class StateMachineMotoredSubsystem extends StateMachineSubsystem {
+public abstract class StateMachineMotoredSubsystem<StateEnum> extends StateMachineSubsystem<StateEnum> {
 	protected NinjasController _controller;
 	protected NinjasSimulatedController _simulatedController;
 
 	public StateMachineMotoredSubsystem() {
-		if (RobotState.isSimulated()) setSimulationController();
+		if (RobotStateIO.getInstance().isSimulated()) setSimulationController();
 		else setController();
 	}
 
 	protected NinjasController controller() {
-		if (RobotState.isSimulated()) return _simulatedController;
+		if (RobotStateIO.getInstance().isSimulated()) return _simulatedController;
 		else return _controller;
 	}
 
@@ -36,11 +36,6 @@ public abstract class StateMachineMotoredSubsystem extends StateMachineSubsystem
 	 */
 	protected abstract void setSimulationController();
 
-	/**
-	 * Resets the subsystem: moves the subsystem down until limit hit and then stops.
-	 *
-	 * @return the command that does that
-	 */
 	public abstract void resetSubsystem();
 
 	public abstract boolean isResetted();
