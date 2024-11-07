@@ -1,6 +1,8 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.ninjas4744.NinjasLib.DataClasses.VisionOutput;
+import com.ninjas4744.NinjasLib.RobotStateIO;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -17,8 +19,6 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.Constants.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.NinjasLib.DataClasses.VisionOutput;
-import frc.robot.NinjasLib.RobotStateIO;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Swerve.SwerveIO;
 

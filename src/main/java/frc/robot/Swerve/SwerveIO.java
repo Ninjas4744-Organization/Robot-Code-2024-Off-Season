@@ -1,5 +1,8 @@
 package frc.robot.Swerve;
 
+import com.ninjas4744.NinjasLib.DataClasses.SwerveDemand;
+import com.ninjas4744.NinjasLib.DataClasses.SwerveDemand.SwerveState;
+import com.ninjas4744.NinjasLib.Subsystems.StateMachineSubsystem;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
@@ -15,9 +18,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.NinjasLib.DataClasses.SwerveDemand;
-import frc.robot.NinjasLib.DataClasses.SwerveDemand.SwerveState;
-import frc.robot.NinjasLib.Subsystems.StateMachineSubsystem;
 import frc.robot.RobotState;
 import frc.robot.RobotStates;
 import frc.robot.Swerve.PathFollowing.PathFollower;

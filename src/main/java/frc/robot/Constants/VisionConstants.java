@@ -1,17 +1,17 @@
 package frc.robot.Constants;
 
+import com.ninjas4744.NinjasLib.DataClasses.VisionConstants.NoteDetectionConstants;
+import com.ninjas4744.NinjasLib.DataClasses.VisionConstants.SimulationConstants;
+import com.ninjas4744.NinjasLib.DataClasses.VisionOutput;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.NinjasLib.DataClasses.VisionConstants.NoteDetectionConstants;
-import frc.robot.NinjasLib.DataClasses.VisionConstants.SimulationConstants;
-import frc.robot.NinjasLib.DataClasses.VisionOutput;
 import frc.robot.RobotState;
 
 import java.util.Map;
 
 public class VisionConstants {
-    public static final frc.robot.NinjasLib.DataClasses.VisionConstants kVisionConstants = new frc.robot.NinjasLib.DataClasses.VisionConstants();
+    public static final com.ninjas4744.NinjasLib.DataClasses.VisionConstants kVisionConstants = new com.ninjas4744.NinjasLib.DataClasses.VisionConstants();
     static{
         kVisionConstants.cameras = Map.of(
             //"Front", new Transform3d(0, 0, 0, new Rotation3d(0, 30, 0)),

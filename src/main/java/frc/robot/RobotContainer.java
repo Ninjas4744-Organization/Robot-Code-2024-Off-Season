@@ -1,5 +1,10 @@
 package frc.robot;
 
+import com.ninjas4744.NinjasLib.DataClasses.SwerveDemand;
+import com.ninjas4744.NinjasLib.DataClasses.VisionOutput;
+import com.ninjas4744.NinjasLib.RobotStateIO;
+import com.ninjas4744.NinjasLib.StateMachineIO;
+import com.ninjas4744.NinjasLib.Vision.VisionIO;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -9,11 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Constants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.NinjasLib.DataClasses.SwerveDemand;
-import frc.robot.NinjasLib.DataClasses.VisionOutput;
-import frc.robot.NinjasLib.RobotStateIO;
-import frc.robot.NinjasLib.StateMachineIO;
-import frc.robot.NinjasLib.Vision.VisionIO;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;
@@ -28,7 +28,7 @@ public class RobotContainer {
 	private boolean isSwerveBayblade = false;
 
 	public RobotContainer() {
-		RobotStateIO.setInstance(new RobotState());
+		RobotStateIO.setInstance(new RobotState(), Robot.instance);
 
 		Shooter.getInstance();
 		ShooterAngle.getInstance();

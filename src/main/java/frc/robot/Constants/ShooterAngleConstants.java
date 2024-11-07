@@ -1,14 +1,14 @@
 package frc.robot.Constants;
 
+import com.ninjas4744.NinjasLib.DataClasses.MainControllerConstants;
+import com.ninjas4744.NinjasLib.DataClasses.PIDFConstants;
+import com.ninjas4744.NinjasLib.DataClasses.SimulatedControllerConstants;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.NinjasLib.DataClasses.MainControllerConstants;
-import frc.robot.NinjasLib.DataClasses.PIDFConstants;
-import frc.robot.NinjasLib.DataClasses.SimulatedControllerConstants;
 import frc.robot.RobotState;
 
 public class ShooterAngleConstants {

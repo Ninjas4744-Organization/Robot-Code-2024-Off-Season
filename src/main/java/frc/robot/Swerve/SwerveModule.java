@@ -1,6 +1,7 @@
 package frc.robot.Swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ninjas4744.NinjasLib.DataClasses.SwerveModuleConstants;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -12,7 +13,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
 import frc.robot.RobotState;
 import frc.robot.Swerve.Extras.CANCoderUtil;
 import frc.robot.Swerve.Extras.CANCoderUtil.CCUsage;
