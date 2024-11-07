@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.Constants.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.NinjasLib.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.DataClasses.VisionOutput;
 import frc.robot.NinjasLib.RobotStateIO;
 import frc.robot.Swerve.Swerve;
 import frc.robot.Swerve.SwerveIO;
@@ -78,15 +78,15 @@ public class RobotState extends RobotStateIO<RobotStates> {
 	 *
 	 * @param visionEstimation - the estimation
 	 */
-	public void updateRobotPose(VisionEstimation visionEstimation) {
+	public void updateRobotPose(VisionOutput visionEstimation) {
 		if (visionEstimation.hasTargets){
 			poseEstimator.addVisionMeasurement(
-				visionEstimation.pose,
+				visionEstimation.robotPose,
 				visionEstimation.timestamp,
 				new Matrix<>(Nat.N3(), Nat.N1(), new double[] {
 					VisionConstants.calculateFOM(visionEstimation),
 					VisionConstants.calculateFOM(visionEstimation),
-					VisionConstants.calculateFOM(visionEstimation) * 5,
+					VisionConstants.calculateFOM(visionEstimation),
 				})
 			);
 		}
@@ -94,46 +94,46 @@ public class RobotState extends RobotStateIO<RobotStates> {
 		_robotPosePublisher.set(getRobotPose());
 	}
 
-	public void updateRobotPose(VisionEstimation[] visionEstimations) {
-		Pose2d averagePose = new Pose2d();
-		double averageTimestamp = 0;
-		double rotationSum = 0;
-		Pose2d averageTarget = new Pose2d();
-		int count = 0;
-
-		for (VisionEstimation estimation : visionEstimations) {
-			if (estimation.pose == null || !estimation.hasTargets) continue;
-
-			averagePose = new Pose2d(
-				averagePose.getX() + estimation.pose.getX(),
-				averagePose.getY() + estimation.pose.getY(),
-				averagePose.getRotation());
-			rotationSum += estimation.pose.getRotation().getDegrees();
-
-			averageTarget = new Pose2d(
-				averageTarget.getX() + estimation.target.getX(),
-				averageTarget.getY() + estimation.target.getY(),
-				new Rotation2d()
-			);
-
-			averageTimestamp += estimation.timestamp;
-			count++;
-		}
-
-		averagePose = new Pose2d(
-				averagePose.getX() / count,
-				averagePose.getY() / count,
-				new Rotation2d(Rotation2d.fromDegrees(rotationSum).getRadians() / count));
-
-		averageTarget = new Pose2d(
-			averageTarget.getX() / count,
-			averageTarget.getY() / count,
-			new Rotation2d());
-
-		if (count == 0) return;
-
-		updateRobotPose(new VisionEstimation(averagePose, averageTimestamp / count, true, averageTarget));
-	}
+//	public void updateRobotPose(VisionOutput[] visionEstimations) {
+//		Pose2d averagePose = new Pose2d();
+//		double averageTimestamp = 0;
+//		double rotationSum = 0;
+//		Pose2d averageTarget = new Pose2d();
+//		int count = 0;
+//
+//		for (VisionOutput estimation : visionEstimations) {
+//			if (estimation.robotPose == null || !estimation.hasTargets) continue;
+//
+//			averagePose = new Pose2d(
+//				averagePose.getX() + estimation.robotPose.getX(),
+//				averagePose.getY() + estimation.robotPose.getY(),
+//				averagePose.getRotation());
+//			rotationSum += estimation.robotPose.getRotation().getDegrees();
+//
+//			averageTarget = new Pose2d(
+//				averageTarget.getX() + estimation.closestTag.pose.getX(),
+//				averageTarget.getY() + estimation.closestTag.pose.getY(),
+//				new Rotation2d()
+//			);
+//
+//			averageTimestamp += estimation.timestamp;
+//			count++;
+//		}
+//
+//		averagePose = new Pose2d(
+//				averagePose.getX() / count,
+//				averagePose.getY() / count,
+//				new Rotation2d(Rotation2d.fromDegrees(rotationSum).getRadians() / count));
+//
+//		averageTarget = new Pose2d(
+//			averageTarget.getX() / count,
+//			averageTarget.getY() / count,
+//			new Rotation2d());
+//
+//		if (count == 0) return;
+//
+////		updateRobotPose(new (averagePose, averageTimestamp / count, true, averageTarget));
+//	}
 
 	/**
 	 * @return yaw angle of the robot according to gyro

@@ -10,7 +10,7 @@ import frc.robot.Constants.Constants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand;
-import frc.robot.NinjasLib.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.DataClasses.VisionOutput;
 import frc.robot.NinjasLib.RobotStateIO;
 import frc.robot.NinjasLib.StateMachineIO;
 import frc.robot.NinjasLib.Vision.VisionIO;
@@ -123,11 +123,25 @@ public class RobotContainer {
 	}
 
 	public void periodic() {
-		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
-//		RobotState.getInstance().updateRobotPose(estimations);
-		for (VisionEstimation estimation : estimations)
-			if (estimation.pose != null)
-				RobotState.getInstance().updateRobotPose(estimation);
+		SmartDashboard.putNumber(
+			"Distance",
+			RobotState.getRobotPose()
+				.getTranslation()
+				.plus(Constants.ShooterAngleConstants.kShooterPose.toTranslation2d())
+				.getDistance(Constants.ShooterAngleConstants.getSpeakerHolePose()
+					.toPose2d()
+					.getTranslation()));
+
+//		SmartDashboard.putData("Camera", CameraServer.getVideo());
+
+//		if(RobotState.isAutonomous())
+//			return;
+
+		VisionOutput[] estimations = VisionIO.getInstance().getVisionEstimations();
+//		RobotState.updateRobotPose(estimations);
+		for (VisionOutput estimation : estimations)
+			if (estimation.robotPose != null)
+				RobotState.updateRobotPose(estimation);
 	}
 
 	public void resetSubsystems() {

@@ -3,17 +3,15 @@ package frc.robot.NinjasLib.Vision;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.NinjasLib.DataClasses.VisionConstants;
-import frc.robot.NinjasLib.DataClasses.VisionEstimation;
 import frc.robot.NinjasLib.DataClasses.VisionOutput;
 import frc.robot.NinjasLib.RobotStateIO;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 public abstract class VisionIO extends SubsystemBase {
 	private static VisionIO _instance;
 	protected HashMap<String, VisionOutput> _outputs;
-	protected VisionEstimation[] _visionEstimations;
+	//	protected VisionEstimation[] _visionEstimations;
 	protected VisionCamera[] _cameras;
 
 	public static VisionIO getInstance() {
@@ -36,31 +34,28 @@ public abstract class VisionIO extends SubsystemBase {
 		for (int i = 0; i < constants.cameras.size(); i++)
 			_cameras[i] = new VisionCamera(camerasNames[i], constants.cameras.get(camerasNames[i]), constants);
 
-		_visionEstimations = new VisionEstimation[camerasNames.length];
+//		_visionEstimations = new VisionEstimation[camerasNames.length];
 		_outputs = new HashMap<>();
 		for (String name : camerasNames) {
 			VisionOutput output = new VisionOutput();
 			_outputs.put(name, output);
 
-			_visionEstimations[Arrays.asList(camerasNames).indexOf(name)] = new VisionEstimation(output.robotPose, output.timestamp, output.hasTargets, output.closestTag.pose.toPose2d());
+//			_visionEstimations[Arrays.asList(camerasNames).indexOf(name)] = new VisionEstimation(output.robotPose, output.timestamp, output.hasTargets, output.closestTag.pose.toPose2d());
 		}
 	}
 
 	@Override
 	public void periodic() {
-		for (int i = 0; i < _cameras.length; i++) {
-			VisionOutput output = _cameras[i].Update();
-			_outputs.put(_cameras[i].getName(), output);
-			_visionEstimations[i] = new VisionEstimation(output.robotPose, output.timestamp, output.hasTargets, output.closestTag.pose.toPose2d());
-		}
+		for (VisionCamera camera : _cameras)
+			_outputs.put(camera.getName(), camera.Update());
 	}
 
 	/**
 	 * @return an array of each camera's robot pose, the time when this pose was detected and if
 	 * it has targets
 	 */
-	public VisionEstimation[] getVisionEstimations() {
-		return _visionEstimations;
+	public VisionOutput[] getVisionEstimations() {
+		return _outputs.values().toArray(new VisionOutput[0]);
 	}
 
 	/**
