@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.NinjasLib.DataClasses.SwerveDemand;
-import frc.robot.NinjasLib.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.DataClasses.VisionOutput;
 import frc.robot.NinjasLib.Swerve.Swerve;
 import frc.robot.NinjasLib.Swerve.SwerveIO;
 import frc.robot.NinjasLib.Vision.VisionIO;
@@ -134,10 +134,10 @@ public class RobotContainer {
 //		if(RobotState.isAutonomous())
 //			return;
 
-		VisionEstimation[] estimations = VisionIO.getInstance().getVisionEstimations();
+		VisionOutput[] estimations = VisionIO.getInstance().getVisionEstimations();
 //		RobotState.updateRobotPose(estimations);
-		for (VisionEstimation estimation : estimations)
-			if (estimation.pose != null)
+		for (VisionOutput estimation : estimations)
+			if (estimation.robotPose != null)
 				RobotState.updateRobotPose(estimation);
 	}
 

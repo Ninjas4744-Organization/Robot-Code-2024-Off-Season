@@ -3,6 +3,7 @@ package frc.robot.NinjasLib.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionOutput;
@@ -62,6 +63,8 @@ public class VisionCamera {
 
 		_output.hasTargets = result.hasTargets();
 		if (currentPose.isEmpty()) return _output;
+
+		SmartDashboard.putNumber("Dist To Target", result.getBestTarget().getBestCameraToTarget().getTranslation().getNorm());
 
 		_targets = currentPose.get().targetsUsed;
 		findMinMax(_output);

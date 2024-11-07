@@ -90,7 +90,7 @@ public final class Constants {
 
 			double angle = kAngleMap.get(dist);
 
-			double angleClamped = Math.min(Math.max(angle, 37.7), 80);
+			double angleClamped = Math.min(Math.max(angle, 31), 73.3);
 			return Rotation2d.fromDegrees(angleClamped);
 		}
 
@@ -367,12 +367,11 @@ public final class Constants {
 
 		public static final double kMaxAmbiguity = 0.2;
 
-		public static double calculateFOM(double distance) {
-//			double distFOM = 0.015 * distance * distance + 0.172 * distance - 0.05;
-			double distFOM = 0.314 * distance - 0.236;
-			double speedFOM = 0.2 * RobotState.getRobotVelocity().getNorm();
-
-			return distFOM + speedFOM;
+		public static double calculateFOM(VisionOutput visionEstimation) {
+			double distFOM = 0.34 * visionEstimation.closestTagDist - 0.124;
+			SmartDashboard.putNumber("FOM", distFOM);
+//			double speedFOM = 0.2 * RobotState.getRobotVelocity().getNorm();
+			return distFOM;
 		}
 
 		public static final boolean kUseOurField = false;
