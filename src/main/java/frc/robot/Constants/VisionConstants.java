@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.NinjasLib.DataClasses.VisionConstants.NoteDetectionConstants;
 import frc.robot.NinjasLib.DataClasses.VisionConstants.SimulationConstants;
-import frc.robot.NinjasLib.DataClasses.VisionEstimation;
+import frc.robot.NinjasLib.DataClasses.VisionOutput;
 import frc.robot.RobotState;
 
 import java.util.Map;
@@ -52,12 +52,9 @@ public class VisionConstants {
         kVisionConstants.noteDetectionConstants.noteHeight = 0.0254;
     }
 
-    public static double calculateFOM(VisionEstimation estimation) {
-        double distToTarget = RobotState.getInstance().getRobotPose().getTranslation().getDistance(estimation.target.getTranslation());
-
-        //double distFOM = 0.015 * distance * distance + 0.172 * distance - 0.05;
-        double distFOM = 0.314 * distToTarget - 0.0359;
-        double speedFOM = 0.2 * RobotState.getInstance().getRobotVelocity().getNorm();
+    public static double calculateFOM(VisionOutput estimation) {
+        double distFOM = 0.34 * estimation.closestTagDist - 0.124;
+        double speedFOM = 0/*0.2 * RobotState.getInstance().getRobotVelocity().getNorm()*/;
 
         return distFOM + speedFOM;
     };

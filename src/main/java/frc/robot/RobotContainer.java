@@ -123,25 +123,11 @@ public class RobotContainer {
 	}
 
 	public void periodic() {
-		SmartDashboard.putNumber(
-			"Distance",
-			RobotState.getRobotPose()
-				.getTranslation()
-				.plus(Constants.ShooterAngleConstants.kShooterPose.toTranslation2d())
-				.getDistance(Constants.ShooterAngleConstants.getSpeakerHolePose()
-					.toPose2d()
-					.getTranslation()));
-
-//		SmartDashboard.putData("Camera", CameraServer.getVideo());
-
-//		if(RobotState.isAutonomous())
-//			return;
-
 		VisionOutput[] estimations = VisionIO.getInstance().getVisionEstimations();
 //		RobotState.updateRobotPose(estimations);
 		for (VisionOutput estimation : estimations)
 			if (estimation.robotPose != null)
-				RobotState.updateRobotPose(estimation);
+				RobotState.getInstance().updateRobotPose(estimation);
 	}
 
 	public void resetSubsystems() {
