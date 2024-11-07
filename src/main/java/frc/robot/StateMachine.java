@@ -1,8 +1,8 @@
 package frc.robot;
 
+import com.ninjas4744.NinjasLib.DataClasses.StateEndCondition;
+import com.ninjas4744.NinjasLib.StateMachineIO;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.NinjasLib.DataClasses.StateEndCondition;
-import frc.robot.NinjasLib.StateMachineIO;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ShooterAngle;

@@ -1,11 +1,11 @@
 package frc.robot.Subsystems;
 
+import com.ninjas4744.NinjasLib.Controllers.NinjasSimulatedController;
+import com.ninjas4744.NinjasLib.Controllers.NinjasSparkMaxController;
+import com.ninjas4744.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ShooterAngleConstants;
-import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
-import frc.robot.NinjasLib.Controllers.NinjasSparkMaxController;
-import frc.robot.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
 import frc.robot.RobotStates;
 
 public class ShooterAngle extends StateMachineMotoredSubsystem<RobotStates> {

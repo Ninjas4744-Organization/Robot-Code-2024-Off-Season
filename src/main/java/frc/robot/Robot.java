@@ -9,10 +9,12 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
 	private Command _autoCommand;
 	private RobotContainer _robotContainer;
+	public static Robot instance;
 
 	@Override
 	public void robotInit() {
 		Pathfinding.setPathfinder(new LocalADStar());
+		instance = this;
 		_robotContainer = new RobotContainer();
 	}
 

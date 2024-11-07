@@ -1,5 +1,6 @@
 package frc.robot.Constants;
 
+import com.ninjas4744.NinjasLib.DataClasses.SwerveModuleConstants;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -9,7 +10,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import frc.robot.NinjasLib.DataClasses.SwerveModuleConstants;
 
 public final class SwerveConstants {
     public static final double kSpeedFactor = 1;

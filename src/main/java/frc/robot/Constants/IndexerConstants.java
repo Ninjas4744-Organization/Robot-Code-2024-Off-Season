@@ -1,7 +1,7 @@
 package frc.robot.Constants;
 
-import frc.robot.NinjasLib.DataClasses.MainControllerConstants;
-import frc.robot.NinjasLib.DataClasses.SimulatedControllerConstants;
+import com.ninjas4744.NinjasLib.DataClasses.MainControllerConstants;
+import com.ninjas4744.NinjasLib.DataClasses.SimulatedControllerConstants;
 
 public class IndexerConstants {
     public static final MainControllerConstants kControllerConstants = new MainControllerConstants();

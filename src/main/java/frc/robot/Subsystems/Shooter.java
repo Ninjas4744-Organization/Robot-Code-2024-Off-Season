@@ -1,9 +1,9 @@
 package frc.robot.Subsystems;
 
+import com.ninjas4744.NinjasLib.Controllers.NinjasSimulatedController;
+import com.ninjas4744.NinjasLib.Controllers.NinjasTalonFXController;
+import com.ninjas4744.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.NinjasLib.Controllers.NinjasSimulatedController;
-import frc.robot.NinjasLib.Controllers.NinjasTalonFXController;
-import frc.robot.NinjasLib.Subsystems.StateMachineMotoredSubsystem;
 import frc.robot.RobotStates;
 
 public class Shooter extends StateMachineMotoredSubsystem<RobotStates> {
