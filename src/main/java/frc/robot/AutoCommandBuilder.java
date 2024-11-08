@@ -43,7 +43,7 @@ public class AutoCommandBuilder {
 
 			SwerveConstants.AutoConstants.kAutonomyConfig, //Autonomy config
 
-			() -> RobotState.getInstance().getAlliance() == Alliance.Red, // Boolean supplier that mirrors path if red alliance
+			() -> false/*RobotState.getInstance().getAlliance() == Alliance.Red*/, // Boolean supplier that mirrors path if red alliance
 
 			SwerveIO.getInstance() // Reference to swerve subsystem to set requirements
 		);
