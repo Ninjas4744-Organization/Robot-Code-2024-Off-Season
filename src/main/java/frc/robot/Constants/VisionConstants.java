@@ -53,7 +53,9 @@ public class VisionConstants {
     }
 
     public static double calculateFOM(VisionOutput estimation) {
-        double distFOM = 0.34 * estimation.closestTagDist - 0.124;
+        double C = 0.116;
+
+        double distFOM = (2 * Math.pow(2, estimation.closestTagDist)) / estimation.amountOfTargets * C;
         double speedFOM = 0/*0.2 * RobotState.getInstance().getRobotVelocity().getNorm()*/;
 
         return distFOM + speedFOM;

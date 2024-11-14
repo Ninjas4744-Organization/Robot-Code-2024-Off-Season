@@ -85,7 +85,7 @@ dependencies {
 	nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
 	simulationRelease wpi.sim.enableRelease()
 
-	implementation 'com.github.Ninjas4744-Organization:NinjasLib:0.3'
+	implementation 'com.github.Ninjas4744-Organization:NinjasLib:0.4'
 
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
