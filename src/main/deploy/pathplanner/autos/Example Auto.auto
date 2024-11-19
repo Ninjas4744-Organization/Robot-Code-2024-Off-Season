@@ -1,0 +1,115 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2788871226815193,
+      "y": 5.515804013063089
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Full Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Example Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Full Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "second path"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Third path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Full Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fourth path"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fifth path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Full Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,0 +1,58 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.9418259121824937,
+        "y": 7.29585116802188
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.9418259121824937,
+        "y": 7.3958511680218795
+      },
+      "isLocked": false,
+      "linkedName": "End end pikup 2"
+    },
+    {
+      "anchor": {
+        "x": 1.9112722961537205,
+        "y": 5.28158728214746
+      },
+      "prevControl": {
+        "x": 1.9581156423368464,
+        "y": 6.206743369264199
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "End third path"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 180.0,
+      "rotateFast": true
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 270.0,
+    "maxAngularAcceleration": 360.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -178.4925642412251,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": -92.79270236571327,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

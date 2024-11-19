@@ -171,10 +171,10 @@ public abstract class SwerveIO extends StateMachineSubsystem<RobotStates> {
 				_xPID.calculate(RobotState.getInstance().getRobotPose().getX(), target.getX()),
 				_yPID.calculate(RobotState.getInstance().getRobotPose().getY(), target.getY()));
 
-		Shuffleboard.getTab("Swerve").add("X PID Target", target.getX());
-		Shuffleboard.getTab("Swerve").add("Y PID Target", target.getY());
-		Shuffleboard.getTab("Swerve").add("X PID", result.getX());
-		Shuffleboard.getTab("Swerve").add("Y PID", result.getY());
+//		Shuffleboard.getTab("Swerve").add("X PID Target", target.getX())	;
+//		Shuffleboard.getTab("Swerve").add("Y PID Target", target.getY());
+//		Shuffleboard.getTab("Swerve").add("X PID", result.getX());
+//		Shuffleboard.getTab("Swerve").add("Y PID", result.getY());
 
 		return result;
 	}

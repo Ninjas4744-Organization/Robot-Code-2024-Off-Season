@@ -93,7 +93,8 @@ public class RobotContainer {
 			else StateMachine.getInstance().changeRobotState(RobotStates.DELIVERY);
 		})));
 
-		_driverJoystick.square().onTrue(TeleopCommandBuilder.runIfNotTestMode(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_AMP_PREPARE)));
+//		_driverJoystick.square().onTrue(TeleopCommandBuilder.runIfNotTestMode(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_AMP_PREPARE)));
+		_driverJoystick.square().onTrue(TeleopCommandBuilder.runIfNotTestMode(TeleopCommandBuilder.changeRobotState(RobotStates.DRIVE_TO_AMP)));
 
 		_driverJoystick.circle().onTrue(TeleopCommandBuilder.runIfNotTestMode(TeleopCommandBuilder.changeRobotState(RobotStates.CLOSE)));
 
