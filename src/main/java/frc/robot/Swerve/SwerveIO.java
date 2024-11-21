@@ -159,9 +159,9 @@ public abstract class SwerveIO extends StateMachineSubsystem<RobotStates> {
 
 	public ChassisSpeeds fromPercent(ChassisSpeeds percent) {
 		return new ChassisSpeeds(
-				_demand.driverInput.vxMetersPerSecond * SwerveConstants.maxSpeed * SwerveConstants.kSpeedFactor,
-				_demand.driverInput.vyMetersPerSecond * SwerveConstants.maxSpeed * SwerveConstants.kSpeedFactor,
-				_demand.driverInput.omegaRadiansPerSecond
+      percent.vxMetersPerSecond * SwerveConstants.maxSpeed * SwerveConstants.kSpeedFactor,
+      percent.vyMetersPerSecond * SwerveConstants.maxSpeed * SwerveConstants.kSpeedFactor,
+      percent.omegaRadiansPerSecond
 						* SwerveConstants.maxAngularVelocity
 						* SwerveConstants.kRotationSpeedFactor);
 	}
@@ -171,7 +171,7 @@ public abstract class SwerveIO extends StateMachineSubsystem<RobotStates> {
 				_xPID.calculate(RobotState.getInstance().getRobotPose().getX(), target.getX()),
 				_yPID.calculate(RobotState.getInstance().getRobotPose().getY(), target.getY()));
 
-//		Shuffleboard.getTab("Swerve").add("X PID Target", target.getX())	;
+//		Shuffleboard.getTab("Swerve").add("X PID Target", target.getX());
 //		Shuffleboard.getTab("Swerve").add("Y PID Target", target.getY());
 //		Shuffleboard.getTab("Swerve").add("X PID", result.getX());
 //		Shuffleboard.getTab("Swerve").add("Y PID", result.getY());
@@ -432,7 +432,7 @@ public abstract class SwerveIO extends StateMachineSubsystem<RobotStates> {
 					_demand.targetPose = FieldConstants.getOffsetTagPose(
 							FieldConstants.getTagPose(FieldConstants.getAmpTag().ID)
 									.toPose2d(),
-							1.25);
+            0.75);
 
 					double dist =
 							RobotState.getInstance().getRobotPose().getTranslation().getDistance(_demand.targetPose.getTranslation());

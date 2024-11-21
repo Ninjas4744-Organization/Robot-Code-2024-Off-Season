@@ -95,7 +95,8 @@ public class StateMachine extends StateMachineIO<RobotStates> {
 						|| wantedState == RobotStates.CLOSE
 						|| wantedState == RobotStates.SHOOT_SPEAKER_PREPARE
 					|| wantedState == RobotStates.OUTTAKE
-						|| wantedState == RobotStates.RESET) RobotState.getInstance().setRobotState(wantedState);
+					|| wantedState == RobotStates.RESET
+					|| wantedState == RobotStates.DRIVE_TO_AMP) RobotState.getInstance().setRobotState(wantedState);
 				break;
 
 			case NOTE_IN_INDEXER:

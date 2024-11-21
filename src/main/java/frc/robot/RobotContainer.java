@@ -55,7 +55,7 @@ public class RobotContainer {
 		Shuffleboard.getTab("Competition")
 				.addBoolean("Can Gyro Reset", () -> VisionIO.getInstance().hasTargets());
 
-		new Trigger(() -> RobotState.getInstance().getRobotPose().getX() <= 5 && RobotState.getInstance().getNoteInIndexer())
+		new Trigger(() -> RobotState.getInstance().getRobotPose().getX() <= 5 && RobotState.getInstance().getNoteInIndexer() && !RobotState.getInstance().isAutonomous())
 				.onTrue(TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
 
 		configureBindings();

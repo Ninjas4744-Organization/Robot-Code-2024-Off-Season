@@ -175,8 +175,8 @@ public final class SwerveConstants {
         public static final double kIZoneTheta = 4;
         public static final double kDTheta = 0.003;
 
-        public static final double kMaxSpeed = 2;
-        public static final double kAcceleration = 4;
+        public static final double kMaxSpeed = 4;
+        public static final double kAcceleration = 9;
         public static final double kMaxAngularSpeed = 8;
         public static final double kAngularAcceleration = 16;
 

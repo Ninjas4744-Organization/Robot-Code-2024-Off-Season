@@ -32,7 +32,19 @@
         {
           "type": "named",
           "data": {
+            "name": "Print 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Wait Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Print 2"
           }
         },
         {

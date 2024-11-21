@@ -83,9 +83,9 @@ public class AutoCommandBuilder {
 
 		NamedCommands.registerCommand("Stop", Commands.runOnce(() -> SwerveIO.getInstance().drive(new ChassisSpeeds(), false)));
 
-		NamedCommands.registerCommand("Print 1", Commands.print("Start"));
+		NamedCommands.registerCommand("Print 1", Commands.print("11111111111111111111"));
 
-		NamedCommands.registerCommand("Print 2", Commands.print("Note In Indexer"));
+		NamedCommands.registerCommand("Print 2", Commands.print("22222222222222222222"));
 	}
 
 	/**
