@@ -24,7 +24,6 @@ public class ShooterAngleConstants {
         kControllerConstants.PIDFConstants.kP = 0.15;
 
         kControllerConstants.positionGoalTolerance = 0.5;
-        kControllerConstants.dynamicProfiling = true;
 
         kControllerConstants.encoderConversionFactor = 1.0 / 300.0 * 360.0;
         kControllerConstants.encoderHomePosition = 31;
