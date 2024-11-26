@@ -11,12 +11,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Print 1"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Center To Speaker"
@@ -61,12 +55,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Print 2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Prepare Shoot"
           }
         },
@@ -98,6 +86,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Center Autos",
+  "folder": null,
   "choreoAuto": false
 }
