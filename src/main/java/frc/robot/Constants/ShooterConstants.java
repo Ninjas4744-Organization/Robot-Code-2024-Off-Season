@@ -40,13 +40,13 @@ public class ShooterConstants {
         kOuttake(1200),
         kDelivery(4600);
 
-        private final int value;
+        private final double value;
 
-        States(int value) {
+        States(double value) {
             this.value = value;
         }
 
-        public int get(){
+        public double get() {
             return value;
         }
     }

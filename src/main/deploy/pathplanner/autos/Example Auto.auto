@@ -77,6 +77,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Fifth path"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Wait Note"

@@ -82,13 +82,13 @@ public class ShooterAngleConstants {
         Close(31),
         Delivery(45);
 
-        private final int value;
+        private final double value;
 
-        States(int value) {
+        States(double value) {
             this.value = value;
         }
 
-        public int get(){
+        public double get() {
             return value;
         }
     }

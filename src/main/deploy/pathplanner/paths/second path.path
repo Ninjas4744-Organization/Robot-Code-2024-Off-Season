@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.824717546724679,
-        "y": 5.55
+        "x": 2.825,
+        "y": 5.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3091730901019112,
-        "y": 6.425
+        "x": 1.3094555433772324,
+        "y": 6.275
       },
       "isLocked": false,
       "linkedName": "end first pick up"
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 4.25,
+    "maxAcceleration": 8.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -53,7 +53,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

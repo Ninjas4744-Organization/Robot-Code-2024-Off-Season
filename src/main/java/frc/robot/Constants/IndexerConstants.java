@@ -20,18 +20,18 @@ public class IndexerConstants {
 
     public enum States {
         kIntake(1),
-        kIndex(1),
+        kIndex(0.5),
         kIndexBack(-1),
         kShoot(1),
         kOuttake(1);
 
-        private final int value;
+        private final double value;
 
-        States(int value) {
+        States(double value) {
             this.value = value;
         }
 
-        public int get(){
+        public double get() {
             return value;
         }
     }
