@@ -64,14 +64,11 @@ public class FieldConstants {
     public static AprilTagFieldLayout getFieldLayout(List<Integer> ignoredTags) {
         AprilTagFieldLayout layout;
 
-        if (RobotState.getInstance().isSimulated()) layout = kUseOurField ? kOurFieldLayout : kBlueFieldLayout;
-        else {
-            if (kUseOurField) layout = kOurFieldLayout;
-            else
-                layout = RobotState.getInstance().getAlliance() == DriverStation.Alliance.Blue
-                    ? kBlueFieldLayout
-                    : kRedFieldLayout;
-        }
+        if (kUseOurField) layout = kOurFieldLayout;
+        else
+            layout = RobotState.getInstance().getAlliance() == DriverStation.Alliance.Blue
+                ? kBlueFieldLayout
+                : kRedFieldLayout;
 
         if (!ignoredTags.isEmpty()) layout.getTags().removeIf(tag -> ignoredTags.contains(tag.ID));
 

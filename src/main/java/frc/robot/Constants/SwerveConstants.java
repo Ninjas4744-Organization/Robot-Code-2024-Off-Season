@@ -161,7 +161,8 @@ public final class SwerveConstants {
 
     public static class Simulation {
         public static final double kSimToRealSpeedConversion = 0.02; // meters per 0.02s -> meters per 1s
-        public static final double kAcceleration = 20;
+        public static final double kAcceleration = 12;
+        public static final double k0Acceleration = 18;
     }
 
     public static final class AutoConstants {

@@ -150,10 +150,6 @@ public abstract class SwerveIO extends StateMachineSubsystem<RobotStates> {
 
 		lookAtTranslation = lookAtTranslation.rotateBy(sheer);
 
-		lookAtTranslation = RobotState.getInstance().isSimulated()
-				? new Translation2d(lookAtTranslation.getX(), -lookAtTranslation.getY())
-				: lookAtTranslation;
-
 		return lookAt(invert ? lookAtTranslation.rotateBy(Rotation2d.fromDegrees(180)) : lookAtTranslation, 1);
 	}
 
@@ -377,7 +373,7 @@ public abstract class SwerveIO extends StateMachineSubsystem<RobotStates> {
 								_demand.driverInput.vxMetersPerSecond,
 								_demand.driverInput.vyMetersPerSecond,
 								lookAtTarget(
-										_demand.targetPose, /*RobotState.getInstance().getRobotState() == RobotStates.NOTE_SEARCH*/
+										_demand.targetPose,
 										false,
 										SwerveConstants.kShootingAngleError.unaryMinus())),
 						SwerveConstants.kFieldRelative);

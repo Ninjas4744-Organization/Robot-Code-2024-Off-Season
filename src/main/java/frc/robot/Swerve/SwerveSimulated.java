@@ -11,6 +11,7 @@ public class SwerveSimulated extends SwerveIO {
 	private ChassisSpeeds _currentChassisSpeeds = new ChassisSpeeds();
 	private final SlewRateLimiter _xAcceleration = new SlewRateLimiter(SwerveConstants.Simulation.kAcceleration);
 	private final SlewRateLimiter _yAcceleration = new SlewRateLimiter(SwerveConstants.Simulation.kAcceleration);
+	private final SlewRateLimiter _0Acceleration = new SlewRateLimiter(SwerveConstants.Simulation.k0Acceleration);
 
 	@Override
 	public void drive(ChassisSpeeds drive, boolean fieldRelative) {
@@ -26,7 +27,7 @@ public class SwerveSimulated extends SwerveIO {
 								* SwerveConstants.Simulation.kSimToRealSpeedConversion,
 				RobotState.getInstance().getRobotPose()
 						.getRotation()
-						.minus(Rotation2d.fromRadians(_currentChassisSpeeds.omegaRadiansPerSecond
+						.plus(Rotation2d.fromRadians(_0Acceleration.calculate(_currentChassisSpeeds.omegaRadiansPerSecond)
 								* SwerveConstants.Simulation.kSimToRealSpeedConversion))));
 	}
 

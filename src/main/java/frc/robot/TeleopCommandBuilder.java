@@ -23,8 +23,7 @@ public class TeleopCommandBuilder {
 				() -> {
 					double lx = -MathUtil.applyDeadband(translation.get().getX(), SwerveConstants.kJoystickDeadband);
 					double ly = -MathUtil.applyDeadband(translation.get().getY(), SwerveConstants.kJoystickDeadband);
-					double rx = (RobotState.getInstance().isSimulated() ? 1 : -1)
-							* MathUtil.applyDeadband(rotation.get().getX(), SwerveConstants.kJoystickDeadband);
+					double rx = -MathUtil.applyDeadband(rotation.get().getX(), SwerveConstants.kJoystickDeadband);
 					double ry = -MathUtil.applyDeadband(rotation.get().getY(), SwerveConstants.kJoystickDeadband);
 
 					double finalRotation =
