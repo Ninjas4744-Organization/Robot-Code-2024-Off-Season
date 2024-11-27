@@ -41,8 +41,8 @@ public class ShooterAngleConstants {
     public static final InterpolatingDoubleTreeMap kAngleMap = new InterpolatingDoubleTreeMap();
 
     static {
-        kAngleMap.put(2.5, 40.3);
         kAngleMap.put(1.6, 51.8);
+        kAngleMap.put(2.5, 40.3);
         kAngleMap.put(2.3, 41.8);
         kAngleMap.put(3.0, 36.2);
         kAngleMap.put(3.6, 29.4);
@@ -72,7 +72,7 @@ public class ShooterAngleConstants {
 
         double angle = kAngleMap.get(dist);
 
-        double angleClamped = Math.min(Math.max(angle, 37.7), 80);
+        double angleClamped = Math.min(Math.max(angle, 31), 72);
         return Rotation2d.fromDegrees(angleClamped);
     }
 
