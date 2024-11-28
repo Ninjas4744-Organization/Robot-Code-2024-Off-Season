@@ -6,10 +6,12 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.Shooter;
@@ -52,21 +54,21 @@ public class AutoCommandBuilder {
 	/** Registers all auto commands to pathplanner */
 	public static void registerCommands() {
 		NamedCommands.registerCommand(
-				"Prepare Shoot", TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE));
+			"Prepare Shoot", prepareShoot());
 
 		NamedCommands.registerCommand(
 				"Wait Shoot Ready",
 				Commands.waitUntil(() -> RobotState.getInstance().getRobotState() == RobotStates.SHOOT_SPEAKER_READY));
 
-		NamedCommands.registerCommand("Shoot", TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT));
+		NamedCommands.registerCommand("Shoot", shoot());
 
 		NamedCommands.registerCommand(
 				"Full Shoot",
 				Commands.sequence(
-						TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE),
+					prepareShoot(),
 						Commands.waitUntil(
 								() -> RobotState.getInstance().getRobotState() == RobotStates.SHOOT_SPEAKER_READY),
-						TeleopCommandBuilder.changeRobotState(RobotStates.SHOOT),
+					shoot(),
 						Commands.waitUntil(() -> RobotState.getInstance().getRobotState() == RobotStates.NOTE_SEARCH)));
 
 		NamedCommands.registerCommand("Intake", TeleopCommandBuilder.changeRobotState(RobotStates.INTAKE));
@@ -83,9 +85,46 @@ public class AutoCommandBuilder {
 
 		NamedCommands.registerCommand("Stop", Commands.runOnce(() -> SwerveIO.getInstance().drive(new ChassisSpeeds(), false)));
 
+		NamedCommands.registerCommand("Jiggle Back Right", jiggleBack(new Translation2d(-1, 0), new Translation2d(0, -1)));
+		NamedCommands.registerCommand("Jiggle Back Left", jiggleBack(new Translation2d(-1, 0), new Translation2d(0, 1)));
+
 		NamedCommands.registerCommand("Print 1", Commands.print("11111111111111111111"));
 
 		NamedCommands.registerCommand("Print 2", Commands.print("22222222222222222222"));
+	}
+
+	private static Command prepareShoot() {
+		return Commands.runOnce(() -> {
+			StateMachine.getInstance().changeRobotState(RobotStates.SHOOT_SPEAKER_PREPARE);
+			SwerveIO.getInstance().updateDemand(FieldConstants.getTagPose(FieldConstants.getSpeakerTag().ID).toPose2d());
+			SwerveIO.getInstance().setState(SwerveDemand.SwerveState.LOOK_AT_TARGET);
+		});
+	}
+
+	private static Command shoot() {
+		return Commands.runOnce(() -> {
+			StateMachine.getInstance().changeRobotState(RobotStates.SHOOT);
+			SwerveIO.getInstance().setState(SwerveDemand.SwerveState.AUTONOMY);
+		});
+	}
+
+	static double t = 0;
+
+	private static Command jiggleBack(Translation2d dir, Translation2d jiggleDir) {
+		return Commands.run(() -> {
+			double speed = 0.15 * SwerveConstants.maxSpeed;
+			double jiggleSpeed = Math.cos(t - 0.5) * 0.45 * SwerveConstants.maxSpeed;
+			SwerveIO.getInstance().drive(new ChassisSpeeds(
+				dir.getX() * speed + jiggleDir.getX() * jiggleSpeed,
+				dir.getY() * speed + jiggleDir.getY() * jiggleSpeed,
+				0
+			), false);
+
+			t += 0.02 * Math.PI * 2;
+		}).until(() -> RobotState.getInstance().getNoteInIndexer()).andThen(Commands.runOnce(() -> {
+			SwerveIO.getInstance().drive(new ChassisSpeeds(), false);
+			t = 0;
+		}));
 	}
 
 	/**

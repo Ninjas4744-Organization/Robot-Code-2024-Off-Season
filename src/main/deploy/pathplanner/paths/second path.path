@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.825,
-        "y": 5.4
+        "x": 2.0,
+        "y": 5.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3094555433772324,
-        "y": 6.275
+        "x": 1.4869697850114978,
+        "y": 6.909538931178863
       },
       "isLocked": false,
-      "linkedName": "end first pick up"
+      "linkedName": "End third path"
     },
     {
       "anchor": {
-        "x": 3.0,
+        "x": 2.5,
         "y": 7.1
       },
       "prevControl": {
-        "x": 1.0,
+        "x": 2.0,
         "y": 7.1
       },
       "nextControl": null,
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.25,
-    "maxAcceleration": 8.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 10.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

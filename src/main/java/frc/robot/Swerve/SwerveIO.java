@@ -259,10 +259,10 @@ public abstract class SwerveIO extends StateMachineSubsystem<RobotStates> {
 	 * @param state the wanted state
 	 */
 	public void setState(SwerveState state) {
-		if (RobotState.getInstance().isAutonomous()) {
-      _state = SwerveState.AUTONOMY;
-			return;
-		}
+//		if (RobotState.getInstance().isAutonomous()) {
+//      _state = SwerveState.AUTONOMY;
+//			return;
+//		}
 
 		_previousState = _state;
 		_state = state;

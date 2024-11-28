@@ -25,6 +25,18 @@
         {
           "type": "named",
           "data": {
+            "name": "Jiggle Back Right"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Sixth Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Wait Note"
           }
         },
@@ -44,6 +56,12 @@
           "type": "path",
           "data": {
             "pathName": "second path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Jiggle Back Right"
           }
         },
         {
@@ -74,6 +92,12 @@
           "type": "path",
           "data": {
             "pathName": "Fourth path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Jiggle Back Left"
           }
         },
         {

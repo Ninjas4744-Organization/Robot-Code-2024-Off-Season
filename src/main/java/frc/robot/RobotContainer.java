@@ -22,7 +22,7 @@ import frc.robot.Swerve.SwerveIO;
 
 public class RobotContainer {
 	private final CommandPS5Controller _driverJoystick;
-	private final CommandPS5Controller _operatorJoystick;
+//	private final CommandPS5Controller _operatorJoystick;
 
 	private boolean isSwerveLookAt = false;
 	private boolean isSwerveBayblade = false;
@@ -42,7 +42,7 @@ public class RobotContainer {
 		AutoCommandBuilder.registerCommands();
 
 		_driverJoystick = new CommandPS5Controller(Constants.kDriverJoystickPort);
-		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
+//		_operatorJoystick = new CommandPS5Controller(Constants.kOperatorJoystickPort);
 
 		Shuffleboard.getTab("Competition").addBoolean("Note", () -> RobotState.getInstance().getNoteInIndexer());
 		Shuffleboard.getTab("Competition")

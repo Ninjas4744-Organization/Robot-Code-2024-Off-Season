@@ -166,14 +166,14 @@ public final class SwerveConstants {
     }
 
     public static final class AutoConstants {
-        public static final double kP = 0.05;
+        public static final double kP = 0.07;
         public static final double kI = 0;
         public static final double kIZone = 0;
         public static final double kD = 0;
 
-        public static final double kPTheta = 0.07;
-        public static final double kITheta = 0.15;
-        public static final double kIZoneTheta = 4;
+        public static final double kPTheta = 0.057;
+        public static final double kITheta = 0.09;
+        public static final double kIZoneTheta = 10;
         public static final double kDTheta = 0.003;
 
         public static final double kMaxSpeed = 4;
