@@ -1,6 +1,8 @@
 package frc.robot.Swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ninjas4744.NinjasLib.Controllers.NinjasController;
+import com.ninjas4744.NinjasLib.Controllers.NinjasTalonFXController;
 import com.ninjas4744.NinjasLib.DataClasses.SwerveModuleConstants;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -29,16 +31,16 @@ public class SwerveModule {
 	private Rotation2d lastAngle;
 	private Rotation2d angleOffset;
 
-	private CANSparkMax angleMotor;
-	private CANSparkMax driveMotor;
+	private NinjasController angleMotor;
+	private NinjasController driveMotor;
 
 	private RelativeEncoder driveEncoder;
 	private RelativeEncoder integratedAngleEncoder;
 
 	private CANcoder angleEncoder;
 
-	private SparkPIDController driveController;
-	private SparkPIDController angleController;
+//	private SparkPIDController driveController;
+//	private SparkPIDController angleController;
 
 	private final SimpleMotorFeedforward feedforward =
 			new SimpleMotorFeedforward(SwerveConstants.kDriveS, SwerveConstants.kDriveV, SwerveConstants.kDriveA);
@@ -57,15 +59,15 @@ public class SwerveModule {
 			configAngleEncoder();
 
 			/* Angle Motor Config */
-			angleMotor = new CANSparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
-			integratedAngleEncoder = angleMotor.getEncoder();
-			angleController = angleMotor.getPIDController();
+			angleMotor = new NinjasTalonFXController(SwerveConstants.SwerveAngleConstants.kControllerConstants);
+//			integratedAngleEncoder = angleMotor.getEncoder();?
+//			angleController = angleMotor.getPIDController();?
 			configAngleMotor();
 
 			/* Drive Motor Config */
-			driveMotor = new CANSparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
-			driveEncoder = driveMotor.getEncoder();
-			driveController = driveMotor.getPIDController();
+			driveMotor =new NinjasTalonFXController(SwerveConstants.SwerveDriveConstants.kControllerConstants);
+//			driveEncoder = driveMotor.getEncoder();?
+//			driveController = driveMotor.getPIDController();?
 			configDriveMotor();
 		}
 
@@ -100,16 +102,11 @@ public class SwerveModule {
 
 	private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
 		if (RobotState.getInstance().isSimulated()) return;
-
 		if (isOpenLoop) {
 			double percentOutput = desiredState.speedMetersPerSecond / SwerveConstants.maxSpeed;
-			driveMotor.set(percentOutput);
+			driveMotor.setPercent(percentOutput);
 		} else {
-			driveController.setReference(
-					desiredState.speedMetersPerSecond,
-					ControlType.kVelocity,
-					0,
-					feedforward.calculate(desiredState.speedMetersPerSecond));
+			angleMotor.setPosition(desiredState.angle.getDegrees());
 		}
 	}
 
@@ -119,7 +116,7 @@ public class SwerveModule {
 				? lastAngle
 				: desiredState.angle;
 
-		angleController.setReference(angle.getDegrees(), ControlType.kPosition);
+		angleMotor.setPosition(angle.getDegrees());
 		lastAngle = angle;
 	}
 
@@ -153,26 +150,30 @@ public class SwerveModule {
 
 	private void configAngleMotor() {
 		// resets angle motor
-		angleMotor.restoreFactoryDefaults();
+//		angleMotor.restoreFactoryDefaults(); i dont know if dis is areplasmant
+		angleMotor.resetEncoder();
 		// limits can bus usage
-		CANSparkMaxUtil.setCANSparkMaxBusUsage(angleMotor, Usage.kPositionOnly);
+//		CANSparkMaxUtil.setCANSparkMaxBusUsage(angleMotor, Usage.kPositionOnly);
 		// sets current limit
-		angleMotor.setSmartCurrentLimit(SwerveConstants.kAngleContinuousCurrentLimit);
+//		angleMotor.setSmartCurrentLimit(SwerveConstants.kAngleContinuousCurrentLimit);
 		// sets inversion
-		angleMotor.setInverted(SwerveConstants.angleInvert);
+//		angleMotor.setInverted(SwerveConstants.angleInvert);
 		// sets brake mode or not
-		angleMotor.setIdleMode(SwerveConstants.angleNeutralMode);
+//		angleMotor.setIdleMode(SwerveConstants.angleNeutralMode);?
 		// sets a conversion factor for the encoder so it output correlates with the
 		// rotation of the module
 		integratedAngleEncoder.setPositionConversionFactor(SwerveConstants.angleConversionFactor);
 		// oops pid loop time sets the pid
-		angleController.setP(m_angleKP);
-		angleController.setI(m_angleKI);
-		angleController.setD(m_angleKD);
-		angleController.setFF(m_angleKFF);
-		angleMotor.enableVoltageCompensation(SwerveConstants.kVoltageComp);
+//		angleController.setP(m_angleKP);
+//		angleController.setI(m_angleKI);
+//		angleController.setD(m_angleKD);
+//		angleController.setFF(m_angleKFF);
+
+//		??????
+//		angleMotor.enableVoltageCompensation(SwerveConstants.kVoltageComp);
 		// burns spark max
-		angleMotor.burnFlash();
+//		angleMotor.burnFlash();
+
 
 		Timer.delay(1.0);
 		// resets to the cancoder
@@ -181,27 +182,28 @@ public class SwerveModule {
 
 	private void configDriveMotor() {
 		// factory resets the spark max
-		driveMotor.restoreFactoryDefaults();
+//		driveMotor.restoreFactoryDefaults();i dont know if dis is areplasmant
+		driveMotor.resetEncoder();
 		// full utilisation on the can loop hell yea
-		CANSparkMaxUtil.setCANSparkMaxBusUsage(driveMotor, Usage.kAll);
+//		CANSparkMaxUtil.setCANSparkMaxBusUsage(driveMotor, Usage.kAll);?
 		// sets current limit
-		driveMotor.setSmartCurrentLimit(SwerveConstants.kDriveContinuousCurrentLimit);
+//		driveMotor.setSmartCurrentLimit(SwerveConstants.kDriveContinuousCurrentLimit);
 		// sets inverted or not
-		driveMotor.setInverted(SwerveConstants.driveInvert);
+//		driveMotor.setInverted(SwerveConstants.driveInvert);
 		// sets brake mode or not
-		driveMotor.setIdleMode(SwerveConstants.driveNeutralMode);
+//		driveMotor.setIdleMode(SwerveConstants.driveNeutralMode);
 		// sets encoder to read velocities as meters per second
-		driveEncoder.setVelocityConversionFactor(SwerveConstants.driveConversionVelocityFactor);
+//		driveEncoder.setVelocityConversionFactor(SwerveConstants.driveConversionVelocityFactor); I fink i dont need it?
 		// sets encoder to read positions as meters traveled
-		driveEncoder.setPositionConversionFactor(SwerveConstants.driveConversionPositionFactor);
+//		driveEncoder.setPositionConversionFactor(SwerveConstants.driveConversionPositionFactor);I fink i dont need it?
 		// pid setting fun
-		driveController.setP(SwerveConstants.kDriveP);
-		driveController.setI(SwerveConstants.kDriveI);
-		driveController.setD(SwerveConstants.kDriveD);
-		driveController.setFF(SwerveConstants.kDriveFF);
-		driveMotor.enableVoltageCompensation(SwerveConstants.kVoltageComp);
+//		driveController.setP(SwerveConstants.kDriveP);
+//		driveController.setI(SwerveConstants.kDriveI);
+//		driveController.setD(SwerveConstants.kDriveD);
+//		driveController.setFF(SwerveConstants.kDriveFF);
+//		driveMotor.enableVoltageCompensation(SwerveConstants.kVoltageComp);
 		// burns to spark max
-		driveMotor.burnFlash();
+//		driveMotor.burnFlash();
 		// resets encoder position to 0
 		driveEncoder.setPosition(0.0);
 	}

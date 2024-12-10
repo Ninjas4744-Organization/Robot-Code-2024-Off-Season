@@ -129,6 +129,7 @@ public class RobotContainer {
 		for (VisionOutput estimation : estimations)
 			if (estimation.robotPose != null)
 				RobotState.getInstance().updateRobotPose(estimation);
+
 	}
 
 	public void resetSubsystems() {

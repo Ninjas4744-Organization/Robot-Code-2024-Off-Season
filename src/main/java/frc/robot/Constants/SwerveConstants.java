@@ -1,5 +1,8 @@
 package frc.robot.Constants;
 
+import com.ninjas4744.NinjasLib.DataClasses.MainControllerConstants;
+import com.ninjas4744.NinjasLib.DataClasses.PIDFConstants;
+import com.ninjas4744.NinjasLib.DataClasses.SimulatedControllerConstants;
 import com.ninjas4744.NinjasLib.DataClasses.SwerveModuleConstants;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -12,6 +15,49 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 public final class SwerveConstants {
+    public final class SwerveAngleConstants {
+        public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+        public static final SimulatedControllerConstants kSimulatedControllerConstants =
+                new SimulatedControllerConstants();
+
+        static {
+            kControllerConstants.main.id = 30;
+            kControllerConstants.main.inverted = true;
+            kControllerConstants.currentLimit = 40;
+            kControllerConstants.PIDFConstants = new PIDFConstants();
+            kControllerConstants.PIDFConstants.kP = 0.01;
+            kControllerConstants.PIDFConstants.kD = 0.005;
+            kControllerConstants.PIDFConstants.kI = 0.0;
+            kControllerConstants.PIDFConstants.kIZone = 0;
+            kControllerConstants.PIDFConstants.kCruiseVelocity = 0.15;
+            kControllerConstants.PIDFConstants.kAcceleration = 0.15;
+            kControllerConstants.currentLimit=50;
+
+
+        }
+    }
+    public final class SwerveDriveConstants {
+        public static final MainControllerConstants kControllerConstants = new MainControllerConstants();
+        public static final SimulatedControllerConstants kSimulatedControllerConstants =
+                new SimulatedControllerConstants();
+
+        static {
+            kControllerConstants.main.id = 30;
+            kControllerConstants.main.inverted = true;
+            kControllerConstants.currentLimit = 40;
+            kControllerConstants.PIDFConstants = new PIDFConstants();
+            kControllerConstants.PIDFConstants.kP = 0;
+            kControllerConstants.PIDFConstants.kD = 0;
+            kControllerConstants.PIDFConstants.kI = 0;
+            kControllerConstants.PIDFConstants.kIZone = 0;
+            kControllerConstants.PIDFConstants.kCruiseVelocity = 0.15;
+            kControllerConstants.PIDFConstants.kAcceleration = 0.15;
+            kControllerConstants.PIDFConstants.kV=2.44;
+            kControllerConstants.currentLimit=50;
+
+
+        }
+    }
     public static final double kSpeedFactor = 1;
     public static final double kRotationSpeedFactor = 1;
     public static final double kJoystickDeadband = 0.1;
@@ -60,7 +106,6 @@ public final class SwerveConstants {
 
     /** Modules drive PID values */
     public static final double kDriveP = 0.0;
-
     public static final double kDriveI = 0.0;
     public static final double kDriveD = 0.0;
     public static final double kDriveFF = 0.0;
